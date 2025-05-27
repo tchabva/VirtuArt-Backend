@@ -22,6 +22,7 @@ public class ArtworkController {
             @RequestParam(value = "limit", defaultValue = "50") String limit,
             @RequestParam(value = "page", defaultValue = "1") String page
     ) {
-        return new ResponseEntity<>(artworkService.getAicArtworks(limit,page), HttpStatus.OK);
+        PaginatedArtworkResultsDTO paginatedArtworkResultsDTO = artworkService.getAicArtworks(limit, page);
+        return new ResponseEntity<>(paginatedArtworkResultsDTO, HttpStatus.OK);
     }
 }
