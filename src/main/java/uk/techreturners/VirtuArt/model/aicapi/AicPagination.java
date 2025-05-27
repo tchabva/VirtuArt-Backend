@@ -1,4 +1,4 @@
-package uk.techreturners.VirtuArt.model;
+package uk.techreturners.VirtuArt.model.aicapi;
 
 public record AicPagination(
         Integer total,
