@@ -5,5 +5,6 @@ import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
 import java.util.List;
 
 public interface ArtworkService {
-    List<PaginatedArtworkResultsDTO> getAicArtworks(String limit, String page);
+    PaginatedArtworkResultsDTO getAicArtworks(String limit, String page);
+
 }

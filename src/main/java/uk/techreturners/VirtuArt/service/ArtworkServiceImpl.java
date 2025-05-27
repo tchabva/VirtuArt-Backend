@@ -14,7 +14,7 @@ public class ArtworkServiceImpl implements ArtworkService {
     private AicApiDAO aicApiDAO;
 
     @Override
-    public List<PaginatedArtworkResultsDTO> getAicArtworks(String limit, String page) {
+    public PaginatedArtworkResultsDTO getAicArtworks(String limit, String page) {
         return aicApiDAO.getArtworks(limit, page);
     }
 }
