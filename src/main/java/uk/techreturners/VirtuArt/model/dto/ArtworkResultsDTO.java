@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record ArtworkResultsDTO(
-        Integer id,
+        String id,
         String title,
         String artistTitle,
         String date
