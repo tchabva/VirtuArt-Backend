@@ -1,4 +1,7 @@
 package uk.techreturners.VirtuArt.model.aicapi;
 
-public record AicArtworkResult(AicArtwork data) {
+public record AicArtworkResult(
+        AicPagination pagination,
+        AicArtwork data
+) {
 }
