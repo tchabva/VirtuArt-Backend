@@ -2,7 +2,7 @@ package uk.techreturners.VirtuArt.model.aicapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record AicArtworkSearchResult(
+public record AicApiSearchArtwork(
         Integer id,
         String title,
         @JsonProperty("date_display") String dateDisplay,

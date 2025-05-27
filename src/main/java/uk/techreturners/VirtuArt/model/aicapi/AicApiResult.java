@@ -5,6 +5,6 @@ import java.util.List;
 // The Art Institute of Chicago API
 public record AicApiResult(
         AicPagination pagination,
-        List<AicArtworkSearchResult> data
+        List<AicApiSearchArtwork> data
 ) {
 }
