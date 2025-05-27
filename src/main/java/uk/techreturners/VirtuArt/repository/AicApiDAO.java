@@ -16,11 +16,11 @@ public class AicApiDAO {
             .baseUrl("https://api.artic.edu/api/v1/artworks")
             .build();
 
-    public AicApiResult getArtworks() {
+    public AicApiResult getArtworks(String limit, String page) {
         try {
             return webClient
                     .get()
-                    .uri("?fields=id,title,artist_title,date_display&limit=20&page=1")
+                    .uri("?fields=id,title,artist_title,date_display&limit="+ limit +"20&page=" + page)
                     .retrieve()
                     .bodyToMono(AicApiResult.class)
                     .block();
