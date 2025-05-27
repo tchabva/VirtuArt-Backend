@@ -1,7 +1,9 @@
 package uk.techreturners.VirtuArt.service;
 
-import uk.techreturners.VirtuArt.model.aicapi.AicApiResult;
+import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
+
+import java.util.List;
 
 public interface ArtworkService {
-    AicApiResult getAicArtworks(String limit, String page);
+    List<PaginatedArtworkResultsDTO> getAicArtworks(String limit, String page);
 }
