@@ -5,10 +5,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiResult;
 import uk.techreturners.VirtuArt.model.aicapi.AicArtwork;
 import uk.techreturners.VirtuArt.model.aicapi.AicArtworkResult;
-import uk.techreturners.VirtuArt.model.aicapi.AicArtworkSearchResult;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Repository
 public class AicApiDAO {
@@ -30,4 +26,19 @@ public class AicApiDAO {
         }
     }
 
+    public AicArtwork getArtworkById(String artworkId) {
+        String params = "?fields=id,title,artist_title,image_id,place_of_origin,date_display,description,alt_image_ids,medium_display,department_title";
+        try {
+            AicArtworkResult responseBody = webClient
+                    .get()
+                    .uri("/" + artworkId + params)
+                    .retrieve()
+                    .bodyToMono(AicArtworkResult.class)
+                    .block();
+            return responseBody.data();
+        } catch (Exception e) {
+            // TODO: Error handling in the vein of "ItemNotFoundException"
+            return null;
+        }
+    }
 }
