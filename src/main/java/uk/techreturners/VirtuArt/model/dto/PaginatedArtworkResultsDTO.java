@@ -8,16 +8,14 @@ import java.util.function.Predicate;
 
 @Builder
 public record PaginatedArtworkResultsDTO(
-        List<ArtworkResultsDTO> data,
         Integer totalItems,
         Integer pageSize,
         Integer totalPages,
         Integer currentPage,
         Boolean hasNext,
         Boolean hasPrevious,
-        String nextUrl
+        List<ArtworkResultsDTO> data
 ) {
-
     public static BiPredicate<Integer, Integer> checkHasNext = (cPage, tPage) -> cPage < tPage;
-    public static Predicate<Integer> checkHasPrevious = cPage -> cPage == 1;
+    public static Predicate<Integer> checkHasPrevious = cPage -> cPage > 1;
 }
