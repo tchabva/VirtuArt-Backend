@@ -42,7 +42,7 @@ public interface DTOMapper {
         return PaginatedArtworkResultsDTO.builder()
                 .data(
                         aicApiSearchResult.data().stream()
-                                .map(this::aicArtworkResultsResponseMapper)
+                                .map(this::aicSearchArtworkResultsResponseMapper)
                                 .toList())
                 .totalItems(aicApiSearchResult.pagination().total())
                 .pageSize(aicApiSearchResult.pagination().limit())
@@ -62,7 +62,7 @@ public interface DTOMapper {
                 .build();
     }
 
-    default ArtworkResultsDTO aicArtworkResultsResponseMapper(AicApiSearchArtwork aicArtworkSearchResult) {
+    default ArtworkResultsDTO aicSearchArtworkResultsResponseMapper(AicApiSearchArtwork aicArtworkSearchResult) {
         return ArtworkResultsDTO.builder()
                 .id(aicArtworkSearchResult.id().toString())
                 .title(aicArtworkSearchResult.title())
