@@ -7,6 +7,7 @@ import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchArtwork;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiArtwork;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiPagination;
+import uk.techreturners.VirtuArt.model.dto.ArtworkDTO;
 
 import java.util.Arrays;
 
@@ -108,5 +109,41 @@ class DTOMapperTest implements DTOMapper {
         // Assert
         assertEquals(expectedUrl, actualUrl1, "Image URL should handle null ID by returning empty string.");
         assertEquals(expectedUrl, actualUrl2, "Image URL should handle null ID by returning empty string.");
+    }
+
+    @Test
+    @DisplayName("createArtworkDtoWithAicApi maps AicArtwork to ArtworkDTO correctly")
+    void testCreateArtworkDtoWithAicApi() {
+        // Act
+        ArtworkDTO artworkDTO = createArtworkDtoWithAicApi(mockAicApiArtwork);
+
+        // Assert
+        assertAll("createArtworkDtoWithAicApi returns a correctly mapped ArtworkDTO",
+                () -> assertNotNull(artworkDTO),
+                () -> assertEquals(String.valueOf(mockAicApiArtwork.id()), artworkDTO.id()),
+                () -> assertEquals(mockAicApiArtwork.title(), artworkDTO.title()),
+                () -> assertEquals(mockAicApiArtwork.artist(), artworkDTO.artist()),
+                () -> assertEquals(mockAicApiArtwork.dateDisplay(), artworkDTO.date()),
+                () -> assertEquals(mockAicApiArtwork.displayMedium(), artworkDTO.displayMedium()),
+                () -> assertEquals(mockAicApiArtwork.description(), artworkDTO.description()),
+                () -> assertEquals(mockAicApiArtwork.department(), artworkDTO.category()),
+                () -> assertEquals(mockAicApiArtwork.origin(), artworkDTO.origin()),
+                () -> assertEquals(
+                        aicImageUrlCreator(mockAicApiArtwork.primaryImageId()), artworkDTO.imageUrl()
+                ),
+                () -> assertEquals("Art Institute of Chicago", artworkDTO.sourceMuseum()),
+                () -> assertNotNull(mockAicApiArtwork.altImageIds()),
+                () -> assertEquals(
+                        mockAicApiArtwork.altImageIds().size(), artworkDTO.altImageUrls().size()
+                )
+        );
+
+        if (!mockAicApiArtwork.altImageIds().isEmpty()){
+            assertEquals(
+                    aicImageUrlCreator(mockAicApiArtwork.altImageIds().get(0)),
+                    artworkDTO.altImageUrls().getFirst(),
+                    "First alt image URL should match."
+            );
+        }
     }
 }
