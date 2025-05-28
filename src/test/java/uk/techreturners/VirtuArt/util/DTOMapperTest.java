@@ -12,6 +12,7 @@ import uk.techreturners.VirtuArt.model.dto.ArtworkResultsDTO;
 import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -198,5 +199,26 @@ class DTOMapperTest implements DTOMapper {
             assertEquals(String.valueOf(firstApiArtwork.id()), firstArtworkResult.id());
             assertEquals(firstApiArtwork.title(), firstArtworkResult.title());
         }
+    }
+
+    @Test
+    @DisplayName("aicPaginatedResponseMapper handles empty data list from API result")
+    void testAicPaginatedResponseMapper_emptyData() {
+        // Arrange
+        AicApiSearchResult emptyDataApiResult = new AicApiSearchResult(
+                mockAicApiPagination, // Use the same pagination
+                Collections.emptyList()
+        );
+
+        // Act
+        PaginatedArtworkResultsDTO paginatedDTO = aicPaginatedResponseMapper(emptyDataApiResult);
+
+        // Assert
+        assertAll("aicPaginatedResponse Mapper handles empty data list from API result",
+                () -> assertNotNull(paginatedDTO),
+                () -> assertNotNull(paginatedDTO.data()),
+                () -> assertTrue(paginatedDTO.data().isEmpty()),
+                () -> assertEquals(mockAicApiPagination.total(), paginatedDTO.totalItems())
+        );
     }
 }
