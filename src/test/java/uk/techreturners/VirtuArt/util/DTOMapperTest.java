@@ -78,4 +78,35 @@ class DTOMapperTest implements DTOMapper {
         // Assert
         assertEquals(expectedUrl, actualUrl, "Image URL should be correctly formatted.");
     }
+
+    @Test
+    @DisplayName("aicImageUrlCreator handles null image ID")
+    void testAicImageUrlCreatorForNullImageId() {
+        // Arrange
+        String artworkImageId = null;
+        String expectedUrl = ""; // Current behavior
+
+        // Act
+        String actualUrl = aicImageUrlCreator(artworkImageId);
+
+        // Assert
+        assertEquals(expectedUrl, actualUrl, "Image URL should handle null ID by returning empty string.");
+    }
+
+    @Test
+    @DisplayName("aicImageUrlCreator handles Blank image ID")
+    void testAicImageUrlCreatorForBlankImageId() {
+        // Arrange
+        String emptyImageId = "";
+        String blankImageId = "  ";
+        String expectedUrl = ""; // Current behavior
+
+        // Act
+        String actualUrl1 = aicImageUrlCreator(emptyImageId);
+        String actualUrl2 = aicImageUrlCreator(emptyImageId);
+
+        // Assert
+        assertEquals(expectedUrl, actualUrl1, "Image URL should handle null ID by returning empty string.");
+        assertEquals(expectedUrl, actualUrl2, "Image URL should handle null ID by returning empty string.");
+    }
 }
