@@ -3,10 +3,8 @@ package uk.techreturners.VirtuArt.util;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
-import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchArtwork;
-import uk.techreturners.VirtuArt.model.aicapi.AicApiArtwork;
-import uk.techreturners.VirtuArt.model.aicapi.AicApiPagination;
+import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
+import uk.techreturners.VirtuArt.model.aicapi.*;
 import uk.techreturners.VirtuArt.model.dto.ArtworkDTO;
 import uk.techreturners.VirtuArt.model.dto.ArtworkResultsDTO;
 import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
@@ -107,7 +105,7 @@ class DTOMapperTest implements DTOMapper {
 
         // Act
         String actualUrl1 = aicImageUrlCreator(emptyImageId);
-        String actualUrl2 = aicImageUrlCreator(emptyImageId);
+        String actualUrl2 = aicImageUrlCreator(blankImageId);
 
         // Assert
         assertEquals(expectedUrl, actualUrl1, "Image URL should handle null ID by returning empty string.");
@@ -143,7 +141,7 @@ class DTOMapperTest implements DTOMapper {
 
         if (!mockAicApiArtwork.altImageIds().isEmpty()) {
             assertEquals(
-                    aicImageUrlCreator(mockAicApiArtwork.altImageIds().get(0)),
+                    aicImageUrlCreator(mockAicApiArtwork.altImageIds().getFirst()),
                     artworkDTO.altImageUrls().getFirst(),
                     "First alt image URL should match."
             );
@@ -219,6 +217,19 @@ class DTOMapperTest implements DTOMapper {
                 () -> assertNotNull(paginatedDTO.data()),
                 () -> assertTrue(paginatedDTO.data().isEmpty()),
                 () -> assertEquals(mockAicApiPagination.total(), paginatedDTO.totalItems())
+        );
+    }
+
+    @Test
+    @DisplayName("aicPaginatedResponseMapper handles null API result by throwing ItemNotFoundException")
+    void testAicPaginatedResponseMapperForNullApiResult() {
+        // Arrange
+        AicApiSearchResult aicApiSearchResult = null;
+
+        // Act & Assert
+        assertThrows(
+                ItemNotFoundException.class,
+                () -> aicPaginatedResponseMapper(aicApiSearchResult)
         );
     }
 }
