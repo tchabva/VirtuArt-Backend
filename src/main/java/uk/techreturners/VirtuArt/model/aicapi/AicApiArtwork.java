@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-public record AicArtwork(
+public record AicApiArtwork(
         Integer id,
         String title,
         @JsonProperty("date_display") String dateDisplay,

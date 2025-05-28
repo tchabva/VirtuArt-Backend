@@ -1,29 +1,29 @@
 package uk.techreturners.VirtuArt.util;
 
-import uk.techreturners.VirtuArt.model.aicapi.AicApiResult;
+import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchArtwork;
-import uk.techreturners.VirtuArt.model.aicapi.AicArtwork;
+import uk.techreturners.VirtuArt.model.aicapi.AicApiArtwork;
 import uk.techreturners.VirtuArt.model.dto.ArtworkDTO;
 import uk.techreturners.VirtuArt.model.dto.ArtworkResultsDTO;
 import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
 
 // DTO Mapper Interface
 public interface DTOMapper {
-    default ArtworkDTO createArtworkDtoWithAicApi(AicArtwork aicArtwork) {
+    default ArtworkDTO createArtworkDtoWithAicApi(AicApiArtwork aicApiArtwork) {
         return ArtworkDTO.builder()
-                .id(aicArtwork.id().toString())
-                .title(aicArtwork.title())
-                .artist(aicArtwork.artist())
-                .date(aicArtwork.dateDisplay())
-                .displayMedium(aicArtwork.displayMedium())
-                .imageUrl(aicImageUrlCreator(aicArtwork.primaryImageId()))
+                .id(aicApiArtwork.id().toString())
+                .title(aicApiArtwork.title())
+                .artist(aicApiArtwork.artist())
+                .date(aicApiArtwork.dateDisplay())
+                .displayMedium(aicApiArtwork.displayMedium())
+                .imageUrl(aicImageUrlCreator(aicApiArtwork.primaryImageId()))
                 .altImageUrls( // Map each altImageId in the List to the URL
-                        aicArtwork.altImageIds().stream()
+                        aicApiArtwork.altImageIds().stream()
                                 .map(this::aicImageUrlCreator)
                                 .toList())
-                .description(aicArtwork.description())
-                .origin(aicArtwork.origin())
-                .category(aicArtwork.department())
+                .description(aicApiArtwork.description())
+                .origin(aicApiArtwork.origin())
+                .category(aicApiArtwork.department())
                 .sourceMuseum("Art Institute of Chicago")
                 .build();
     }
@@ -34,25 +34,25 @@ public interface DTOMapper {
         return AIC_IMAGE_URL.concat(artworkID).concat(AIC_DEFAULT_IMAGE_SETTING);
     }
 
-    default PaginatedArtworkResultsDTO aicPaginatedResponseMapper(AicApiResult aicApiResult) {
+    default PaginatedArtworkResultsDTO aicPaginatedResponseMapper(AicApiSearchResult aicApiSearchResult) {
         return PaginatedArtworkResultsDTO.builder()
                 .data(
-                        aicApiResult.data().stream()
+                        aicApiSearchResult.data().stream()
                                 .map(this::aicArtworkResultsResponseMapper)
                                 .toList())
-                .totalItems(aicApiResult.pagination().total())
-                .pageSize(aicApiResult.pagination().limit())
-                .totalPages(aicApiResult.pagination().totalPages())
-                .currentPage(aicApiResult.pagination().currentPage())
+                .totalItems(aicApiSearchResult.pagination().total())
+                .pageSize(aicApiSearchResult.pagination().limit())
+                .totalPages(aicApiSearchResult.pagination().totalPages())
+                .currentPage(aicApiSearchResult.pagination().currentPage())
                 .hasNext(
                         PaginatedArtworkResultsDTO.checkHasNext.test(
-                                aicApiResult.pagination().currentPage(),
-                                aicApiResult.pagination().totalPages()
+                                aicApiSearchResult.pagination().currentPage(),
+                                aicApiSearchResult.pagination().totalPages()
                         )
                 )
                 .hasPrevious(
                         PaginatedArtworkResultsDTO.checkHasPrevious.test(
-                                aicApiResult.pagination().currentPage()
+                                aicApiSearchResult.pagination().currentPage()
                         )
                 )
                 .build();

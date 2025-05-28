@@ -2,7 +2,7 @@ package uk.techreturners.VirtuArt.model.aicapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record AicPagination(
+public record AicApiPagination(
         Integer total,
         Integer limit,
         Integer offset,
