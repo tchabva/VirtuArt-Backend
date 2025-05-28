@@ -235,8 +235,8 @@ class DTOMapperTest implements DTOMapper {
     }
 
     @Test
-    @DisplayName("aicPaginatedResponseMapper handles null pagination in API result (should throw NPE)")
-    void testAicPaginatedResponseMapper_nullPagination() {
+    @DisplayName("aicPaginatedResponseMapper handles null pagination in API result and throws ItemNotFoundException")
+    void testAicPaginatedResponseMapperForNullPagination() {
         // Arrange
         AicApiSearchResult resultWithNullPagination = new AicApiSearchResult(
                 null, // Null pagination
