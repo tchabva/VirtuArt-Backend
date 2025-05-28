@@ -11,6 +11,7 @@ import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -230,6 +231,22 @@ class DTOMapperTest implements DTOMapper {
         assertThrows(
                 ItemNotFoundException.class,
                 () -> aicPaginatedResponseMapper(aicApiSearchResult)
+        );
+    }
+
+    @Test
+    @DisplayName("aicPaginatedResponseMapper handles null pagination in API result (should throw NPE)")
+    void testAicPaginatedResponseMapper_nullPagination() {
+        // Arrange
+        AicApiSearchResult resultWithNullPagination = new AicApiSearchResult(
+                null, // Null pagination
+                List.of(mockAicApiSearchArtwork1, mockAicApiSearchArtwork2)
+        );
+
+        // Act & Assert
+        assertThrows(
+                ItemNotFoundException.class,
+                () -> aicPaginatedResponseMapper(resultWithNullPagination)
         );
     }
 }
