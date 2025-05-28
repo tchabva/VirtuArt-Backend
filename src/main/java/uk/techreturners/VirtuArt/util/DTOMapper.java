@@ -29,9 +29,13 @@ public interface DTOMapper {
     }
 
     default String aicImageUrlCreator(String artworkID) {
-        String AIC_IMAGE_URL = "https://www.artic.edu/iiif/2/";
-        String AIC_DEFAULT_IMAGE_SETTING = "/full/843,/0/default.jpg";
-        return AIC_IMAGE_URL.concat(artworkID).concat(AIC_DEFAULT_IMAGE_SETTING);
+        if(artworkID == null || artworkID.isBlank()){
+            return "";
+        } else {
+            String AIC_IMAGE_URL = "https://www.artic.edu/iiif/2/";
+            String AIC_DEFAULT_IMAGE_SETTING = "/full/843,/0/default.jpg";
+            return AIC_IMAGE_URL.concat(artworkID).concat(AIC_DEFAULT_IMAGE_SETTING);
+        }
     }
 
     default PaginatedArtworkResultsDTO aicPaginatedResponseMapper(AicApiSearchResult aicApiSearchResult) {
