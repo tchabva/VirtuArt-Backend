@@ -32,16 +32,15 @@ public class AicApiDAO {
         }
     }
 
-    public AicApiArtwork getArtworkById(String artworkId) {
+    public AicApiArtworkResult getArtworkById(String artworkId) {
         String params = "?fields=id,title,artist_title,image_id,place_of_origin,date_display,description,alt_image_ids,medium_display,department_title";
         try {
-            AicApiArtworkResult responseBody = webClient
+            return webClient
                     .get()
                     .uri("/" + artworkId + params)
                     .retrieve()
                     .bodyToMono(AicApiArtworkResult.class)
                     .block();
-            return responseBody.data();
         } catch (WebClientResponseException e) {
             HttpStatus status = HttpStatus.valueOf(e.getStatusCode().value());
             throw new ApiServiceException(e.getMessage(), status);
