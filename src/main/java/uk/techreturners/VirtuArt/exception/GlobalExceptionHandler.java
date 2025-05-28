@@ -18,4 +18,9 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(status).body(message);
     }
+
+    @ExceptionHandler
+    public ResponseEntity<Object> handleItemNotFoundException(ItemNotFoundException e){
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }
