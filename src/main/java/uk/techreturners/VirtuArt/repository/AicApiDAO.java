@@ -6,9 +6,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.techreturners.VirtuArt.exception.ApiServiceException;
-import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
-import uk.techreturners.VirtuArt.model.aicapi.AicApiArtwork;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiArtworkResult;
+import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
 
 @Repository
 public class AicApiDAO {
