@@ -8,6 +8,7 @@ import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchArtwork;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiArtwork;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiPagination;
 import uk.techreturners.VirtuArt.model.dto.ArtworkDTO;
+import uk.techreturners.VirtuArt.model.dto.ArtworkResultsDTO;
 
 import java.util.Arrays;
 
@@ -138,12 +139,28 @@ class DTOMapperTest implements DTOMapper {
                 )
         );
 
-        if (!mockAicApiArtwork.altImageIds().isEmpty()){
+        if (!mockAicApiArtwork.altImageIds().isEmpty()) {
             assertEquals(
                     aicImageUrlCreator(mockAicApiArtwork.altImageIds().get(0)),
                     artworkDTO.altImageUrls().getFirst(),
                     "First alt image URL should match."
             );
         }
+    }
+
+    @Test
+    @DisplayName("aicArtworkResultsResponseMapper maps AicApiSearchArtwork to ArtworkResultsDTO correctly")
+    void testAicSearchArtworkResultsResponseMapper() {
+        // Act
+        ArtworkResultsDTO artworkResultsDTO = aicSearchArtworkResultsResponseMapper(mockAicApiSearchArtwork1);
+
+        // Assert
+        assertAll( "maps ArtworkResultsDTO from AicApiSearchArtwork",
+                () -> assertNotNull(artworkResultsDTO),
+                () -> assertEquals(mockAicApiSearchArtwork1.id().toString(), artworkResultsDTO.id()),
+                () -> assertEquals(mockAicApiSearchArtwork1.title(), artworkResultsDTO.title()),
+                () -> assertEquals(mockAicApiSearchArtwork1.artistTitle(), artworkResultsDTO.artistTitle()),
+                () -> assertEquals(mockAicApiSearchArtwork1.dateDisplay(), artworkResultsDTO.date())
+        );
     }
 }
