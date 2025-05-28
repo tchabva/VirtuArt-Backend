@@ -1,7 +1,11 @@
 package uk.techreturners.VirtuArt.repository;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import uk.techreturners.VirtuArt.exception.ApiServiceException;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiArtwork;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiArtworkResult;
@@ -16,13 +20,15 @@ public class AicApiDAO {
         try {
             return webClient
                     .get()
-                    .uri("?fields=id,title,artist_title,date_display&limit="+ limit +"&page=" + page)
+                    .uri("?fields=id,title,artist_title,date_display&limit=" + limit + "&page=" + page)
                     .retrieve()
                     .bodyToMono(AicApiSearchResult.class)
                     .block();
-        } catch (Exception e) {
-            // TODO: Error handling
-            return null;
+        } catch (WebClientResponseException e) {
+            HttpStatus status = HttpStatus.valueOf(e.getStatusCode().value());
+            throw new ApiServiceException(e.getMessage(), status);
+        } catch (WebClientRequestException e) {
+            throw new ApiServiceException(e.getMessage());
         }
     }
 
@@ -36,9 +42,11 @@ public class AicApiDAO {
                     .bodyToMono(AicApiArtworkResult.class)
                     .block();
             return responseBody.data();
-        } catch (Exception e) {
-            // TODO: Error handling in the vein of "ItemNotFoundException"
-            return null;
+        } catch (WebClientResponseException e) {
+            HttpStatus status = HttpStatus.valueOf(e.getStatusCode().value());
+            throw new ApiServiceException(e.getMessage(), status);
+        } catch (WebClientRequestException e) {
+            throw new ApiServiceException(e.getMessage());
         }
     }
 }
