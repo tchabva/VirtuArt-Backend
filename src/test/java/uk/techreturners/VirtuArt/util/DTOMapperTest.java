@@ -1,12 +1,16 @@
 package uk.techreturners.VirtuArt.util;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchArtwork;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiArtwork;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiPagination;
 
 import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class DTOMapperTest implements DTOMapper {
 
@@ -59,6 +63,19 @@ class DTOMapperTest implements DTOMapper {
                 mockAicApiPagination,
                 Arrays.asList(mockAicApiSearchArtwork1, mockAicApiSearchArtwork2)
         );
+    }
 
+    @Test
+    @DisplayName("aicImageUrlCreator correctly forms URL")
+    void testAicImageUrlCreator() {
+        // Arrange
+        String artworkImageId = "test_image_id";
+        String expectedUrl = "https://www.artic.edu/iiif/2/" + artworkImageId + "/full/843,/0/default.jpg";
+
+        // Act
+        String actualUrl = aicImageUrlCreator(artworkImageId);
+
+        // Assert
+        assertEquals(expectedUrl, actualUrl, "Image URL should be correctly formatted.");
     }
 }
