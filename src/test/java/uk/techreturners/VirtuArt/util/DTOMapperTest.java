@@ -9,6 +9,7 @@ import uk.techreturners.VirtuArt.model.aicapi.AicApiArtwork;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiPagination;
 import uk.techreturners.VirtuArt.model.dto.ArtworkDTO;
 import uk.techreturners.VirtuArt.model.dto.ArtworkResultsDTO;
+import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
 
 import java.util.Arrays;
 
@@ -155,12 +156,47 @@ class DTOMapperTest implements DTOMapper {
         ArtworkResultsDTO artworkResultsDTO = aicSearchArtworkResultsResponseMapper(mockAicApiSearchArtwork1);
 
         // Assert
-        assertAll( "maps ArtworkResultsDTO from AicApiSearchArtwork",
+        assertAll("Maps ArtworkResultsDTO from AicApiSearchArtwork",
                 () -> assertNotNull(artworkResultsDTO),
                 () -> assertEquals(mockAicApiSearchArtwork1.id().toString(), artworkResultsDTO.id()),
                 () -> assertEquals(mockAicApiSearchArtwork1.title(), artworkResultsDTO.title()),
                 () -> assertEquals(mockAicApiSearchArtwork1.artistTitle(), artworkResultsDTO.artistTitle()),
                 () -> assertEquals(mockAicApiSearchArtwork1.dateDisplay(), artworkResultsDTO.date())
         );
+    }
+
+    @Test
+    @DisplayName("aicPaginatedResponseMapper maps AicApiResult to PaginatedArtworkResultsDTO correctly")
+    void testAicPaginatedResponseMapper() {
+        // Act
+        PaginatedArtworkResultsDTO paginatedDTO = aicPaginatedResponseMapper(mockAicApiSearchResult);
+
+        // Assert
+        assertAll("Maps AicApiSearchResult to PaginatedArtworkResultsDTO",
+                () -> assertNotNull(paginatedDTO),
+                () -> assertEquals(
+                        mockAicApiSearchResult.pagination().total(),
+                        paginatedDTO.totalItems()),
+                () -> assertEquals(
+                        mockAicApiSearchResult.pagination().limit(),
+                        paginatedDTO.pageSize()),
+                () -> assertEquals(
+                        mockAicApiSearchResult.pagination().totalPages(), paginatedDTO.totalPages()),
+                () -> assertEquals(
+                        mockAicApiSearchResult.pagination().currentPage(), paginatedDTO.currentPage()
+                ),
+                () -> assertTrue(paginatedDTO.hasNext()),
+                () -> assertTrue(paginatedDTO.hasPrevious()),
+                () -> assertNotNull(paginatedDTO.data()),
+                () -> assertEquals(mockAicApiSearchResult.data().size(), paginatedDTO.data().size())
+        );
+
+        // Check mapping of individual artwork results
+        if (!paginatedDTO.data().isEmpty()) {
+            ArtworkResultsDTO firstArtworkResult = paginatedDTO.data().getFirst();
+            AicApiSearchArtwork firstApiArtwork = mockAicApiSearchResult.data().getFirst();
+            assertEquals(String.valueOf(firstApiArtwork.id()), firstArtworkResult.id());
+            assertEquals(firstApiArtwork.title(), firstArtworkResult.title());
+        }
     }
 }
