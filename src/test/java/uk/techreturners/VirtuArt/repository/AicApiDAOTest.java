@@ -1,12 +1,15 @@
 package uk.techreturners.VirtuArt.repository;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import uk.techreturners.VirtuArt.model.aicapi.*;
 
 import java.util.Collections;
@@ -14,6 +17,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,5 +61,25 @@ class AicApiDAOTest {
                 "Artist Name", "image_id_123", List.of("alt_image_id_1")
         );
         expectedAicArtworkResult = new AicApiArtworkResult(expectedAicArtwork);
+    }
+
+    @Test
+    @DisplayName("getArtworks successfully retrieves and returns AicApiSearchResult")
+    void testGetArtworks_success() {
+        // Arrange
+        String limit = "10";
+        String page = "1";
+        String expectedUri = "?fields=id,title,artist_title,date_display&limit=" + limit + "&page=" + page;
+
+        when(mockRequestHeadersUriSpec.uri(expectedUri)).thenReturn(mockRequestHeadersSpec);
+        when(mockResponseSpec.bodyToMono(AicApiSearchResult.class)).thenReturn(Mono.just(expectedSearchResult));
+
+        // Act
+        AicApiSearchResult actualResult = aicApiDAO.getArtworks(limit, page);
+
+        // Assert
+        assertNotNull(actualResult, "Result should not be null.");
+        assertEquals(expectedSearchResult, actualResult, "Actual result should match expected result.");
+        verify(mockWebClient.get()).uri(expectedUri);
     }
 }
