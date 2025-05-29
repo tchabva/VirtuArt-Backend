@@ -265,4 +265,64 @@ class DTOMapperTest implements DTOMapper {
                 () -> aicPaginatedResponseMapper(resultWithNullData)
         );
     }
+
+    @Test
+    @DisplayName("aicPaginatedResponseMapper calculates hasNext and hasPrevious correctly - At First Page")
+    void testPaginationLogicForFirstPage() {
+        // Arrange
+        AicApiPagination firstPagePagination = new AicApiPagination(100, 10, 10, 1);
+        AicApiSearchResult apiResult = new AicApiSearchResult(firstPagePagination, Collections.emptyList());
+
+        // Act
+        PaginatedArtworkResultsDTO dto = aicPaginatedResponseMapper(apiResult);
+
+        // Assert
+        assertTrue(dto.hasNext());
+        assertFalse(dto.hasPrevious());
+    }
+
+    @Test
+    @DisplayName("aicPaginatedResponseMapper calculates hasNext and hasPrevious correctly - At Last Page")
+    void testPaginationLogicForLastPage() {
+        // Arrange
+        AicApiPagination lastPagePagination = new AicApiPagination(100, 10, 10, 10);
+        AicApiSearchResult apiResult = new AicApiSearchResult(lastPagePagination, Collections.emptyList());
+
+        // Act
+        PaginatedArtworkResultsDTO dto = aicPaginatedResponseMapper(apiResult);
+
+        // Assert
+        assertFalse(dto.hasNext());
+        assertTrue(dto.hasPrevious());
+    }
+
+    @Test
+    @DisplayName("aicPaginatedResponseMapper calculates hasNext and hasPrevious correctly - Middle Page")
+    void testPaginationLogicForMiddlePage() {
+        // Arrange
+        AicApiPagination middlePagePagination = new AicApiPagination(100, 10, 10, 5);
+        AicApiSearchResult apiResult = new AicApiSearchResult(middlePagePagination, Collections.emptyList());
+
+        // Act
+        PaginatedArtworkResultsDTO dto = aicPaginatedResponseMapper(apiResult);
+
+        // Assert
+         assertTrue(dto.hasNext());
+         assertTrue(dto.hasPrevious());
+    }
+
+    @Test
+    @DisplayName("aicPaginatedResponseMapper calculates hasNext and hasPrevious correctly - Single Page")
+    void testPaginationLogicForSinglePage() {
+        // Arrange
+        AicApiPagination singlePagePagination = new AicApiPagination(5, 1, 10, 1);
+        AicApiSearchResult apiResult = new AicApiSearchResult(singlePagePagination, Collections.emptyList());
+
+        // Act
+        PaginatedArtworkResultsDTO dto = aicPaginatedResponseMapper(apiResult); // Or dtoMapper.aicPaginatedResponseMapper(apiResult)
+
+        // Assert
+         assertFalse(dto.hasNext());
+         assertFalse(dto.hasPrevious());
+    }
 }
