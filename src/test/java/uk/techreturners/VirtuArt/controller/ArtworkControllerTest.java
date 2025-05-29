@@ -16,8 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @DataJpaTest
 class ArtworkControllerTest {
@@ -69,9 +68,27 @@ class ArtworkControllerTest {
                 () -> assertEquals(HttpStatus.OK, responseEntity.getStatusCode()),
                 () -> assertEquals(expectedPaginatedResponse, responseEntity.getBody())
         );
-        verify(mockArtworkService).getAicArtworks(defaultLimit, defaultPage); // Verify service method was called
+        verify(mockArtworkService, times(1)).getAicArtworks(defaultLimit, defaultPage);
     }
 
+    @Test
+    @DisplayName("getArtworks with custom parameters returns PaginatedArtworkResultsDTO and OK status")
+    void testGetArtworksCustomParametersReturnsPaginatedResultsAndOk() {
+        // Arrange
+        String customLimit = "10";
+        String customPage = "2";
+        when(mockArtworkService.getAicArtworks(customLimit, customPage)).thenReturn(expectedPaginatedResponse);
 
+        // Act
+        ResponseEntity<PaginatedArtworkResultsDTO> responseEntity = artworkController.getArtworks(customLimit, customPage);
+
+        // Assert
+        assertAll(
+                () -> assertNotNull(responseEntity),
+                () -> assertEquals(HttpStatus.OK, responseEntity.getStatusCode()),
+                () -> assertEquals(expectedPaginatedResponse, responseEntity.getBody())
+        );
+        verify(mockArtworkService, times(1)).getAicArtworks(customLimit, customPage);
+    }
 
 }
