@@ -98,4 +98,22 @@ class ArtworkServiceImplTest {
         verify(artworkService, times(1))
                 .aicPaginatedResponseMapper(any(AicApiSearchResult.class));
     }
+
+    @Test
+    @DisplayName("getAicArtworks handles null response from DAO")
+    void testGetAicArtworksHandlesNullDaoResponse() {
+        // Arrange
+        String limit = "10";
+        String page = "1";
+        when(mockAicApiDAO.getArtworks(limit, page)).thenReturn(null);
+
+        // Act & Assert
+        org.junit.jupiter.api.Assertions.assertThrows(uk.techreturners.VirtuArt.exception.ItemNotFoundException.class, () -> {
+            artworkService.getAicArtworks(limit, page);
+        });
+
+        verify(mockAicApiDAO).getArtworks(limit, page);
+    }
+
+
 }
