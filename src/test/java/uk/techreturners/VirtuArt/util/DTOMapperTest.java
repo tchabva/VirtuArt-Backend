@@ -315,7 +315,7 @@ class DTOMapperTest implements DTOMapper {
     @DisplayName("aicPaginatedResponseMapper calculates hasNext and hasPrevious correctly - Single Page")
     void testPaginationLogicForSinglePage() {
         // Arrange
-        AicApiPagination singlePagePagination = new AicApiPagination(5, 1, 10, 1);
+        AicApiPagination singlePagePagination = new AicApiPagination(5, 10, 1, 1);
         AicApiSearchResult apiResult = new AicApiSearchResult(singlePagePagination, Collections.emptyList());
 
         // Act
