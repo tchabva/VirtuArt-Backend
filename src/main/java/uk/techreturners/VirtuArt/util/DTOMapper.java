@@ -46,6 +46,10 @@ public interface DTOMapper {
     default PaginatedArtworkResultsDTO aicPaginatedResponseMapper(AicApiSearchResult aicApiSearchResult) {
         if (aicApiSearchResult == null) {
             throw new ItemNotFoundException("Null response from AIC API");
+        } else if (aicApiSearchResult.pagination() == null) {
+            throw new ItemNotFoundException("Null pagination response from AIC API");
+        } else if (aicApiSearchResult.data() == null) {
+            throw new ItemNotFoundException("Null data response froma AIC API");
         } else {
             return PaginatedArtworkResultsDTO.builder()
                     .data(
