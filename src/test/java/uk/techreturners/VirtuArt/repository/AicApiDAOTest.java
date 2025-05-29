@@ -187,4 +187,34 @@ class AicApiDAOTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
         verify(mockWebClient).get();
     }
+
+    @Test
+    @DisplayName("getArtworkById throws ApiServiceException when WebClientRequestException occurs")
+    void testGetArtworkById_webClientRequestException_throwsApiServiceException() {
+        // Arrange
+        String artworkId = "12345";
+        String expectedParams = "?fields=id,title,artist_title,image_id,place_of_origin,date_display,description,alt_image_ids,medium_display,department_title";
+        String expectedUri = "/" + artworkId + expectedParams;
+
+        HttpHeaders headers = new HttpHeaders();
+
+        WebClientRequestException requestException = new WebClientRequestException(
+                new ApiServiceException("Connection failed"),
+                HttpMethod.GET,
+                URI.create(""),
+                headers
+        );
+
+        when(mockRequestHeadersUriSpec.uri(expectedUri)).thenReturn(mockRequestHeadersSpec);
+        when(mockResponseSpec.bodyToMono(AicApiArtworkResult.class)).thenReturn(Mono.error(requestException));
+
+        // Act & Assert
+        ApiServiceException exception = assertThrows(ApiServiceException.class,
+                () -> aicApiDAO.getArtworkById(artworkId));
+
+        assertNotNull(exception.getMessage());
+        assertEquals("Connection failed", exception.getMessage());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        verify(mockWebClient).get();
+    }
 }
