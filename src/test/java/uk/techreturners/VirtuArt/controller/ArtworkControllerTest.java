@@ -121,6 +121,6 @@ class ArtworkControllerTest {
                 },
                 () -> assertEquals(emptyDataResponse, responseEntity.getBody())
         );
-        verify(mockArtworkService).getAicArtworks(limit, page);
+        verify(mockArtworkService,times(1)).getAicArtworks(limit, page);
     }
 }
