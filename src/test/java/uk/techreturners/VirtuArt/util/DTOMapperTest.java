@@ -249,4 +249,20 @@ class DTOMapperTest implements DTOMapper {
                 () -> aicPaginatedResponseMapper(resultWithNullPagination)
         );
     }
+
+    @Test
+    @DisplayName("aicPaginatedResponseMapper handles null data list in API result by throwing ItemNotFoundException")
+    void testAicPaginatedResponseMapperForNullDataList() {
+        // Arrange
+        AicApiSearchResult resultWithNullData = new AicApiSearchResult(
+                mockAicApiPagination,
+                null // Null data list
+        );
+
+        // Act & Assert
+        assertThrows(
+                ItemNotFoundException.class,
+                () -> aicPaginatedResponseMapper(resultWithNullData)
+        );
+    }
 }
