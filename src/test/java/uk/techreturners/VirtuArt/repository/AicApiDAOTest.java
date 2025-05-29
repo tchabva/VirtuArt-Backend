@@ -8,8 +8,11 @@ import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
+import uk.techreturners.VirtuArt.exception.ApiServiceException;
 import uk.techreturners.VirtuArt.model.aicapi.*;
 
 import java.util.Collections;
@@ -83,5 +86,27 @@ class AicApiDAOTest {
         verify(mockWebClient.get()).uri(expectedUri);
     }
 
+    @Test
+    @DisplayName("getArtworks throws ApiServiceException when WebClientResponseException occurs")
+    void testGetArtworksWebClientResponseExceptionThrowsApiServiceException() {
+        // Arrange
+        String limit = "10";
+        String page = "1";
+        String expectedUri = "?fields=id,title,artist_title,date_display&limit=" + limit + "&page=" + page;
 
+        WebClientResponseException responseException = WebClientResponseException.create(
+                404, "Not Found", null, null, null
+        );
+
+        when(mockRequestHeadersUriSpec.uri(expectedUri)).thenReturn(mockRequestHeadersSpec);
+        when(mockResponseSpec.bodyToMono(AicApiSearchResult.class)).thenReturn(Mono.error(responseException));
+
+        // Act & Assert
+        ApiServiceException exception = assertThrows(ApiServiceException.class,
+                () -> aicApiDAO.getArtworks(limit, page));
+
+        assertEquals("404 Not Found", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        verify(mockWebClient).get();
+    }
 }
