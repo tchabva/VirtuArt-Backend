@@ -13,6 +13,7 @@ import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
 import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
 import uk.techreturners.VirtuArt.repository.AicApiDAO;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -115,5 +116,35 @@ class ArtworkServiceImplTest {
         verify(mockAicApiDAO).getArtworks(limit, page);
     }
 
+    @Test
+    @DisplayName("getAicArtworks handles empty data list from DAO")
+    void testGetAicArtworksHandlesEmptyDataListFromDao() {
+        // Arrange
+        String limit = "10";
+        String page = "1";
+        AicApiPagination mockPagination = new AicApiPagination(
+                0, 10, 0, 1
+        );
+        AicApiSearchResult emptyDataApiResult = new AicApiSearchResult(
+                mockPagination,
+                Collections.emptyList()
+        );
+        when(mockAicApiDAO.getArtworks(limit, page)).thenReturn(emptyDataApiResult);
 
+        // Act
+        PaginatedArtworkResultsDTO resultDTO = artworkService.getAicArtworks(limit, page);
+
+        // Assert
+        assertAll(
+                () -> assertNotNull(resultDTO),
+                () -> assertNotNull(resultDTO.data()),
+                () -> assertEquals(0, resultDTO.data().size()),
+                () -> assertEquals(0, resultDTO.totalItems()),
+                () -> assertEquals(0, resultDTO.totalPages())
+        );
+
+        verify(mockAicApiDAO).getArtworks(limit, page);
+        verify(artworkService, times(0)).aicSearchArtworkResultsResponseMapper(any(AicApiSearchArtwork.class)); // Should not be called if data is empty
+        verify(artworkService, times(1)).aicPaginatedResponseMapper(any(AicApiSearchResult.class));
+    }
 }
