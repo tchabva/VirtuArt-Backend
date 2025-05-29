@@ -8,13 +8,17 @@ import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import uk.techreturners.VirtuArt.exception.ApiServiceException;
 import uk.techreturners.VirtuArt.model.aicapi.*;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
@@ -107,6 +111,35 @@ class AicApiDAOTest {
 
         assertEquals("404 Not Found", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        verify(mockWebClient).get();
+    }
+
+    @Test
+    @DisplayName("getArtworks throws ApiServiceException when WebClientRequestException occurs")
+    void testGetArtworksWebClientRequestExceptionThrowsApiServiceException() {
+        // Arrange
+        String limit = "10";
+        String page = "1";
+        String expectedUri = "?fields=id,title,artist_title,date_display&limit=" + limit + "&page=" + page;
+        HttpHeaders headers = new HttpHeaders();
+
+        WebClientRequestException requestException = new WebClientRequestException(
+                new ApiServiceException("Connection failed"),
+                HttpMethod.GET,
+                URI.create(""),
+                headers
+        );
+
+        when(mockRequestHeadersUriSpec.uri(expectedUri)).thenReturn(mockRequestHeadersSpec);
+        when(mockResponseSpec.bodyToMono(AicApiSearchResult.class)).thenReturn(Mono.error(requestException));
+
+        // Act & Assert
+        ApiServiceException exception = assertThrows(ApiServiceException.class,
+                () -> aicApiDAO.getArtworks(limit, page));
+
+        assertNotNull(exception.getMessage());
+        assertEquals("Connection failed", exception.getMessage());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
         verify(mockWebClient).get();
     }
 }
