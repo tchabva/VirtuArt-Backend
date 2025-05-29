@@ -1,5 +1,7 @@
 package uk.techreturners.VirtuArt.repository;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -11,9 +13,10 @@ import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
 
 @Repository
 public class AicApiDAO {
-    private final WebClient webClient = WebClient.builder()
-            .baseUrl("https://api.artic.edu/api/v1/artworks")
-            .build();
+
+    @Autowired
+    @Qualifier("aicApiWebClient")
+    private WebClient webClient;
 
     public AicApiSearchResult getArtworks(String limit, String page) {
         try {
