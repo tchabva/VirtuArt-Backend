@@ -1,9 +1,13 @@
 package uk.techreturners.VirtuArt.controller;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import uk.techreturners.VirtuArt.model.dto.ArtworkResultsDTO;
 import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
 import uk.techreturners.VirtuArt.service.ArtworkService;
@@ -12,6 +16,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @DataJpaTest
 class ArtworkControllerTest {
@@ -44,6 +50,26 @@ class ArtworkControllerTest {
                 .hasNext(false)
                 .hasPrevious(false)
                 .build();
+    }
+
+    @Test
+    @DisplayName("getArtworks with default parameters returns PaginatedArtworkResultsDTO and OK status")
+    void testGetArtworksWithDefaultParametersReturnsPaginatedResultsAndOk() {
+        // Arrange
+        String defaultLimit = "50";
+        String defaultPage = "1";
+        when(mockArtworkService.getAicArtworks(defaultLimit, defaultPage)).thenReturn(expectedPaginatedResponse);
+
+        // Act
+        ResponseEntity<PaginatedArtworkResultsDTO> responseEntity = artworkController.getArtworks(defaultLimit, defaultPage);
+
+        // Assert
+        assertAll(
+                () -> assertNotNull(responseEntity),
+                () -> assertEquals(HttpStatus.OK, responseEntity.getStatusCode()),
+                () -> assertEquals(expectedPaginatedResponse, responseEntity.getBody())
+        );
+        verify(mockArtworkService).getAicArtworks(defaultLimit, defaultPage); // Verify service method was called
     }
 
 
