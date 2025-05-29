@@ -142,4 +142,25 @@ class AicApiDAOTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
         verify(mockWebClient).get();
     }
+
+    @Test
+    @DisplayName("getArtworkById successfully retrieves and returns AicApiArtworkResult")
+    void testGetArtworkById() {
+        // Arrange
+        String artworkId = "12345";
+        String expectedParams = "?fields=id,title,artist_title,image_id,place_of_origin,date_display,description,alt_image_ids,medium_display,department_title";
+        String expectedUri = "/" + artworkId + expectedParams;
+
+        when(mockRequestHeadersUriSpec.uri(expectedUri)).thenReturn(mockRequestHeadersSpec);
+        when(mockResponseSpec.bodyToMono(AicApiArtworkResult.class)).thenReturn(Mono.just(expectedAicArtworkResult));
+
+        // Act
+        AicApiArtworkResult actualResult = aicApiDAO.getArtworkById(artworkId);
+
+        // Assert
+        assertNotNull(actualResult);
+        assertEquals(expectedAicArtworkResult, actualResult);
+        verify(mockWebClient).get();
+        verify(mockRequestHeadersUriSpec).uri(expectedUri);
+    }
 }
