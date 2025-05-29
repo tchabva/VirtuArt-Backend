@@ -1,22 +1,30 @@
 package uk.techreturners.VirtuArt.service;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiPagination;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchArtwork;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
+import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
 import uk.techreturners.VirtuArt.repository.AicApiDAO;
 
-import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+@DataJpaTest
 class ArtworkServiceImplTest {
 
     @Mock
     private AicApiDAO mockAicApiDAO;
 
+    @Spy // For verifying the method calls for the DTOMapper Interface
     @InjectMocks
     private ArtworkServiceImpl artworkService;
 
@@ -43,8 +51,51 @@ class ArtworkServiceImplTest {
 
         mockApiSearchResult = new AicApiSearchResult(
                 mockPagination,
-                Collections.singletonList(mockApiSearchArtwork)
+                List.of(mockApiSearchArtwork)
         );
     }
 
+    @Test
+    @DisplayName("getAicArtworks calls DAO and maps response correctly")
+    void testGetAicArtworks() {
+        // Arrange
+        String limit = "10";
+        String page = "1";
+        when(mockAicApiDAO.getArtworks(limit, page)).thenReturn(mockApiSearchResult);
+
+        // Act
+        PaginatedArtworkResultsDTO resultDTO = artworkService.getAicArtworks(limit, page);
+
+        // Assert
+        assertAll(
+                () -> assertNotNull(resultDTO),
+                () -> assertEquals(mockApiSearchResult.pagination().total(), resultDTO.totalItems()),
+                () -> assertEquals(mockApiSearchResult.pagination().limit(), resultDTO.pageSize()),
+                () -> assertEquals(
+                        mockApiSearchResult.pagination().totalPages(), resultDTO.totalPages()
+                ),
+                () -> assertEquals(
+                        mockApiSearchResult.pagination().currentPage(), resultDTO.currentPage()
+                ),
+                () -> assertNotNull(resultDTO.data()),
+                () -> assertEquals(1, resultDTO.data().size()),
+                () -> assertEquals(
+                        String.valueOf(mockApiSearchArtwork.id()), resultDTO.data().getFirst().id()
+                ),
+                () -> assertEquals(mockApiSearchArtwork.title(), resultDTO.data().getFirst().title()),
+                () -> assertEquals(
+                        mockApiSearchArtwork.artistTitle(), resultDTO.data().getFirst().artistTitle()
+                ),
+                () -> assertEquals(
+                        mockApiSearchArtwork.dateDisplay(), resultDTO.data().getFirst().date()
+                )
+        );
+
+        verify(mockAicApiDAO).getArtworks(limit, page); // Verify DAO method was called
+        // Verify that the DTOMapper's methods were involved.
+        verify(artworkService, times(1))
+                .aicSearchArtworkResultsResponseMapper(any(AicApiSearchArtwork.class));
+        verify(artworkService, times(1))
+                .aicPaginatedResponseMapper(any(AicApiSearchResult.class));
+    }
 }
