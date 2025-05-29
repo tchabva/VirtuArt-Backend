@@ -91,4 +91,36 @@ class ArtworkControllerTest {
         verify(mockArtworkService, times(1)).getAicArtworks(customLimit, customPage);
     }
 
+    @Test
+    @DisplayName("getArtworks when service returns empty data list")
+    void testGetArtworksServiceReturnsEmptyDataReturnsPaginatedResultsAndOk() {
+        // Arrange
+        String limit = "5";
+        String page = "1";
+        PaginatedArtworkResultsDTO emptyDataResponse = PaginatedArtworkResultsDTO.builder()
+                .data(Collections.emptyList())
+                .totalItems(0)
+                .pageSize(5)
+                .totalPages(0)
+                .currentPage(1)
+                .hasNext(false)
+                .hasPrevious(false)
+                .build();
+        when(mockArtworkService.getAicArtworks(limit, page)).thenReturn(emptyDataResponse);
+
+        // Act
+        ResponseEntity<PaginatedArtworkResultsDTO> responseEntity = artworkController.getArtworks(limit, page);
+
+        // Assert
+        assertAll(
+                () -> assertNotNull(responseEntity),
+                () -> assertEquals(HttpStatus.OK, responseEntity.getStatusCode()),
+                () -> {
+                    assertNotNull(responseEntity.getBody());
+                    assertEquals(0, responseEntity.getBody().data().size());
+                },
+                () -> assertEquals(emptyDataResponse, responseEntity.getBody())
+        );
+        verify(mockArtworkService).getAicArtworks(limit, page);
+    }
 }
