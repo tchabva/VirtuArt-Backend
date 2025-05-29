@@ -163,4 +163,28 @@ class AicApiDAOTest {
         verify(mockWebClient).get();
         verify(mockRequestHeadersUriSpec).uri(expectedUri);
     }
+
+    @Test
+    @DisplayName("getArtworkById throws ApiServiceException when WebClientResponseException occurs")
+    void testGetArtworkByIdWebClientResponseExceptionThrowsApiServiceException() {
+        // Arrange
+        String artworkId = "12345";
+        String expectedParams = "?fields=id,title,artist_title,image_id,place_of_origin,date_display,description,alt_image_ids,medium_display,department_title";
+        String expectedUri = "/" + artworkId + expectedParams;
+
+        WebClientResponseException responseException = WebClientResponseException.create(
+                500, "Internal Server Error", null, null, null
+        );
+
+        when(mockRequestHeadersUriSpec.uri(expectedUri)).thenReturn(mockRequestHeadersSpec);
+        when(mockResponseSpec.bodyToMono(AicApiArtworkResult.class)).thenReturn(Mono.error(responseException));
+
+        // Act & Assert
+        ApiServiceException exception = assertThrows(ApiServiceException.class,
+                () -> aicApiDAO.getArtworkById(artworkId));
+
+        assertEquals("500 Internal Server Error", exception.getMessage());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        verify(mockWebClient).get();
+    }
 }
