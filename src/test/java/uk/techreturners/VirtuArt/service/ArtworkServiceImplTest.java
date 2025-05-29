@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiPagination;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchArtwork;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
@@ -109,9 +110,7 @@ class ArtworkServiceImplTest {
         when(mockAicApiDAO.getArtworks(limit, page)).thenReturn(null);
 
         // Act & Assert
-        org.junit.jupiter.api.Assertions.assertThrows(uk.techreturners.VirtuArt.exception.ItemNotFoundException.class, () -> {
-            artworkService.getAicArtworks(limit, page);
-        });
+       assertThrows(ItemNotFoundException.class,() -> artworkService.getAicArtworks(limit, page));
 
         verify(mockAicApiDAO).getArtworks(limit, page);
     }
@@ -144,7 +143,30 @@ class ArtworkServiceImplTest {
         );
 
         verify(mockAicApiDAO).getArtworks(limit, page);
-        verify(artworkService, times(0)).aicSearchArtworkResultsResponseMapper(any(AicApiSearchArtwork.class)); // Should not be called if data is empty
-        verify(artworkService, times(1)).aicPaginatedResponseMapper(any(AicApiSearchResult.class));
+        verify(artworkService, times(0)) // Should not be called if the response is empty
+                .aicSearchArtworkResultsResponseMapper(any(AicApiSearchArtwork.class));
+        verify(artworkService, times(1))
+                .aicPaginatedResponseMapper(any(AicApiSearchResult.class));
+    }
+
+    @Test
+    @DisplayName("getAicArtworks handles null data from DAO")
+    void testGetAicArtworksHandlesNullDataFromDao() {
+        // Arrange
+        String limit = "10";
+        String page = "1";
+        AicApiPagination mockPagination = new AicApiPagination(
+                100, 10, 10, 1
+        );
+        AicApiSearchResult nullDataResult = new AicApiSearchResult(
+                mockPagination,
+                null
+        );
+        when(mockAicApiDAO.getArtworks(limit, page)).thenReturn(nullDataResult);
+
+        // Act & Assert
+        assertThrows(ItemNotFoundException.class, () -> artworkService.getAicArtworks(limit, page));
+
+        verify(mockAicApiDAO).getArtworks(limit, page);
     }
 }
