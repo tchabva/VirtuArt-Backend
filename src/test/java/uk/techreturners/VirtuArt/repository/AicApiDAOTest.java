@@ -65,7 +65,7 @@ class AicApiDAOTest {
 
     @Test
     @DisplayName("getArtworks successfully retrieves and returns AicApiSearchResult")
-    void testGetArtworks_success() {
+    void testGetArtworks() {
         // Arrange
         String limit = "10";
         String page = "1";
@@ -78,8 +78,10 @@ class AicApiDAOTest {
         AicApiSearchResult actualResult = aicApiDAO.getArtworks(limit, page);
 
         // Assert
-        assertNotNull(actualResult, "Result should not be null.");
-        assertEquals(expectedSearchResult, actualResult, "Actual result should match expected result.");
+        assertNotNull(actualResult);
+        assertEquals(expectedSearchResult, actualResult);
         verify(mockWebClient.get()).uri(expectedUri);
     }
+
+
 }
