@@ -3,15 +3,16 @@ package uk.techreturners.VirtuArt.repository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClient.*;
+import org.springframework.web.reactive.function.client.WebClient.RequestHeadersSpec;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
@@ -27,17 +28,19 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@DataJpaTest
 class AicApiDAOTest {
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private WebClient mockWebClient;
 
+    @SuppressWarnings("rawtypes")
     @Mock
-    private WebClient.RequestHeadersUriSpec mockRequestHeadersUriSpec;
+    private RequestHeadersUriSpec mockRequestHeadersUriSpec;
 
+    @SuppressWarnings("rawtypes")
     @Mock
-    private WebClient.RequestHeadersSpec mockRequestHeadersSpec;
+    private RequestHeadersSpec mockRequestHeadersSpec;
 
     @Mock
     private WebClient.ResponseSpec mockResponseSpec;
@@ -46,12 +49,12 @@ class AicApiDAOTest {
     private AicApiDAO aicApiDAO;
 
     private AicApiSearchResult expectedSearchResult;
-    private AicApiArtwork expectedAicArtwork;
     private AicApiArtworkResult expectedAicArtworkResult;
 
+    @SuppressWarnings("unchecked")
     @BeforeEach
     void setUp() {
-        // Common setup for WebClient mocking
+        // setup for WebClient mocking
         when(mockWebClient.get()).thenReturn(mockRequestHeadersUriSpec);
         when(mockRequestHeadersUriSpec.uri(anyString())).thenReturn(mockRequestHeadersSpec);
         when(mockRequestHeadersSpec.retrieve()).thenReturn(mockResponseSpec);
@@ -62,7 +65,7 @@ class AicApiDAOTest {
         expectedSearchResult = new AicApiSearchResult(pagination, Collections.singletonList(searchArtwork));
 
         // Setup for getArtworkById
-        expectedAicArtwork = new AicApiArtwork(
+        AicApiArtwork expectedAicArtwork = new AicApiArtwork(
                 12345, "Artwork Title", "20th Century", "Place of Origin",
                 "A detailed description of the artwork.", "Oil on canvas", "Modern Art",
                 "Artist Name", "image_id_123", List.of("alt_image_id_1")

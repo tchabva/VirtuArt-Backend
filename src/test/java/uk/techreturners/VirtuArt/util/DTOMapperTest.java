@@ -3,6 +3,7 @@ package uk.techreturners.VirtuArt.util;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
 import uk.techreturners.VirtuArt.model.aicapi.*;
 import uk.techreturners.VirtuArt.model.dto.ArtworkDTO;
@@ -15,6 +16,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@DataJpaTest
 class DTOMapperTest implements DTOMapper {
 
     // AIC API Mocks
