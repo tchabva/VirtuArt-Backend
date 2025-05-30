@@ -1,4 +1,4 @@
-package uk.techreturners.VirtuArt.model.dto;
+package uk.techreturners.VirtuArt.model.request;
 
 public record CreateExhibitionRequest(
         String title,
