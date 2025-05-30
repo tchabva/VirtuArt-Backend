@@ -49,7 +49,7 @@ public class AicApiElasticSearchQuery {
     public static class BoolQuery {
         @JsonProperty("must")
         private List<Map<String, Object>> must;
-        
+
     }
 
     @Override
