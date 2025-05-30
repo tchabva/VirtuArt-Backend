@@ -1,6 +1,6 @@
 package uk.techreturners.VirtuArt.model.dto;
 
-public record NewExhibitionDTO(
+public record CreateExhibitionRequest(
         String title,
         String description
 ) {
