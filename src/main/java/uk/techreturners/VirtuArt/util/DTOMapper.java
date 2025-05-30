@@ -84,6 +84,7 @@ public interface DTOMapper {
                     .title(aicArtworkSearchResult.title())
                     .artistTitle(aicArtworkSearchResult.artistTitle())
                     .date(aicArtworkSearchResult.dateDisplay())
+                    .imageURL(aicImageUrlCreator(aicArtworkSearchResult.primaryImageId()))
                     .build();
         }
     }
