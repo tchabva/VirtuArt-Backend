@@ -81,7 +81,7 @@ class AicApiDAOTest {
         // Arrange
         String limit = "10";
         String page = "1";
-        String expectedUri = "?fields=id,title,artist_title,date_display&limit=" + limit + "&page=" + page;
+        String expectedUri = "?fields=id,title,artist_title,date_display,image_id&limit=" + limit + "&page=" + page;
 
         when(mockRequestHeadersUriSpec.uri(expectedUri)).thenReturn(mockRequestHeadersSpec);
         when(mockResponseSpec.bodyToMono(AicApiSearchResult.class)).thenReturn(Mono.just(expectedSearchResult));
