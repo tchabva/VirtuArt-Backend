@@ -19,8 +19,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(message);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<Object> handleItemNotFoundException(ItemNotFoundException e){
+    @ExceptionHandler(ItemNotFoundException.class)
+    public ResponseEntity<Object> handleItemNotFoundException(ItemNotFoundException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
