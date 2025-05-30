@@ -2,6 +2,7 @@ package uk.techreturners.VirtuArt.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.techreturners.VirtuArt.model.aicapi.AicApiElasticSearchQuery;
 import uk.techreturners.VirtuArt.model.dto.ArtworkDTO;
 import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
 import uk.techreturners.VirtuArt.repository.AicApiDAO;
@@ -26,5 +27,10 @@ public class ArtworkServiceImpl implements ArtworkService, DTOMapper {
             }
             default -> throw new IllegalArgumentException("Invalid data source: " + source);
         }
+    }
+
+    @Override
+    public PaginatedArtworkResultsDTO getAicArtworksBySearchQuery(AicApiElasticSearchQuery searchQuery) {
+        return aicPaginatedResponseMapper(aicApiDAO.getArtworksByElasticSearchQuery(searchQuery));
     }
 }
