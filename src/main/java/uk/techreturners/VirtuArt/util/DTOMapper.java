@@ -1,11 +1,13 @@
 package uk.techreturners.VirtuArt.util;
 
 import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
+import uk.techreturners.VirtuArt.model.Exhibition;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchArtwork;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiArtwork;
 import uk.techreturners.VirtuArt.model.dto.ArtworkDTO;
 import uk.techreturners.VirtuArt.model.dto.ArtworkResultsDTO;
+import uk.techreturners.VirtuArt.model.dto.ExhibitionDTO;
 import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
 
 // DTO Mapper Interface
@@ -85,6 +87,21 @@ public interface DTOMapper {
                     .artistTitle(aicArtworkSearchResult.artistTitle())
                     .date(aicArtworkSearchResult.dateDisplay())
                     .imageURL(aicImageUrlCreator(aicArtworkSearchResult.primaryImageId()))
+                    .build();
+        }
+    }
+
+    default ExhibitionDTO createExhibitionDTO(Exhibition exhibition) {
+        if (exhibition == null) {
+            throw new ItemNotFoundException("Exhibition Item could not be found");
+        } else {
+            return ExhibitionDTO.builder()
+                    .id(exhibition.getId())
+                    .title(exhibition.getTitle())
+                    .description(exhibition.getDescription())
+                    .createdAt(exhibition.getCreatedAt().toString())
+                    .updatedAt(exhibition.getUpdatedAt().toString())
+                    .exhibitionItems(exhibition.getExhibitionItems())
                     .build();
         }
     }
