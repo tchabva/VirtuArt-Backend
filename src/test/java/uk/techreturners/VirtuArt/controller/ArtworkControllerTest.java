@@ -53,14 +53,14 @@ class ArtworkControllerTest {
 
     @Test
     @DisplayName("getArtworks with default parameters returns PaginatedArtworkResultsDTO and OK status")
-    void testGetArtworksWithDefaultParametersReturnsPaginatedResultsAndOk() {
+    void testGetAicArtworksWithDefaultParametersReturnsPaginatedResultsAndOk() {
         // Arrange
         String defaultLimit = "50";
         String defaultPage = "1";
         when(mockArtworkService.getAicArtworks(defaultLimit, defaultPage)).thenReturn(expectedPaginatedResponse);
 
         // Act
-        ResponseEntity<PaginatedArtworkResultsDTO> responseEntity = artworkController.getArtworks(defaultLimit, defaultPage);
+        ResponseEntity<PaginatedArtworkResultsDTO> responseEntity = artworkController.getAicArtworks(defaultLimit, defaultPage);
 
         // Assert
         assertAll(
@@ -73,14 +73,14 @@ class ArtworkControllerTest {
 
     @Test
     @DisplayName("getArtworks with custom parameters returns PaginatedArtworkResultsDTO and OK status")
-    void testGetArtworksCustomParametersReturnsPaginatedResultsAndOk() {
+    void testGetAicArtworksCustomParametersReturnsPaginatedResultsAndOk() {
         // Arrange
         String customLimit = "10";
         String customPage = "2";
         when(mockArtworkService.getAicArtworks(customLimit, customPage)).thenReturn(expectedPaginatedResponse);
 
         // Act
-        ResponseEntity<PaginatedArtworkResultsDTO> responseEntity = artworkController.getArtworks(customLimit, customPage);
+        ResponseEntity<PaginatedArtworkResultsDTO> responseEntity = artworkController.getAicArtworks(customLimit, customPage);
 
         // Assert
         assertAll(
@@ -93,7 +93,7 @@ class ArtworkControllerTest {
 
     @Test
     @DisplayName("getArtworks when service returns empty data list")
-    void testGetArtworksServiceReturnsEmptyDataReturnsPaginatedResultsAndOk() {
+    void testGetAicArtworksServiceReturnsEmptyDataReturnsPaginatedResultsAndOk() {
         // Arrange
         String limit = "5";
         String page = "1";
@@ -109,7 +109,7 @@ class ArtworkControllerTest {
         when(mockArtworkService.getAicArtworks(limit, page)).thenReturn(emptyDataResponse);
 
         // Act
-        ResponseEntity<PaginatedArtworkResultsDTO> responseEntity = artworkController.getArtworks(limit, page);
+        ResponseEntity<PaginatedArtworkResultsDTO> responseEntity = artworkController.getAicArtworks(limit, page);
 
         // Assert
         assertAll(

@@ -15,8 +15,8 @@ public class ArtworkController {
     @Autowired
     private ArtworkService artworkService;
 
-    @GetMapping()
-    public ResponseEntity<PaginatedArtworkResultsDTO> getArtworks(
+    @GetMapping("/aic")
+    public ResponseEntity<PaginatedArtworkResultsDTO> getAicArtworks(
             @RequestParam(value = "limit", defaultValue = "50") String limit,
             @RequestParam(value = "page", defaultValue = "1") String page
     ) {
@@ -24,9 +24,10 @@ public class ArtworkController {
         return new ResponseEntity<>(paginatedArtworkResultsDTO, HttpStatus.OK);
     }
 
-
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<ArtworkDTO> getArtworkById(@PathVariable("id") String artworkId){
-        return new ResponseEntity<>(artworkService.getArtworkById(artworkId), HttpStatus.OK);
+    @GetMapping(path = "/{source}/{id}")
+    public ResponseEntity<ArtworkDTO> getArtworkById(
+            @PathVariable("source") String source,
+            @PathVariable("id") String artworkId) {
+        return new ResponseEntity<>(artworkService.getArtworkById(source, artworkId), HttpStatus.OK);
     }
 }
