@@ -10,9 +10,8 @@ import java.util.List;
 public record ExhibitionDTO(
         String id,
         String title,
-        String description,
+        Integer itemCount,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt,
-        List<ExhibitionItem> exhibitionItems
+        LocalDateTime updatedAt
 ) {
 }
