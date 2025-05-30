@@ -6,6 +6,7 @@ public record AicApiSearchArtwork(
         Integer id,
         String title,
         @JsonProperty("date_display") String dateDisplay,
-        @JsonProperty("artist_title") String artistTitle
+        @JsonProperty("artist_title") String artistTitle,
+        @JsonProperty("image_id") String primaryImageId
 ) {
 }

@@ -7,6 +7,7 @@ public record ArtworkResultsDTO(
         String id,
         String title,
         String artistTitle,
-        String date
+        String date,
+        String imageURL
 ) {
 }
