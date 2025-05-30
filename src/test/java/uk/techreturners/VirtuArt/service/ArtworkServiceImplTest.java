@@ -41,7 +41,8 @@ class ArtworkServiceImplTest {
                 123,
                 "Mona Lisa",
                 "1503-1506",
-                "Leonardo da Vinci"
+                "Leonardo da Vinci",
+                "https://www.image.com/imageId"
         );
 
         AicApiPagination mockPagination = new AicApiPagination(

@@ -60,7 +60,9 @@ class AicApiDAOTest {
         when(mockRequestHeadersSpec.retrieve()).thenReturn(mockResponseSpec);
 
         // Setup for getArtworks
-        AicApiSearchArtwork searchArtwork = new AicApiSearchArtwork(1, "Title", "Date", "Artist");
+        AicApiSearchArtwork searchArtwork = new AicApiSearchArtwork(
+                1, "Title", "Date", "Artist", "https://www.image.com/imageId"
+        );
         AicApiPagination pagination = new AicApiPagination(1, 1, 1, 1);
         expectedSearchResult = new AicApiSearchResult(pagination, Collections.singletonList(searchArtwork));
 

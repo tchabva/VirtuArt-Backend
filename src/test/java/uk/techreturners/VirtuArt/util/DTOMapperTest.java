@@ -47,7 +47,8 @@ class DTOMapperTest implements DTOMapper {
                 101,
                 "Impression, soleil levant",
                 "1872",
-                "Claude Monet"
+                "Claude Monet",
+                "https://www.image.com/imageId"
         );
 
         // Setup for aicArtworkResultsResponseMapper
@@ -55,7 +56,8 @@ class DTOMapperTest implements DTOMapper {
                 1012,
                 "Water Lilies",
                 "1915",
-                "Claude Monet"
+                "Claude Monet",
+                "https://www.image.com/imageId"
         );
 
         mockAicApiPagination = new AicApiPagination(
