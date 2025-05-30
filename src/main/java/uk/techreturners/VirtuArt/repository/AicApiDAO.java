@@ -24,7 +24,7 @@ public class AicApiDAO {
         try {
             return webClient
                     .get()
-                    .uri("?fields=id,title,artist_title,date_display&limit=" + limit + "&page=" + page)
+                    .uri("?fields=id,title,artist_title,date_display,image_id&limit=" + limit + "&page=" + page)
                     .retrieve()
                     .bodyToMono(AicApiSearchResult.class)
                     .block();

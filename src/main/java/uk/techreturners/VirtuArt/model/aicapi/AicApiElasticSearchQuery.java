@@ -20,7 +20,7 @@ public class AicApiElasticSearchQuery {
     private List<Map<String, Object>> sort;
 
     @JsonProperty("fields")
-    private final List<String> fields = List.of("id", "title", "date_display", "artist_title");
+    private final List<String> fields = List.of("id", "title", "date_display", "artist_title","image_id");
 
     @JsonProperty("size")
     private int size;
