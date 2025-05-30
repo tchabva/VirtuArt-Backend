@@ -19,7 +19,12 @@ public class ArtworkServiceImpl implements ArtworkService, DTOMapper {
     }
 
     @Override
-    public ArtworkDTO getArtworkById(String artworkId) {
-        return createArtworkDtoWithAicApi(aicApiDAO.getArtworkById(artworkId).data());
+    public ArtworkDTO getArtworkById(String source, String artworkId) {
+        switch (source){
+            case "aic" -> {
+                return createArtworkDtoWithAicApi(aicApiDAO.getArtworkById(artworkId).data());
+            }
+            default -> throw new IllegalArgumentException("Invalid data source: " + source);
+        }
     }
 }
