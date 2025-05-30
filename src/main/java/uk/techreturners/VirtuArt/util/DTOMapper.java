@@ -98,10 +98,9 @@ public interface DTOMapper {
             return ExhibitionDTO.builder()
                     .id(exhibition.getId())
                     .title(exhibition.getTitle())
-                    .description(exhibition.getDescription())
+                    .itemCount(exhibition.getExhibitionItems().size())
                     .createdAt(exhibition.getCreatedAt())
                     .updatedAt(exhibition.getUpdatedAt())
-                    .exhibitionItems(exhibition.getExhibitionItems())
                     .build();
         }
     }
