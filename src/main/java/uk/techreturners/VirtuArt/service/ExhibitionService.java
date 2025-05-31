@@ -7,9 +7,11 @@ import uk.techreturners.VirtuArt.model.request.AddArtworkRequest;
 import uk.techreturners.VirtuArt.model.request.CreateExhibitionRequest;
 import uk.techreturners.VirtuArt.model.request.UpdateExhibitionRequest;
 
+import java.util.List;
+
 public interface ExhibitionService {
 
-    ExhibitionDTO getAllUserExhibitions();
+    List<ExhibitionDTO> getAllUserExhibitions();
     ExhibitionDetailDTO getExhibitionById(String id);
     ExhibitionDTO createUserExhibition(CreateExhibitionRequest request);
     ExhibitionItem addArtworkToExhibition(String exhibitionId, AddArtworkRequest request);
