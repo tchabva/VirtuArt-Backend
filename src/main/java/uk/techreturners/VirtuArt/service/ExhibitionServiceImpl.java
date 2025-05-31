@@ -2,6 +2,7 @@ package uk.techreturners.VirtuArt.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
+import uk.techreturners.VirtuArt.model.Exhibition;
 import uk.techreturners.VirtuArt.model.ExhibitionItem;
 import uk.techreturners.VirtuArt.model.User;
 import uk.techreturners.VirtuArt.model.dto.ExhibitionDTO;
@@ -13,6 +14,7 @@ import uk.techreturners.VirtuArt.repository.ExhibitionRepository;
 import uk.techreturners.VirtuArt.repository.UserRepository;
 import uk.techreturners.VirtuArt.util.DTOMapper;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
@@ -46,7 +48,20 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
 
     @Override
     public ExhibitionDTO createUserExhibition(CreateExhibitionRequest request) {
-        return null;
+        User cUser;
+        if (userRepository.findByGoogleId("test").isPresent()){
+            cUser = userRepository.findByGoogleId("test").get();
+            Exhibition newExhibition = Exhibition.builder()
+                    .title(request.title())
+                    .description(request.description())
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
+                    .user(cUser)
+                    .build();
+            return createExhibitionDTO(exhibitionRepository.save(newExhibition));
+        }else {
+            throw new ItemNotFoundException("User could not be found");
+        }
     }
 
     @Override
