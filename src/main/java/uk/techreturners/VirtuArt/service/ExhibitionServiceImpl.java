@@ -37,7 +37,11 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
 
     @Override
     public ExhibitionDetailDTO getExhibitionById(String id) {
-        return null;
+        if(exhibitionRepository.findById(id).isPresent()) {
+            return createExhibitionDetailDTO(exhibitionRepository.findById(id).get());
+        } else {
+            throw new ItemNotFoundException(String.format("Exhibition with the id: %s could not be found", id));
+        }
     }
 
     @Override
