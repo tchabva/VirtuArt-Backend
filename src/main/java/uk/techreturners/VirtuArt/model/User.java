@@ -27,6 +27,6 @@ public class User {
     @Column(name = "google_id", unique = true)
     private String googleId;
 
-    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Exhibition> exhibitions = new ArrayList<>();
 }

@@ -30,7 +30,7 @@ public class Exhibition {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User creator;
+    private User user;
 
     @OneToMany(mappedBy = "exhibition", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExhibitionItem> exhibitionItems = new ArrayList<>();
