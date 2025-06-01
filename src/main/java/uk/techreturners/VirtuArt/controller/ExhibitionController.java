@@ -40,7 +40,7 @@ public class ExhibitionController {
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<ExhibitionDTO> getExhibitionDetails(
+    public ResponseEntity<ExhibitionDTO> addArtworkToExhibition(
             @PathVariable("id") String exhibitId,
             @RequestBody AddArtworkRequest request
     ){
