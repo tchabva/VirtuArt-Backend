@@ -15,7 +15,7 @@ public class TestDataInput implements CommandLineRunner {
     UserRepository userRepository;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
 
         User user = User.builder()
                 .email("mail@e.com")
@@ -25,6 +25,6 @@ public class TestDataInput implements CommandLineRunner {
                 .build();
 
         User savedUser = userRepository.save(user);
-        System.out.println(savedUser.toString());
+        System.out.println(savedUser);
     }
 }
