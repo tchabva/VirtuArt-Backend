@@ -122,12 +122,17 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
         if (exhibitionRepository.findById(exhibitionId).isPresent()) {
             Exhibition exhibition = exhibitionRepository.findById(exhibitionId).get();
             if (request != null) {
-                if (request.title() != null && !request.title().isBlank()) {
-                    exhibition.setTitle(request.title());
+                if (request.title() != null
+                        && !request.title().isBlank()
+                        && !request.title().trim().equals(exhibition.getTitle())
+                ) {
+                    exhibition.setTitle(request.title().trim());
                     exhibition.setUpdatedAt(LocalDateTime.now());
                 }
-                if (request.description() != null && !request.description().isBlank()) {
-                    exhibition.setDescription(request.description());
+                if (request.description() != null
+                        && !request.description().isBlank()
+                        && !request.description().trim().equals(exhibition.getDescription())) {
+                    exhibition.setDescription(request.description().trim());
                     exhibition.setUpdatedAt(LocalDateTime.now());
                 }
             }
