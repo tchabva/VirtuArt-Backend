@@ -25,17 +25,17 @@ public class ExhibitionController {
     }
 
     @PostMapping
-    public ResponseEntity<ExhibitionDTO> createExhibition(@RequestBody CreateExhibitionRequest request){
+    public ResponseEntity<ExhibitionDTO> createExhibition(@RequestBody CreateExhibitionRequest request) {
         return new ResponseEntity<>(exhibitionService.createUserExhibition(request), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteExhibition(@PathVariable("id") String exhibitId){
+    public ResponseEntity<Void> deleteExhibition(@PathVariable("id") String exhibitId) {
         return new ResponseEntity<>(exhibitionService.deleteExhibition(exhibitId), HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ExhibitionDetailDTO> getExhibitionDetails(@PathVariable("id") String exhibitId){
+    public ResponseEntity<ExhibitionDetailDTO> getExhibitionDetails(@PathVariable("id") String exhibitId) {
         return new ResponseEntity<>(exhibitionService.getExhibitionById(exhibitId), HttpStatus.OK);
     }
 
@@ -43,7 +43,18 @@ public class ExhibitionController {
     public ResponseEntity<ExhibitionDTO> addArtworkToExhibition(
             @PathVariable("id") String exhibitId,
             @RequestBody AddArtworkRequest request
-    ){
+    ) {
         return new ResponseEntity<>(exhibitionService.addArtworkToExhibition(exhibitId, request), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}/{apiId}/{source}")
+    public ResponseEntity<Void> deleteArtworkFromExhibition(
+            @PathVariable("id") String exhibitionId,
+            @PathVariable("apiId") String apiId,
+            @PathVariable("source") String source
+    ) {
+        return new ResponseEntity<>(
+                exhibitionService.removeArtworkFromExhibition(exhibitionId, apiId, source), HttpStatus.NO_CONTENT
+        );
     }
 }
