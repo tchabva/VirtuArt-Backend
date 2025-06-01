@@ -27,12 +27,12 @@ public class ExhibitionItemServiceImpl implements ExhibitionItemService {
     }
 
     @Override
-    public ExhibitionItem getExhibitionItem(String id) {
-        if(exhibitionItemRepository.findById(id).isPresent()){
-            return exhibitionItemRepository.findById(id).get();
+    public ExhibitionItem getExhibitionItem(String apiId, String source) {
+        if(exhibitionItemRepository.findByApiIdAndSource(apiId, source).isPresent()){
+            return exhibitionItemRepository.findByApiIdAndSource(apiId, source).get();
         } else {
             throw new ItemNotFoundException(
-                    String.format("ExhibitionItem with the id: %s could not be found", id)
+                    String.format("ExhibitionItem with the Apid: %s and Source: %s could not be found", apiId, source)
             );
         }
     }
