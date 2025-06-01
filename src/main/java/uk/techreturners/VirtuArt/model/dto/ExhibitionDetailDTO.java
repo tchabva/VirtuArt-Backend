@@ -13,6 +13,6 @@ public record ExhibitionDetailDTO(
         String description,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        List<ExhibitionItem> exhibitionItems
+        List<ExhibitionItemDTO> exhibitionItems
 ) {
 }
