@@ -8,6 +8,7 @@ import uk.techreturners.VirtuArt.model.dto.ExhibitionDTO;
 import uk.techreturners.VirtuArt.model.dto.ExhibitionDetailDTO;
 import uk.techreturners.VirtuArt.model.request.AddArtworkRequest;
 import uk.techreturners.VirtuArt.model.request.CreateExhibitionRequest;
+import uk.techreturners.VirtuArt.model.request.UpdateExhibitionRequest;
 import uk.techreturners.VirtuArt.service.ExhibitionService;
 
 import java.util.List;
@@ -56,5 +57,13 @@ public class ExhibitionController {
         return new ResponseEntity<>(
                 exhibitionService.removeArtworkFromExhibition(exhibitionId, apiId, source), HttpStatus.NO_CONTENT
         );
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ExhibitionDTO> patchExhibitionDetails(
+            @PathVariable("id") String id,
+            @RequestBody UpdateExhibitionRequest request
+    ) {
+        return new ResponseEntity<>(exhibitionService.updateExhibitionDetails(id, request), HttpStatus.OK);
     }
 }
