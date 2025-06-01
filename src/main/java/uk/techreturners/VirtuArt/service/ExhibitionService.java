@@ -14,7 +14,7 @@ public interface ExhibitionService {
     List<ExhibitionDTO> getAllUserExhibitions();
     ExhibitionDetailDTO getExhibitionById(String id);
     ExhibitionDTO createUserExhibition(CreateExhibitionRequest request);
-    ExhibitionItem addArtworkToExhibition(String exhibitionId, AddArtworkRequest request);
+    ExhibitionDTO addArtworkToExhibition(String exhibitionId, AddArtworkRequest request);
     Void removeArtworkFromExhibition(String exhibitionId, String artworkId);
     Void deleteExhibition(String id);
     ExhibitionDTO updateExhibitionDetails(String exhibitionId, UpdateExhibitionRequest request);

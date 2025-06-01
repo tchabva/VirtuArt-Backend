@@ -20,7 +20,7 @@ import java.util.List;
 public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
 
     @Autowired
-    private  ExhibitionRepository exhibitionRepository;
+    private ExhibitionRepository exhibitionRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -29,17 +29,17 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
     @Override
     public List<ExhibitionDTO> getAllUserExhibitions() {
         User cUser;
-        if (userRepository.findByGoogleId("test").isPresent()){
-          cUser = userRepository.findByGoogleId("test").get();
-          return exhibitionRepository.findByUser(cUser).stream().map(this::createExhibitionDTO).toList();
-        }else {
+        if (userRepository.findByGoogleId("test").isPresent()) {
+            cUser = userRepository.findByGoogleId("test").get();
+            return exhibitionRepository.findByUser(cUser).stream().map(this::createExhibitionDTO).toList();
+        } else {
             throw new ItemNotFoundException("User could not be found");
         }
     }
 
     @Override
     public ExhibitionDetailDTO getExhibitionById(String id) {
-        if(exhibitionRepository.findById(id).isPresent()) {
+        if (exhibitionRepository.findById(id).isPresent()) {
             return createExhibitionDetailDTO(exhibitionRepository.findById(id).get());
         } else {
             throw new ItemNotFoundException(String.format("Exhibition with the id: %s could not be found", id));
@@ -49,7 +49,7 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
     @Override
     public ExhibitionDTO createUserExhibition(CreateExhibitionRequest request) {
         User cUser;
-        if (userRepository.findByGoogleId("test").isPresent()){
+        if (userRepository.findByGoogleId("test").isPresent()) {
             cUser = userRepository.findByGoogleId("test").get();
             Exhibition newExhibition = Exhibition.builder()
                     .title(request.title())
@@ -59,14 +59,30 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
                     .user(cUser)
                     .build();
             return createExhibitionDTO(exhibitionRepository.save(newExhibition));
-        }else {
+        } else {
             throw new ItemNotFoundException("User could not be found");
         }
     }
 
     @Override
-    public ExhibitionItem addArtworkToExhibition(String exhibitionId, AddArtworkRequest request) {
-        return null;
+    public ExhibitionDTO addArtworkToExhibition(String exhibitionId, AddArtworkRequest request) {
+        if (exhibitionRepository.findById(exhibitionId).isPresent()) {
+            Exhibition exhibition = exhibitionRepository.findById(exhibitionId).get();
+            ExhibitionItem newExhibitionItem = ExhibitionItem.builder()
+                    .apiId(request.apiId())
+                    .title(request.title())
+                    .artistTitle(request.artistTitle())
+                    .date(request.date())
+                    .imageUrl(request.imageUrl())
+                    .source(request.source())
+                    .build();
+
+            exhibition.getExhibitionItems().add(newExhibitionItem);
+
+            return createExhibitionDTO(exhibitionRepository.save(exhibition));
+        } else {
+            throw new ItemNotFoundException(String.format("Exhibition with the id: %s could not be found", exhibitionId));
+        }
     }
 
     @Override
