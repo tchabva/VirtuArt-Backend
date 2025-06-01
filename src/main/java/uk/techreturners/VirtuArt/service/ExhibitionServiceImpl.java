@@ -10,6 +10,7 @@ import uk.techreturners.VirtuArt.model.dto.ExhibitionDetailDTO;
 import uk.techreturners.VirtuArt.model.request.AddArtworkRequest;
 import uk.techreturners.VirtuArt.model.request.CreateExhibitionRequest;
 import uk.techreturners.VirtuArt.model.request.UpdateExhibitionRequest;
+import uk.techreturners.VirtuArt.repository.ExhibitionItemRepository;
 import uk.techreturners.VirtuArt.repository.ExhibitionRepository;
 import uk.techreturners.VirtuArt.repository.UserRepository;
 import uk.techreturners.VirtuArt.util.DTOMapper;
@@ -25,6 +26,8 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ExhibitionItemRepository exhibitionItemRepository;
 
     @Override
     public List<ExhibitionDTO> getAllUserExhibitions() {
@@ -76,9 +79,7 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
                     .imageUrl(request.imageUrl())
                     .source(request.source())
                     .build();
-
             exhibition.getExhibitionItems().add(newExhibitionItem);
-
             return createExhibitionDTO(exhibitionRepository.save(exhibition));
         } else {
             throw new ItemNotFoundException(String.format("Exhibition with the id: %s could not be found", exhibitionId));
@@ -87,7 +88,21 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
 
     @Override
     public Void removeArtworkFromExhibition(String exhibitionId, String artworkId) {
-        return null;
+        if (exhibitionRepository.findById(exhibitionId).isPresent()) {
+            Exhibition exhibition = exhibitionRepository.findById(exhibitionId).get();
+            if (exhibitionItemRepository.findById(artworkId).isPresent()) {
+                ExhibitionItem exhibitionItem = exhibitionItemRepository.findById(artworkId).get();
+                exhibition.getExhibitionItems().remove(exhibitionItem);
+                exhibitionRepository.save(exhibition);
+                return null;
+            } else {
+                throw new ItemNotFoundException(
+                        String.format("ExhibitionItem with the id: %s could not be found", artworkId)
+                );
+            }
+        } else {
+            throw new ItemNotFoundException(String.format("Exhibition with the id: %s could not be found", exhibitionId));
+        }
     }
 
     @Override
