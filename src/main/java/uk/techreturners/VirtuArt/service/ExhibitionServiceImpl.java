@@ -1,6 +1,7 @@
 package uk.techreturners.VirtuArt.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
 import uk.techreturners.VirtuArt.model.Exhibition;
 import uk.techreturners.VirtuArt.model.ExhibitionItem;
@@ -18,6 +19,7 @@ import uk.techreturners.VirtuArt.util.DTOMapper;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Service
 public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
 
     @Autowired
