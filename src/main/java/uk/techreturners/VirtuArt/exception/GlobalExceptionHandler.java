@@ -28,4 +28,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(ExhibitionItemExistsAlreadyException.class)
+    public ResponseEntity<Object> handleItemExistsAlreadyException(ExhibitionItemExistsAlreadyException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+    }
 }

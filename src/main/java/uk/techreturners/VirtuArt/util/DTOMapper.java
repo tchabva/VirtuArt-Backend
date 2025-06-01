@@ -1,12 +1,12 @@
 package uk.techreturners.VirtuArt.util;
 
 import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
+import uk.techreturners.VirtuArt.model.Exhibition;
+import uk.techreturners.VirtuArt.model.ExhibitionItem;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchArtwork;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiArtwork;
-import uk.techreturners.VirtuArt.model.dto.ArtworkDTO;
-import uk.techreturners.VirtuArt.model.dto.ArtworkResultsDTO;
-import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
+import uk.techreturners.VirtuArt.model.dto.*;
 
 // DTO Mapper Interface
 public interface DTOMapper {
@@ -85,6 +85,52 @@ public interface DTOMapper {
                     .artistTitle(aicArtworkSearchResult.artistTitle())
                     .date(aicArtworkSearchResult.dateDisplay())
                     .imageURL(aicImageUrlCreator(aicArtworkSearchResult.primaryImageId()))
+                    .build();
+        }
+    }
+
+    default ExhibitionDTO createExhibitionDTO(Exhibition exhibition) {
+        if (exhibition == null) {
+            throw new ItemNotFoundException("Exhibition Item could not be found");
+        } else {
+            return ExhibitionDTO.builder()
+                    .id(exhibition.getId())
+                    .title(exhibition.getTitle())
+                    .itemCount(exhibition.getExhibitionItems().size())
+                    .createdAt(exhibition.getCreatedAt())
+                    .updatedAt(exhibition.getUpdatedAt())
+                    .build();
+        }
+    }
+
+    default ExhibitionDetailDTO createExhibitionDetailDTO(Exhibition exhibition) {
+        if (exhibition == null) {
+            throw new ItemNotFoundException("Exhibition Item could not be found");
+        } else {
+            return ExhibitionDetailDTO.builder()
+                    .id(exhibition.getId())
+                    .title(exhibition.getTitle())
+                    .description(exhibition.getDescription())
+                    .createdAt(exhibition.getCreatedAt())
+                    .updatedAt(exhibition.getUpdatedAt())
+                    .exhibitionItems(
+                            exhibition.getExhibitionItems().stream().map(this::createExhibitionItemDTO).toList()
+                    )
+                    .build();
+        }
+    }
+
+    default ExhibitionItemDTO createExhibitionItemDTO(ExhibitionItem exhibitionItem) {
+        if (exhibitionItem == null) {
+            throw new ItemNotFoundException("Exhibition Item could not be found");
+        } else {
+            return ExhibitionItemDTO.builder()
+                    .id(exhibitionItem.getId())
+                    .apiId(exhibitionItem.getApiId())
+                    .title(exhibitionItem.getTitle())
+                    .date(exhibitionItem.getDate())
+                    .imageUrl(exhibitionItem.getImageUrl())
+                    .source(exhibitionItem.getSource())
                     .build();
         }
     }

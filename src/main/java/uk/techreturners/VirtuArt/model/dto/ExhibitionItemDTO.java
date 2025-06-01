@@ -3,11 +3,12 @@ package uk.techreturners.VirtuArt.model.dto;
 import lombok.Builder;
 
 @Builder
-public record ArtworkResultsDTO(
+public record ExhibitionItemDTO(
         String id,
+        String apiId,
         String title,
-        String artistTitle,
         String date,
-        String imageURL
+        String imageUrl,
+        String source
 ) {
 }
