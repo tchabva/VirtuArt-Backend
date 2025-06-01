@@ -3,6 +3,9 @@ package uk.techreturners.VirtuArt.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -30,9 +33,6 @@ public class ExhibitionItem {
 
     private String source;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "exhibition_id")
-    private Exhibition exhibition;
-
-    // TODO Consider making this a ManyToMany Relationship
+    @ManyToMany(mappedBy = "exhibitionItems", fetch = FetchType.LAZY)
+    private List<Exhibition> exhibitions = new ArrayList<>();
 }

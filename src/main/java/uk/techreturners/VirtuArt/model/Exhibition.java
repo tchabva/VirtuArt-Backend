@@ -32,6 +32,11 @@ public class Exhibition {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "exhibition", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "exhibition_exhibition_item",
+            joinColumns = @JoinColumn(name = "exhibition_id"),
+            inverseJoinColumns = @JoinColumn(name = "exhibition_item_id")
+    )
     private List<ExhibitionItem> exhibitionItems = new ArrayList<>();
 }
