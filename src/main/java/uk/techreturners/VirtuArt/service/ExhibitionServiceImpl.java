@@ -94,7 +94,6 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
                 ExhibitionItem exhibitionItem = exhibitionItemRepository.findById(artworkId).get();
                 exhibition.getExhibitionItems().remove(exhibitionItem);
                 exhibitionRepository.save(exhibition);
-                return null;
             } else {
                 throw new ItemNotFoundException(
                         String.format("ExhibitionItem with the id: %s could not be found", artworkId)
@@ -103,10 +102,16 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
         } else {
             throw new ItemNotFoundException(String.format("Exhibition with the id: %s could not be found", exhibitionId));
         }
+        return null;
     }
 
     @Override
     public Void deleteExhibition(String id) {
+        if (exhibitionRepository.findById(id).isPresent()) {
+            exhibitionRepository.deleteById(id);
+        } else {
+            throw new ItemNotFoundException(String.format("Exhibition with the id: %s could not be found", id));
+        }
         return null;
     }
 
