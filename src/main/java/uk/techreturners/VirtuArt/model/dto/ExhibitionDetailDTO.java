@@ -1,7 +1,6 @@
 package uk.techreturners.VirtuArt.model.dto;
 
 import lombok.Builder;
-import uk.techreturners.VirtuArt.model.ExhibitionItem;
 
 import java.time.LocalDateTime;
 import java.util.List;
