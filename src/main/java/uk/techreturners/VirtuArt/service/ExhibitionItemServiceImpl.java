@@ -2,6 +2,7 @@ package uk.techreturners.VirtuArt.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
 import uk.techreturners.VirtuArt.model.ExhibitionItem;
 import uk.techreturners.VirtuArt.model.request.AddArtworkRequest;
 import uk.techreturners.VirtuArt.repository.ExhibitionItemRepository;
@@ -23,6 +24,17 @@ public class ExhibitionItemServiceImpl implements ExhibitionItemService {
                 .source(request.source())
                 .build();
         return exhibitionItemRepository.save(newExhibitionItem);
+    }
+
+    @Override
+    public ExhibitionItem getExhibitionItem(String id) {
+        if(exhibitionItemRepository.findById(id).isPresent()){
+            return exhibitionItemRepository.findById(id).get();
+        } else {
+            throw new ItemNotFoundException(
+                    String.format("ExhibitionItem with the id: %s could not be found", id)
+            );
+        }
     }
 
     @Override

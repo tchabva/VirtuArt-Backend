@@ -6,5 +6,6 @@ import uk.techreturners.VirtuArt.model.request.CreateExhibitionRequest;
 
 public interface ExhibitionItemService {
     ExhibitionItem addNewExhibitionItem(AddArtworkRequest request);
+    ExhibitionItem getExhibitionItem(String id);
     ExhibitionItem getOrCreateExhibitionItem(AddArtworkRequest request);
 }
