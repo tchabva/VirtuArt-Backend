@@ -26,4 +26,9 @@ public class ExhibitionController {
     public ResponseEntity<ExhibitionDTO> createExhibition(@RequestBody CreateExhibitionRequest request){
         return new ResponseEntity<>(exhibitionService.createUserExhibition(request), HttpStatus.CREATED);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteExhibition(@PathVariable("id") String exhibitId){
+        return new ResponseEntity<>(exhibitionService.deleteExhibition(exhibitId), HttpStatus.NO_CONTENT);
+    }
 }
