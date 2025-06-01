@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.techreturners.VirtuArt.model.dto.ExhibitionDTO;
+import uk.techreturners.VirtuArt.model.dto.ExhibitionDetailDTO;
 import uk.techreturners.VirtuArt.model.request.CreateExhibitionRequest;
 import uk.techreturners.VirtuArt.service.ExhibitionService;
 
@@ -30,5 +31,10 @@ public class ExhibitionController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteExhibition(@PathVariable("id") String exhibitId){
         return new ResponseEntity<>(exhibitionService.deleteExhibition(exhibitId), HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ExhibitionDetailDTO> getExhibitionDetails(@PathVariable("id") String exhibitId){
+        return new ResponseEntity<>(exhibitionService.getExhibitionById(exhibitId), HttpStatus.OK);
     }
 }
