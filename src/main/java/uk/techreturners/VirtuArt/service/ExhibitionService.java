@@ -18,7 +18,7 @@ public interface ExhibitionService {
 
     ExhibitionDTO addArtworkToExhibition(String exhibitionId, AddArtworkRequest request);
 
-    Void removeArtworkFromExhibition(String exhibitionId, String artworkId);
+    Void removeArtworkFromExhibition(String exhibitionId, String apiId, String source);
 
     Void deleteExhibition(String id);
 

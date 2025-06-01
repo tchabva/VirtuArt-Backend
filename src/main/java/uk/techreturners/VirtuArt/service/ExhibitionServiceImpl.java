@@ -2,6 +2,7 @@ package uk.techreturners.VirtuArt.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.techreturners.VirtuArt.exception.ExhibitionItemExistsAlreadyException;
 import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
 import uk.techreturners.VirtuArt.model.Exhibition;
 import uk.techreturners.VirtuArt.model.ExhibitionItem;
@@ -11,7 +12,6 @@ import uk.techreturners.VirtuArt.model.dto.ExhibitionDetailDTO;
 import uk.techreturners.VirtuArt.model.request.AddArtworkRequest;
 import uk.techreturners.VirtuArt.model.request.CreateExhibitionRequest;
 import uk.techreturners.VirtuArt.model.request.UpdateExhibitionRequest;
-import uk.techreturners.VirtuArt.repository.ExhibitionItemRepository;
 import uk.techreturners.VirtuArt.repository.ExhibitionRepository;
 import uk.techreturners.VirtuArt.repository.UserRepository;
 import uk.techreturners.VirtuArt.util.DTOMapper;
@@ -30,7 +30,7 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
     private UserRepository userRepository;
 
     @Autowired
-    private ExhibitionItemRepository exhibitionItemRepository;
+    private ExhibitionItemService exhibitionItemService;
 
     @Override
     public List<ExhibitionDTO> getAllUserExhibitions() {
@@ -75,36 +75,32 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
     public ExhibitionDTO addArtworkToExhibition(String exhibitionId, AddArtworkRequest request) {
         if (exhibitionRepository.findById(exhibitionId).isPresent()) {
             Exhibition exhibition = exhibitionRepository.findById(exhibitionId).get();
-            ExhibitionItem newExhibitionItem = ExhibitionItem.builder()
-                    .apiId(request.apiId())
-                    .title(request.title())
-                    .artistTitle(request.artistTitle())
-                    .date(request.date())
-                    .imageUrl(request.imageUrl())
-                    .source(request.source())
-                    .build();
-            exhibition.getExhibitionItems().add(newExhibitionItem);
-            exhibition.setUpdatedAt(LocalDateTime.now());
-            return createExhibitionDTO(exhibitionRepository.save(exhibition));
+            ExhibitionItem exhibitionItem = exhibitionItemService.getOrCreateExhibitionItem(request);
+            if (exhibition.getExhibitionItems().contains(exhibitionItem)) {
+                throw new ExhibitionItemExistsAlreadyException(
+                        String.format(
+                                "The ExhibitionItem name: %s and apiId: %s already in this Exhibition",
+                                exhibition.getTitle(), exhibition.getId()
+                        )
+                );
+            } else {
+                exhibition.getExhibitionItems().add(exhibitionItem);
+                exhibition.setUpdatedAt(LocalDateTime.now());
+                return createExhibitionDTO(exhibitionRepository.save(exhibition));
+            }
         } else {
             throw new ItemNotFoundException(String.format("Exhibition with the id: %s could not be found", exhibitionId));
         }
     }
 
     @Override
-    public Void removeArtworkFromExhibition(String exhibitionId, String artworkId) {
+    public Void removeArtworkFromExhibition(String exhibitionId, String apiId, String source) {
         if (exhibitionRepository.findById(exhibitionId).isPresent()) {
             Exhibition exhibition = exhibitionRepository.findById(exhibitionId).get();
-            if (exhibitionItemRepository.findById(artworkId).isPresent()) {
-                ExhibitionItem exhibitionItem = exhibitionItemRepository.findById(artworkId).get();
-                exhibition.getExhibitionItems().remove(exhibitionItem);
-                exhibition.setUpdatedAt(LocalDateTime.now());
-                exhibitionRepository.save(exhibition);
-            } else {
-                throw new ItemNotFoundException(
-                        String.format("ExhibitionItem with the id: %s could not be found", artworkId)
-                );
-            }
+            ExhibitionItem exhibitionItem = exhibitionItemService.getExhibitionItem(apiId, source);
+            exhibition.getExhibitionItems().remove(exhibitionItem);
+            exhibition.setUpdatedAt(LocalDateTime.now());
+            exhibitionRepository.save(exhibition);
         } else {
             throw new ItemNotFoundException(String.format("Exhibition with the id: %s could not be found", exhibitionId));
         }
