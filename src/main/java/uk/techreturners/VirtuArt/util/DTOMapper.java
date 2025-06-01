@@ -2,6 +2,7 @@ package uk.techreturners.VirtuArt.util;
 
 import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
 import uk.techreturners.VirtuArt.model.Exhibition;
+import uk.techreturners.VirtuArt.model.ExhibitionItem;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchArtwork;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiArtwork;
@@ -112,7 +113,24 @@ public interface DTOMapper {
                     .description(exhibition.getDescription())
                     .createdAt(exhibition.getCreatedAt())
                     .updatedAt(exhibition.getUpdatedAt())
-                    .exhibitionItems(exhibition.getExhibitionItems())
+                    .exhibitionItems(
+                            exhibition.getExhibitionItems().stream().map(this::createExhibitionItemDTO).toList()
+                    )
+                    .build();
+        }
+    }
+
+    default ExhibitionItemDTO createExhibitionItemDTO(ExhibitionItem exhibitionItem) {
+        if (exhibitionItem == null) {
+            throw new ItemNotFoundException("Exhibition Item could not be found");
+        } else {
+            return ExhibitionItemDTO.builder()
+                    .id(exhibitionItem.getId())
+                    .apiId(exhibitionItem.getApiId())
+                    .title(exhibitionItem.getTitle())
+                    .date(exhibitionItem.getDate())
+                    .imageUrl(exhibitionItem.getImageUrl())
+                    .source(exhibitionItem.getSource())
                     .build();
         }
     }
