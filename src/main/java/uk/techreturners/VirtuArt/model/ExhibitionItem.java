@@ -29,4 +29,10 @@ public class ExhibitionItem {
     private String imageUrl;
 
     private String source;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exhibition_id")
+    private Exhibition exhibition;
+
+    // TODO Consider making this a ManyToMany Relationship
 }

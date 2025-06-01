@@ -80,6 +80,7 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
                     .source(request.source())
                     .build();
             exhibition.getExhibitionItems().add(newExhibitionItem);
+            exhibition.setUpdatedAt(LocalDateTime.now());
             return createExhibitionDTO(exhibitionRepository.save(exhibition));
         } else {
             throw new ItemNotFoundException(String.format("Exhibition with the id: %s could not be found", exhibitionId));
@@ -93,6 +94,7 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
             if (exhibitionItemRepository.findById(artworkId).isPresent()) {
                 ExhibitionItem exhibitionItem = exhibitionItemRepository.findById(artworkId).get();
                 exhibition.getExhibitionItems().remove(exhibitionItem);
+                exhibition.setUpdatedAt(LocalDateTime.now());
                 exhibitionRepository.save(exhibition);
             } else {
                 throw new ItemNotFoundException(
