@@ -45,7 +45,7 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
         Optional<Exhibition> exhibition = exhibitionRepository.findById(exhibitionId);
         if (exhibition.isPresent()) {
             // Verifies ownership
-            if (exhibition.get().getUser() == null || !exhibition.get().getId().equals(currentUser.getId())) {
+            if (exhibition.get().getUser() == null || !exhibition.get().getUser().getId().equals(currentUser.getId())) {
                 throw new AccessDeniedException("You are not authorised to access or modify this Exhibition");
             }
             return exhibition.get();
