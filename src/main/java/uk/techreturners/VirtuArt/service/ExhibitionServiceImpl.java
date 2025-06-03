@@ -55,7 +55,7 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<ExhibitionDTO> getAllUserExhibitions(Jwt jwt) {
         User currentUser = getAuthenticatedUser(jwt);
         return exhibitionRepository.findByUser(currentUser).stream()
@@ -169,7 +169,7 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
             }
         }
 
-        if(isUpdated){
+        if (isUpdated) {
             exhibition.setUpdatedAt(LocalDateTime.now());
             return createExhibitionDTO(exhibitionRepository.save(exhibition));
         }
