@@ -1,7 +1,10 @@
 package uk.techreturners.VirtuArt.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.techreturners.VirtuArt.exception.ExhibitionItemExistsAlreadyException;
 import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
 import uk.techreturners.VirtuArt.model.Exhibition;
@@ -13,12 +16,12 @@ import uk.techreturners.VirtuArt.model.request.AddArtworkRequest;
 import uk.techreturners.VirtuArt.model.request.CreateExhibitionRequest;
 import uk.techreturners.VirtuArt.model.request.UpdateExhibitionRequest;
 import uk.techreturners.VirtuArt.repository.ExhibitionRepository;
-import uk.techreturners.VirtuArt.repository.UserRepository;
 import uk.techreturners.VirtuArt.util.DTOMapper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
@@ -27,120 +30,149 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
     private ExhibitionRepository exhibitionRepository;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private ExhibitionItemService exhibitionItemService;
 
-    @Override
-    public List<ExhibitionDTO> getAllUserExhibitions() {
-        User cUser;
-        if (userRepository.findByGoogleId("test").isPresent()) {
-            cUser = userRepository.findByGoogleId("test").get();
-            return exhibitionRepository.findByUser(cUser).stream().map(this::createExhibitionDTO).toList();
-        } else {
-            throw new ItemNotFoundException("User could not be found");
-        }
+    @Autowired
+    private UserService userService;
+
+    // Helper method
+    private User getAuthenticatedUser(Jwt jwt) {
+        return userService.getCurrentUser(jwt);
     }
 
-    @Override
-    public ExhibitionDetailDTO getExhibitionById(String id) {
-        if (exhibitionRepository.findById(id).isPresent()) {
-            return createExhibitionDetailDTO(exhibitionRepository.findById(id).get());
-        } else {
-            throw new ItemNotFoundException(String.format("Exhibition with the id: %s could not be found", id));
-        }
-    }
-
-    @Override
-    public ExhibitionDTO createUserExhibition(CreateExhibitionRequest request) {
-        User cUser;
-        if (userRepository.findByGoogleId("test").isPresent()) {
-            cUser = userRepository.findByGoogleId("test").get();
-            Exhibition newExhibition = Exhibition.builder()
-                    .title(request.title())
-                    .description(request.description())
-                    .createdAt(LocalDateTime.now())
-                    .updatedAt(LocalDateTime.now())
-                    .exhibitionItems(new ArrayList<>())
-                    .user(cUser)
-                    .build();
-            return createExhibitionDTO(exhibitionRepository.save(newExhibition));
-        } else {
-            throw new ItemNotFoundException("User could not be found");
-        }
-    }
-
-    @Override
-    public ExhibitionDTO addArtworkToExhibition(String exhibitionId, AddArtworkRequest request) {
-        if (exhibitionRepository.findById(exhibitionId).isPresent()) {
-            Exhibition exhibition = exhibitionRepository.findById(exhibitionId).get();
-            ExhibitionItem exhibitionItem = exhibitionItemService.getOrCreateExhibitionItem(request);
-            if (exhibition.getExhibitionItems().contains(exhibitionItem)) {
-                throw new ExhibitionItemExistsAlreadyException(
-                        String.format(
-                                "The ExhibitionItem name: %s and apiId: %s already in this Exhibition",
-                                exhibition.getTitle(), exhibition.getId()
-                        )
-                );
-            } else {
-                exhibition.getExhibitionItems().add(exhibitionItem);
-                exhibition.setUpdatedAt(LocalDateTime.now());
-                return createExhibitionDTO(exhibitionRepository.save(exhibition));
+    // Helper method
+    private Exhibition getExhibitionForCurrentUser(String exhibitionId, User currentUser) {
+        Optional<Exhibition> exhibition = exhibitionRepository.findById(exhibitionId);
+        if (exhibition.isPresent()) {
+            // Verifies ownership
+            if (exhibition.get().getUser() == null || !exhibition.get().getId().equals(currentUser.getId())) {
+                throw new AccessDeniedException("You are not authorised to access or modify this Exhibition");
             }
+            return exhibition.get();
         } else {
             throw new ItemNotFoundException(String.format("Exhibition with the id: %s could not be found", exhibitionId));
         }
     }
 
     @Override
-    public Void removeArtworkFromExhibition(String exhibitionId, String apiId, String source) {
-        if (exhibitionRepository.findById(exhibitionId).isPresent()) {
-            Exhibition exhibition = exhibitionRepository.findById(exhibitionId).get();
-            ExhibitionItem exhibitionItem = exhibitionItemService.getExhibitionItem(apiId, source);
-            exhibition.getExhibitionItems().remove(exhibitionItem);
+    @Transactional(readOnly = true)
+    public List<ExhibitionDTO> getAllUserExhibitions(Jwt jwt) {
+        User currentUser = getAuthenticatedUser(jwt);
+        return exhibitionRepository.findByUser(currentUser).stream()
+                .map(this::createExhibitionDTO)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ExhibitionDetailDTO getExhibitionById(String id, Jwt jwt) {
+        User currentUser = getAuthenticatedUser(jwt);
+        Exhibition exhibition = getExhibitionForCurrentUser(id, currentUser); // Verifies ownership
+        return createExhibitionDetailDTO(exhibition);
+    }
+
+    @Override
+    @Transactional
+    public ExhibitionDTO createUserExhibition(CreateExhibitionRequest request, Jwt jwt) {
+        User currentUser = getAuthenticatedUser(jwt);
+        Exhibition newExhibition = Exhibition.builder()
+                .title(request.title())
+                .description(request.description())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .exhibitionItems(new ArrayList<>())
+                .user(currentUser)
+                .build();
+        return createExhibitionDTO(exhibitionRepository.save(newExhibition));
+    }
+
+    @Override
+    @Transactional
+    public ExhibitionDTO addArtworkToExhibition(String exhibitionId, AddArtworkRequest request, Jwt jwt) {
+        User currentUser = getAuthenticatedUser(jwt);
+        Exhibition exhibition = getExhibitionForCurrentUser(exhibitionId, currentUser); // Verifies ownership
+        ExhibitionItem exhibitionItem = exhibitionItemService.getOrCreateExhibitionItem(request);
+
+        if (exhibition.getExhibitionItems().stream().anyMatch(
+                item -> item.getId().equals(exhibitionItem.getId()))
+        ) {
+            throw new ExhibitionItemExistsAlreadyException(
+                    String.format(
+                            "The ExhibitionItem name: %s and apiId: %s already in this Exhibition",
+                            exhibition.getTitle(), exhibition.getId()
+                    )
+            );
+        } else {
+            exhibition.getExhibitionItems().add(exhibitionItem);
+            exhibition.setUpdatedAt(LocalDateTime.now());
+            Exhibition updatedExhibition = exhibitionRepository.save(exhibition);
+            return createExhibitionDTO(updatedExhibition);
+        }
+    }
+
+    @Override
+    @Transactional
+    public Void removeArtworkFromExhibition(String exhibitionId, String apiId, String source, Jwt jwt) {
+        User currentUser = getAuthenticatedUser(jwt);
+        Exhibition exhibition = getExhibitionForCurrentUser(exhibitionId, currentUser); // Verifies ownership
+        ExhibitionItem exhibitionItemToDelete = exhibitionItemService.getExhibitionItem(apiId, source);
+
+        boolean isRemoved = exhibition.getExhibitionItems().removeIf(item ->
+                item.getId().equals(exhibitionItemToDelete.getId())
+        );
+
+        if (isRemoved) {
             exhibition.setUpdatedAt(LocalDateTime.now());
             exhibitionRepository.save(exhibition);
         } else {
-            throw new ItemNotFoundException(String.format("Exhibition with the id: %s could not be found", exhibitionId));
-        }
-        return null;
-    }
-
-    @Override
-    public Void deleteExhibition(String id) {
-        if (exhibitionRepository.findById(id).isPresent()) {
-            exhibitionRepository.deleteById(id);
-        } else {
-            throw new ItemNotFoundException(String.format("Exhibition with the id: %s could not be found", id));
-        }
-        return null;
-    }
-
-    @Override
-    public ExhibitionDTO updateExhibitionDetails(String exhibitionId, UpdateExhibitionRequest request) {
-        if (exhibitionRepository.findById(exhibitionId).isPresent()) {
-            Exhibition exhibition = exhibitionRepository.findById(exhibitionId).get();
-            if (request != null) {
-                if (request.title() != null
-                        && !request.title().isBlank()
-                        && !request.title().trim().equals(exhibition.getTitle())
-                ) {
-                    exhibition.setTitle(request.title().trim());
-                    exhibition.setUpdatedAt(LocalDateTime.now());
-                }
-                if (request.description() != null
-                        && !request.description().isBlank()
-                        && !request.description().trim().equals(exhibition.getDescription())) {
-                    exhibition.setDescription(request.description().trim());
-                    exhibition.setUpdatedAt(LocalDateTime.now());
-                }
-            }
-            return createExhibitionDTO(exhibitionRepository.save(exhibition));
-        } else {
             throw new ItemNotFoundException(
-                    String.format("Exhibition with the id: %s could not be found", exhibitionId)
+                    String.format(
+                            "Artwork with the apiId %s from source %s could not be found in exhibition %s",
+                            apiId,
+                            source,
+                            exhibitionId
+                    )
             );
         }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public Void deleteExhibition(String id, Jwt jwt) {
+        User currentUser = getAuthenticatedUser(jwt);
+        Exhibition exhibition = getExhibitionForCurrentUser(id, currentUser); // Verifies ownership
+        exhibitionRepository.deleteById(exhibition.getId());
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public ExhibitionDTO updateExhibitionDetails(String exhibitionId, UpdateExhibitionRequest request, Jwt jwt) {
+        User currentUser = getAuthenticatedUser(jwt);
+        Exhibition exhibition = getExhibitionForCurrentUser(exhibitionId, currentUser); // Verifies ownership
+        boolean isUpdated = false;
+
+        if (request != null) {
+            if (request.title() != null
+                    && !request.title().isBlank()
+                    && !request.title().trim().equals(exhibition.getTitle())
+            ) {
+                exhibition.setTitle(request.title().trim());
+                isUpdated = true;
+            }
+            if (request.description() != null
+                    && !request.description().isBlank()
+                    && !request.description().trim().equals(exhibition.getDescription())) {
+                exhibition.setDescription(request.description().trim());
+                isUpdated = true;
+            }
+        }
+
+        if(isUpdated){
+            exhibition.setUpdatedAt(LocalDateTime.now());
+            return createExhibitionDTO(exhibitionRepository.save(exhibition));
+        }
+        return createExhibitionDTO(exhibition);
     }
 }
