@@ -20,16 +20,16 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Allow public access Artworks and the test H2 console
                         .requestMatchers(HttpMethod.GET, "/api/v1/artworks/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "api/v1/artworks/search").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/artworks/search/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         // Secure all Exhibition related endpoints for only authenticated users.
-                        .requestMatchers("api/v1/exhibitions/**").authenticated()
+                        .requestMatchers("/api/v1/exhibitions/**").authenticated()
                         .anyRequest().authenticated() // Requires authentication for all other unlisted requests
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt( jwt -> {}) // Default JWT validation
+                        .jwt(jwt -> {}) // Default JWT validation
                 )
-                .sessionManagement( session -> session
+                .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
         return httpSecurity.build();
