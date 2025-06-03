@@ -33,4 +33,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleItemExistsAlreadyException(ExhibitionItemExistsAlreadyException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }
