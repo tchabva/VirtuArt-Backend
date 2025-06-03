@@ -32,7 +32,7 @@ public class ArtworkController {
         return new ResponseEntity<>(artworkService.getArtworkById(source, artworkId), HttpStatus.OK);
     }
 
-    @PostMapping("aic/search")
+    @PostMapping("/search/aic")
     public ResponseEntity<PaginatedArtworkResultsDTO> searchAicApi(@RequestBody AicApiElasticSearchQuery searchQuery){
         return new ResponseEntity<>(artworkService.getAicArtworksBySearchQuery(searchQuery), HttpStatus.OK);
     }
