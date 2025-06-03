@@ -3,6 +3,8 @@ package uk.techreturners.VirtuArt.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import uk.techreturners.VirtuArt.model.dto.ExhibitionDTO;
 import uk.techreturners.VirtuArt.model.dto.ExhibitionDetailDTO;
@@ -21,49 +23,55 @@ public class ExhibitionController {
     private ExhibitionService exhibitionService;
 
     @GetMapping
-    public ResponseEntity<List<ExhibitionDTO>> getUserExhibitions() {
-        return new ResponseEntity<>(exhibitionService.getAllUserExhibitions(), HttpStatus.OK);
+    public ResponseEntity<List<ExhibitionDTO>> getUserExhibitions(@AuthenticationPrincipal Jwt jwt) {
+        return new ResponseEntity<>(exhibitionService.getAllUserExhibitions(jwt), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<ExhibitionDTO> createExhibition(@RequestBody CreateExhibitionRequest request) {
-        return new ResponseEntity<>(exhibitionService.createUserExhibition(request), HttpStatus.CREATED);
+    public ResponseEntity<ExhibitionDTO> createExhibition(
+            @RequestBody CreateExhibitionRequest request,
+            @AuthenticationPrincipal Jwt jwt) {
+        return new ResponseEntity<>(exhibitionService.createUserExhibition(request, jwt), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteExhibition(@PathVariable("id") String exhibitId) {
-        return new ResponseEntity<>(exhibitionService.deleteExhibition(exhibitId), HttpStatus.NO_CONTENT);
+    public ResponseEntity<Void> deleteExhibition(@PathVariable("id") String exhibitId, @AuthenticationPrincipal Jwt jwt) {
+        return new ResponseEntity<>(exhibitionService.deleteExhibition(exhibitId, jwt), HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ExhibitionDetailDTO> getExhibitionDetails(@PathVariable("id") String exhibitId) {
-        return new ResponseEntity<>(exhibitionService.getExhibitionById(exhibitId), HttpStatus.OK);
+    public ResponseEntity<ExhibitionDetailDTO> getExhibitionDetails(
+            @PathVariable("id") String exhibitId, @AuthenticationPrincipal Jwt jwt) {
+        return new ResponseEntity<>(exhibitionService.getExhibitionById(exhibitId, jwt), HttpStatus.OK);
     }
 
     @PostMapping("/{id}")
     public ResponseEntity<ExhibitionDTO> addArtworkToExhibition(
             @PathVariable("id") String exhibitId,
-            @RequestBody AddArtworkRequest request
+            @RequestBody AddArtworkRequest request,
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        return new ResponseEntity<>(exhibitionService.addArtworkToExhibition(exhibitId, request), HttpStatus.OK);
+        return new ResponseEntity<>(exhibitionService.addArtworkToExhibition(exhibitId, request, jwt), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}/{apiId}/{source}")
     public ResponseEntity<Void> deleteArtworkFromExhibition(
             @PathVariable("id") String exhibitionId,
             @PathVariable("apiId") String apiId,
-            @PathVariable("source") String source
+            @PathVariable("source") String source,
+            @AuthenticationPrincipal Jwt jwt
     ) {
         return new ResponseEntity<>(
-                exhibitionService.removeArtworkFromExhibition(exhibitionId, apiId, source), HttpStatus.NO_CONTENT
+                exhibitionService.removeArtworkFromExhibition(exhibitionId, apiId, source, jwt), HttpStatus.NO_CONTENT
         );
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<ExhibitionDTO> patchExhibitionDetails(
             @PathVariable("id") String id,
-            @RequestBody UpdateExhibitionRequest request
+            @RequestBody UpdateExhibitionRequest request,
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        return new ResponseEntity<>(exhibitionService.updateExhibitionDetails(id, request), HttpStatus.OK);
+        return new ResponseEntity<>(exhibitionService.updateExhibitionDetails(id, request, jwt), HttpStatus.OK);
     }
 }
