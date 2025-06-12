@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
 import uk.techreturners.VirtuArt.model.ExhibitionItem;
+import uk.techreturners.VirtuArt.model.dto.ArtworkDTO;
 import uk.techreturners.VirtuArt.model.request.AddArtworkRequest;
 import uk.techreturners.VirtuArt.repository.ExhibitionItemRepository;
 
@@ -13,15 +14,18 @@ public class ExhibitionItemServiceImpl implements ExhibitionItemService {
     @Autowired
     ExhibitionItemRepository exhibitionItemRepository;
 
+    @Autowired
+    ArtworkService artworkService;
+
     @Override
-    public ExhibitionItem addNewExhibitionItem(AddArtworkRequest request) {
+    public ExhibitionItem addNewExhibitionItem(ArtworkDTO artworkDTO, String source) {
         ExhibitionItem newExhibitionItem = ExhibitionItem.builder()
-                .apiId(request.apiId())
-                .title(request.title())
-                .artistTitle(request.artistTitle())
-                .date(request.date())
-                .imageUrl(request.imageUrl())
-                .source(request.source())
+                .apiId(artworkDTO.id())
+                .title(artworkDTO.title())
+                .artistTitle(artworkDTO.artist())
+                .date(artworkDTO.date())
+                .imageUrl(artworkDTO.imageUrl())
+                .source(source)
                 .build();
         return exhibitionItemRepository.save(newExhibitionItem);
     }
@@ -42,7 +46,10 @@ public class ExhibitionItemServiceImpl implements ExhibitionItemService {
         if (exhibitionItemRepository.findByApiIdAndSource(request.apiId(), request.source()).isPresent()) {
             return exhibitionItemRepository.findByApiIdAndSource(request.apiId(), request.source()).get();
         } else {
-            return addNewExhibitionItem(request);
+
+            ArtworkDTO newArtwork = artworkService.getArtworkById(request.source(), request.apiId());
+
+            return addNewExhibitionItem(newArtwork, request.source());
         }
     }
 }
