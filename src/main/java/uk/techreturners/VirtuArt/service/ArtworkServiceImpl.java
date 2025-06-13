@@ -2,9 +2,11 @@ package uk.techreturners.VirtuArt.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.techreturners.VirtuArt.model.aicapi.AicApiElasticSearchQuery;
 import uk.techreturners.VirtuArt.model.dto.ArtworkDTO;
 import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
 import uk.techreturners.VirtuArt.model.request.AdvancedSearchRequest;
+import uk.techreturners.VirtuArt.model.request.BasicSearchRequest;
 import uk.techreturners.VirtuArt.repository.AicApiDAO;
 import uk.techreturners.VirtuArt.util.DTOMapper;
 import uk.techreturners.VirtuArt.util.SearchRequestMapper;
@@ -22,7 +24,7 @@ public class ArtworkServiceImpl implements ArtworkService, DTOMapper, SearchRequ
 
     @Override
     public ArtworkDTO getArtworkById(String source, String artworkId) {
-        switch (source){
+        switch (source) {
             case "aic" -> {
                 return createArtworkDtoWithAicApi(aicApiDAO.getArtworkById(artworkId).data());
             }
@@ -32,14 +34,24 @@ public class ArtworkServiceImpl implements ArtworkService, DTOMapper, SearchRequ
 
     @Override
     public PaginatedArtworkResultsDTO getArtworksByAdvancedSearchQuery(AdvancedSearchRequest searchQuery) {
-        if (searchQuery.source().equalsIgnoreCase("aic")){
-            return getAicArtworksBySearchQuery(searchQuery);
+        if (searchQuery.source().equalsIgnoreCase("aic")) {
+            return getAicArtworksBySearchQuery(createAicAdvancedElasticQuery(searchQuery));
+        } else {
+            throw new IllegalArgumentException("The source ".concat(searchQuery.source()).concat(" could not be matched"));
         }
-        return null;
     }
 
     @Override
-    public PaginatedArtworkResultsDTO getAicArtworksBySearchQuery(AdvancedSearchRequest searchQuery) {
-        return aicPaginatedResponseMapper(aicApiDAO.getArtworksByElasticSearchQuery(createAicAdvancedElasticQuery(searchQuery)));
+    public PaginatedArtworkResultsDTO getArtworksByBasicSearchQuery(BasicSearchRequest searchQuery) {
+        if (searchQuery.source().equalsIgnoreCase("aic")) {
+            return getAicArtworksBySearchQuery(createBasicElasticQuery(searchQuery));
+        } else {
+            throw new IllegalArgumentException("The source ".concat(searchQuery.source()).concat(" could not be matched"));
+        }
+    }
+
+    @Override
+    public PaginatedArtworkResultsDTO getAicArtworksBySearchQuery(AicApiElasticSearchQuery elasticSearchQuery) {
+        return aicPaginatedResponseMapper(aicApiDAO.getArtworksByElasticSearchQuery(elasticSearchQuery));
     }
 }
