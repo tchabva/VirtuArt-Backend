@@ -1,7 +1,9 @@
 package uk.techreturners.VirtuArt.util;
 
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiElasticSearchQuery;
 import uk.techreturners.VirtuArt.model.request.AdvancedSearchRequest;
+import uk.techreturners.VirtuArt.model.request.BasicSearchRequest;
 
 import java.util.*;
 
@@ -60,7 +62,7 @@ public interface SearchRequestMapper {
                 default -> sortBy = "title.keyword";
             }
 
-            String sorOrderStr = (request.sortOrder().equalsIgnoreCase("ascending"))? "asc" : "desc";
+            String sorOrderStr = (request.sortOrder().equalsIgnoreCase("ascending")) ? "asc" : "desc";
 
             Map<String, Object> sortOrder = new HashMap<>(Map.of("order", sorOrderStr));
             Map<String, Object> sortClause = new HashMap<>(Map.of(sortBy, sortOrder));
@@ -76,5 +78,23 @@ public interface SearchRequestMapper {
 
         System.out.println(elasticsearchQuery);
         return elasticsearchQuery;
+    }
+
+    default AicApiElasticSearchQuery createBasicElasticQuery(BasicSearchRequest request) {
+        AicApiElasticSearchQuery elasticSearchQuery = new AicApiElasticSearchQuery();
+
+        if (request.query() != null && !request.query().isBlank()){
+            elasticSearchQuery.setQ(request.query().trim());
+        }
+
+        // Add public domain term clause
+        Map<String, Object> publicDomainTerm = new HashMap<>(Map.of("is_public_domain", true));
+        Map<String, Object> publicDomainClause = new HashMap<>(Map.of("term", publicDomainTerm));
+
+        elasticSearchQuery.setQuery(publicDomainClause);
+        elasticSearchQuery.setSize(request.pageSize());
+        elasticSearchQuery.setPage(request.currentPage());
+
+        return elasticSearchQuery;
     }
 }
