@@ -10,7 +10,8 @@ public record AdvancedSearchRequest(
       String department,
       String sortBy,
       String sortOrder,
-      String pageSize,
-      String currentPage
+      String source,
+      Integer pageSize,
+      Integer currentPage
 ) {
 }
