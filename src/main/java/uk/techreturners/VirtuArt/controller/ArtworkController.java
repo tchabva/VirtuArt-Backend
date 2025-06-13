@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.techreturners.VirtuArt.model.aicapi.AicApiElasticSearchQuery;
 import uk.techreturners.VirtuArt.model.dto.ArtworkDTO;
 import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
+import uk.techreturners.VirtuArt.model.request.AdvancedSearchRequest;
 import uk.techreturners.VirtuArt.service.ArtworkService;
 
 @RestController
@@ -32,8 +32,8 @@ public class ArtworkController {
         return new ResponseEntity<>(artworkService.getArtworkById(source, artworkId), HttpStatus.OK);
     }
 
-    @PostMapping("/search/aic")
-    public ResponseEntity<PaginatedArtworkResultsDTO> searchAicApi(@RequestBody AicApiElasticSearchQuery searchQuery){
-        return new ResponseEntity<>(artworkService.getAicArtworksBySearchQuery(searchQuery), HttpStatus.OK);
+    @PostMapping("/search/advanced")
+    public ResponseEntity<PaginatedArtworkResultsDTO> advancedApiSearch(@RequestBody AdvancedSearchRequest searchQuery){
+        return new ResponseEntity<>(artworkService.getArtworksByAdvancedSearchQuery(searchQuery), HttpStatus.OK);
     }
 }
