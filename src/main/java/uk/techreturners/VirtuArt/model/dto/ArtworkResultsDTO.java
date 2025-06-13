@@ -8,6 +8,7 @@ public record ArtworkResultsDTO(
         String title,
         String artistTitle,
         String date,
-        String imageURL
+        String imageURL,
+        String source
 ) {
 }
