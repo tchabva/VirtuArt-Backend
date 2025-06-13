@@ -132,7 +132,7 @@ class DTOMapperTest implements DTOMapper {
                 () -> assertEquals(mockAicApiArtwork.dateDisplay(), artworkDTO.date()),
                 () -> assertEquals(mockAicApiArtwork.displayMedium(), artworkDTO.displayMedium()),
                 () -> assertEquals(mockAicApiArtwork.description(), artworkDTO.description()),
-                () -> assertEquals(mockAicApiArtwork.department(), artworkDTO.category()),
+                () -> assertEquals(mockAicApiArtwork.department(), artworkDTO.department()),
                 () -> assertEquals(mockAicApiArtwork.origin(), artworkDTO.origin()),
                 () -> assertEquals(
                         aicImageUrlCreator(mockAicApiArtwork.primaryImageId()), artworkDTO.imageUrl()

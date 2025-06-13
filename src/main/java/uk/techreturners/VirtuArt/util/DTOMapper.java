@@ -27,7 +27,7 @@ public interface DTOMapper {
                                     .toList())
                     .description(aicApiArtwork.description())
                     .origin(aicApiArtwork.origin())
-                    .category(aicApiArtwork.department())
+                    .department(aicApiArtwork.department())
                     .sourceMuseum("Art Institute of Chicago")
                     .build();
         }
