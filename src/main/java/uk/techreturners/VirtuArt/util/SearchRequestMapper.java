@@ -12,28 +12,30 @@ public interface SearchRequestMapper {
 
         // Add title clause if not blank
         if (request.title() != null && !request.title().isBlank()) {
-            Map<String, Object> titleMatch = new HashMap<>(Map.of("title", request.title()));
+            Map<String, Object> titleMatch = new HashMap<>(Map.of("title", request.title().trim()));
             Map<String, Object> titleClause = new HashMap<>(Map.of("match", titleMatch));
             mustClauses.add(titleClause);
         }
 
         // Add artist clause if not blank
         if (request.artist() != null && !request.artist().isBlank()) {
-            Map<String, Object> artistMatch = new HashMap<>(Map.of("artist_title", request.artist()));
+            Map<String, Object> artistMatch = new HashMap<>(Map.of("artist_title", request.artist().trim()));
             Map<String, Object> artistClause = new HashMap<>(Map.of("match", artistMatch));
             mustClauses.add(artistClause);
         }
 
         // Add medium clause if not blank
         if (request.medium() != null && !request.medium().isBlank()) {
-            Map<String, Object> mediumMatch = new HashMap<>(Map.of("medium_display", request.medium()));
+            Map<String, Object> mediumMatch = new HashMap<>(Map.of("medium_display", request.medium().trim()));
             Map<String, Object> mediumClause = new HashMap<>(Map.of("match", mediumMatch));
             mustClauses.add(mediumClause);
         }
 
         // Add department clause if not blank
         if (request.department() != null && !request.department().isBlank()) {
-            Map<String, Object> departmentMatch = new HashMap<>(Map.of("department_title", request.department()));
+            Map<String, Object> departmentMatch = new HashMap<>(
+                    Map.of("department_title", request.department().trim())
+            );
             Map<String, Object> departmentClause = new HashMap<>(Map.of("match", departmentMatch));
             mustClauses.add(departmentClause);
         }
@@ -58,7 +60,9 @@ public interface SearchRequestMapper {
                 default -> sortBy = "title.keyword";
             }
 
-            Map<String, Object> sortOrder = new HashMap<>(Map.of("order", request.sortOrder()));
+            String sorOrderStr = (request.sortOrder().equalsIgnoreCase("ascending"))? "asc" : "desc";
+
+            Map<String, Object> sortOrder = new HashMap<>(Map.of("order", sorOrderStr));
             Map<String, Object> sortClause = new HashMap<>(Map.of(sortBy, sortOrder));
             sortClauses.add(sortClause);
         }

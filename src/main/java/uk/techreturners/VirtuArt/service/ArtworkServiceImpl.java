@@ -40,7 +40,6 @@ public class ArtworkServiceImpl implements ArtworkService, DTOMapper, SearchRequ
 
     @Override
     public PaginatedArtworkResultsDTO getAicArtworksBySearchQuery(AdvancedSearchRequest searchQuery) {
-
         return aicPaginatedResponseMapper(aicApiDAO.getArtworksByElasticSearchQuery(createAicAdvancedElasticQuery(searchQuery)));
     }
 }
