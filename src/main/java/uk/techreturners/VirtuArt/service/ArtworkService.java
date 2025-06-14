@@ -7,6 +7,9 @@ import uk.techreturners.VirtuArt.model.request.AdvancedSearchRequest;
 import uk.techreturners.VirtuArt.model.request.BasicSearchRequest;
 
 public interface ArtworkService {
+
+    PaginatedArtworkResultsDTO getArtworks(String source, String limit, String page);
+
     PaginatedArtworkResultsDTO getAicArtworks(String limit, String page);
 
     ArtworkDTO getArtworkById(String source, String artworkId);

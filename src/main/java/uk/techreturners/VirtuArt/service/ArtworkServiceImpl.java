@@ -18,6 +18,18 @@ public class ArtworkServiceImpl implements ArtworkService, DTOMapper, SearchRequ
     private AicApiDAO aicApiDAO;
 
     @Override
+    public PaginatedArtworkResultsDTO getArtworks(String source, String limit, String page) {
+        switch (source) {
+            case "aic" -> {
+                return getAicArtworks(limit, page);
+            }
+            // TODO: create an illegal source exception
+            default -> throw new IllegalArgumentException("Invalid data source: " + source);
+        }
+    }
+
+    // TODO update testing
+    @Override
     public PaginatedArtworkResultsDTO getAicArtworks(String limit, String page) {
         return aicPaginatedResponseMapper(aicApiDAO.getArtworks(limit, page));
     }

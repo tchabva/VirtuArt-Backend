@@ -17,12 +17,13 @@ public class ArtworkController {
     @Autowired
     private ArtworkService artworkService;
 
-    @GetMapping("/aic")
-    public ResponseEntity<PaginatedArtworkResultsDTO> getAicArtworks(
-            @RequestParam(value = "limit", defaultValue = "50") String limit,
+    @GetMapping(path = "/{source}")
+    public ResponseEntity<PaginatedArtworkResultsDTO> getArtworks(
+            @PathVariable("source") String source,
+            @RequestParam(value = "limit", defaultValue = "25") String limit,
             @RequestParam(value = "page", defaultValue = "1") String page
     ) {
-        PaginatedArtworkResultsDTO paginatedArtworkResultsDTO = artworkService.getAicArtworks(limit, page);
+        PaginatedArtworkResultsDTO paginatedArtworkResultsDTO = artworkService.getArtworks(source, limit, page);
         return new ResponseEntity<>(paginatedArtworkResultsDTO, HttpStatus.OK);
     }
 
