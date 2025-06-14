@@ -20,7 +20,7 @@ public class ArtworkController {
     @GetMapping(path = "/{source}")
     public ResponseEntity<PaginatedArtworkResultsDTO> getArtworks(
             @PathVariable("source") String source,
-            @RequestParam(value = "limit", defaultValue = "25") String limit,
+            @RequestParam(value = "limit", defaultValue = "20") String limit,
             @RequestParam(value = "page", defaultValue = "1") String page
     ) {
         PaginatedArtworkResultsDTO paginatedArtworkResultsDTO = artworkService.getArtworks(source, limit, page);
