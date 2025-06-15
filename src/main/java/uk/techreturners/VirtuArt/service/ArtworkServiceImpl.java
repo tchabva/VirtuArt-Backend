@@ -24,7 +24,7 @@ public class ArtworkServiceImpl implements ArtworkService, DTOMapper, SearchRequ
                 return getAicArtworks(limit, page);
             }
             // TODO: create an illegal source exception
-            default -> throw new IllegalArgumentException("Invalid data source: " + source);
+            case null, default -> throw new IllegalArgumentException("Invalid data source: " + source);
         }
     }
 
@@ -40,7 +40,7 @@ public class ArtworkServiceImpl implements ArtworkService, DTOMapper, SearchRequ
             case "aic" -> {
                 return createArtworkDtoWithAicApi(aicApiDAO.getArtworkById(artworkId).data());
             }
-            default -> throw new IllegalArgumentException("Invalid data source: " + source);
+            case null, default -> throw new IllegalArgumentException("Invalid data source: " + source);
         }
     }
 
