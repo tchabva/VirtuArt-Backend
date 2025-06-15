@@ -27,7 +27,7 @@ public interface DTOMapper {
                                     .toList())
                     .description(aicApiArtwork.description())
                     .origin(aicApiArtwork.origin())
-                    .category(aicApiArtwork.department())
+                    .department(aicApiArtwork.department())
                     .sourceMuseum("Art Institute of Chicago")
                     .build();
         }
@@ -49,7 +49,7 @@ public interface DTOMapper {
         } else if (aicApiSearchResult.pagination() == null) {
             throw new ItemNotFoundException("Null pagination response from AIC API");
         } else if (aicApiSearchResult.data() == null) {
-            throw new ItemNotFoundException("Null data response froma AIC API");
+            throw new ItemNotFoundException("Null data response from AIC API");
         } else {
             return PaginatedArtworkResultsDTO.builder()
                     .data(
@@ -85,6 +85,7 @@ public interface DTOMapper {
                     .artistTitle(aicArtworkSearchResult.artistTitle())
                     .date(aicArtworkSearchResult.dateDisplay())
                     .imageURL(aicImageUrlCreator(aicArtworkSearchResult.primaryImageId()))
+                    .source("aic")
                     .build();
         }
     }

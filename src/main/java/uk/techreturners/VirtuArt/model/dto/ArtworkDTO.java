@@ -15,7 +15,7 @@ public record ArtworkDTO(
         List<String> altImageUrls,
         String description,
         String origin,
-        String category,
+        String department,
         String sourceMuseum
 ) {
 }
