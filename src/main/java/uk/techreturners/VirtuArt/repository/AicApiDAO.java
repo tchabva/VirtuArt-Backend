@@ -22,9 +22,10 @@ public class AicApiDAO {
 
     public AicApiSearchResult getArtworks(String limit, String page) {
         try {
+            String params = "query[term][is_public_domain]=true&sort[updated_at][order]=desc&fields=id,title,artist_title,date_display,image_id";
             return webClient
                     .get()
-                    .uri("?fields=id,title,artist_title,date_display,image_id&limit=" + limit + "&page=" + page)
+                    .uri("/search?"+ params + "&limit=" + limit + "&page=" + page)
                     .retrieve()
                     .bodyToMono(AicApiSearchResult.class)
                     .block();
