@@ -6,6 +6,9 @@ import uk.techreturners.VirtuArt.model.ExhibitionItem;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchArtwork;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiArtwork;
+import uk.techreturners.VirtuArt.model.cmaapi.CmaApiArtworkResult;
+import uk.techreturners.VirtuArt.model.cmaapi.CmaApiSearchResult;
+import uk.techreturners.VirtuArt.model.cmaapi.CmaApiSearchResult.CmaApiSearchArtwork;
 import uk.techreturners.VirtuArt.model.dto.*;
 
 // DTO Mapper Interface
@@ -60,17 +63,31 @@ public interface DTOMapper {
                     .pageSize(aicApiSearchResult.pagination().limit())
                     .totalPages(aicApiSearchResult.pagination().totalPages())
                     .currentPage(aicApiSearchResult.pagination().currentPage())
-                    .hasNext(
-                            PaginatedArtworkResultsDTO.checkHasNext.test(
-                                    aicApiSearchResult.pagination().currentPage(),
-                                    aicApiSearchResult.pagination().totalPages()
-                            )
-                    )
-                    .hasPrevious(
-                            PaginatedArtworkResultsDTO.checkHasPrevious.test(
-                                    aicApiSearchResult.pagination().currentPage()
-                            )
-                    )
+                    .hasNext(aicApiSearchResult.pagination().checkHasNext())
+                    .hasPrevious(aicApiSearchResult.pagination().checkHasPrevious())
+                    .build();
+        }
+    }
+
+    default PaginatedArtworkResultsDTO cmaPaginatedResponseMapper(CmaApiSearchResult result) {
+        if (result == null) {
+            throw new ItemNotFoundException("Null response from AIC API");
+        } else if (result.info() == null) {
+            throw new ItemNotFoundException("Null pagination response from AIC API");
+        } else if (result.data() == null) {
+            throw new ItemNotFoundException("Null data response from AIC API");
+        } else {
+            return PaginatedArtworkResultsDTO.builder()
+                    .data(
+                            result.data().stream()
+                                    .map(this::cmaSearchArtworkResultsResponseMapper)
+                                    .toList())
+                    .totalItems(result.info().total())
+                    .pageSize(result.info().parameters().limit())
+                    .totalPages(result.info().parameters().calculateCurrentPage())
+                    .currentPage(result.info().parameters().calculateTotalPages(result.info().total()))
+                    .hasNext(result.info().checkHasNext())
+                    .hasPrevious(result.info().checkHasPrevious())
                     .build();
         }
     }
@@ -79,13 +96,38 @@ public interface DTOMapper {
         if (aicArtworkSearchResult == null) {
             throw new ItemNotFoundException("Null response from AIC API");
         } else {
-            return ArtworkResultsDTO.builder()
+            return ArtworkResultsDTO
+                    .builder()
                     .id(aicArtworkSearchResult.id().toString())
                     .title(aicArtworkSearchResult.title())
                     .artistTitle(aicArtworkSearchResult.artistTitle())
                     .date(aicArtworkSearchResult.dateDisplay())
                     .imageURL(aicImageUrlCreator(aicArtworkSearchResult.primaryImageId()))
                     .source("aic")
+                    .build();
+        }
+    }
+
+    default ArtworkResultsDTO cmaSearchArtworkResultsResponseMapper(CmaApiSearchArtwork artworkResult) {
+        if (artworkResult == null) {
+            throw new ItemNotFoundException("Null response from CMA API");
+        } else {
+            return ArtworkResultsDTO
+                    .builder()
+                    .id(artworkResult.id().toString())
+                    .title(artworkResult.title())
+                    .artistTitle(
+                            artworkResult.creators() != null && !artworkResult.creators().isEmpty()
+                                    ? artworkResult.creators().getFirst().description()
+                                    : null
+                    )
+                    .date(artworkResult.creationDate())
+                    .imageURL(
+                            artworkResult.images().web() != null
+                                    ? artworkResult.images().web().url()
+                                    : null
+                    )
+                    .source("cma")
                     .build();
         }
     }
