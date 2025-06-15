@@ -55,12 +55,13 @@ class ArtworkControllerTest {
     @DisplayName("getArtworks with default parameters returns PaginatedArtworkResultsDTO and OK status")
     void testGetAicArtworksWithDefaultParametersReturnsPaginatedResultsAndOk() {
         // Arrange
-        String defaultLimit = "50";
+        String source = "aic";
+        String defaultLimit = "20";
         String defaultPage = "1";
-        when(mockArtworkService.getAicArtworks(defaultLimit, defaultPage)).thenReturn(expectedPaginatedResponse);
+        when(mockArtworkService.getArtworks(source, defaultLimit, defaultPage)).thenReturn(expectedPaginatedResponse);
 
         // Act
-        ResponseEntity<PaginatedArtworkResultsDTO> responseEntity = artworkController.getAicArtworks(defaultLimit, defaultPage);
+        ResponseEntity<PaginatedArtworkResultsDTO> responseEntity = artworkController.getArtworks(source, defaultLimit, defaultPage);
 
         // Assert
         assertAll(
@@ -68,19 +69,20 @@ class ArtworkControllerTest {
                 () -> assertEquals(HttpStatus.OK, responseEntity.getStatusCode()),
                 () -> assertEquals(expectedPaginatedResponse, responseEntity.getBody())
         );
-        verify(mockArtworkService, times(1)).getAicArtworks(defaultLimit, defaultPage);
+        verify(mockArtworkService, times(1)).getArtworks(source, defaultLimit, defaultPage);
     }
 
     @Test
     @DisplayName("getArtworks with custom parameters returns PaginatedArtworkResultsDTO and OK status")
     void testGetAicArtworksCustomParametersReturnsPaginatedResultsAndOk() {
         // Arrange
+        String source = "aic";
         String customLimit = "10";
         String customPage = "2";
-        when(mockArtworkService.getAicArtworks(customLimit, customPage)).thenReturn(expectedPaginatedResponse);
+        when(mockArtworkService.getArtworks(source, customLimit, customPage)).thenReturn(expectedPaginatedResponse);
 
         // Act
-        ResponseEntity<PaginatedArtworkResultsDTO> responseEntity = artworkController.getAicArtworks(customLimit, customPage);
+        ResponseEntity<PaginatedArtworkResultsDTO> responseEntity = artworkController.getArtworks(source, customLimit, customPage);
 
         // Assert
         assertAll(
@@ -88,13 +90,14 @@ class ArtworkControllerTest {
                 () -> assertEquals(HttpStatus.OK, responseEntity.getStatusCode()),
                 () -> assertEquals(expectedPaginatedResponse, responseEntity.getBody())
         );
-        verify(mockArtworkService, times(1)).getAicArtworks(customLimit, customPage);
+        verify(mockArtworkService, times(1)).getArtworks(source, customLimit, customPage);
     }
 
     @Test
     @DisplayName("getArtworks when service returns empty data list")
     void testGetAicArtworksServiceReturnsEmptyDataReturnsPaginatedResultsAndOk() {
         // Arrange
+        String source = "aic";
         String limit = "5";
         String page = "1";
         PaginatedArtworkResultsDTO emptyDataResponse = PaginatedArtworkResultsDTO.builder()
@@ -106,10 +109,10 @@ class ArtworkControllerTest {
                 .hasNext(false)
                 .hasPrevious(false)
                 .build();
-        when(mockArtworkService.getAicArtworks(limit, page)).thenReturn(emptyDataResponse);
+        when(mockArtworkService.getArtworks(source, limit, page)).thenReturn(emptyDataResponse);
 
         // Act
-        ResponseEntity<PaginatedArtworkResultsDTO> responseEntity = artworkController.getAicArtworks(limit, page);
+        ResponseEntity<PaginatedArtworkResultsDTO> responseEntity = artworkController.getArtworks(source, limit, page);
 
         // Assert
         assertAll(
@@ -121,6 +124,6 @@ class ArtworkControllerTest {
                 },
                 () -> assertEquals(emptyDataResponse, responseEntity.getBody())
         );
-        verify(mockArtworkService,times(1)).getAicArtworks(limit, page);
+        verify(mockArtworkService,times(1)).getArtworks(source, limit, page);
     }
 }
