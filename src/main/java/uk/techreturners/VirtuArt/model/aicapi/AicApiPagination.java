@@ -8,4 +8,10 @@ public record AicApiPagination(
         @JsonProperty("total_pages") Integer totalPages,
         @JsonProperty("current_page") Integer currentPage
 ) {
+    public Boolean checkHasNext(){
+        return currentPage < totalPages;
+    }
+    public Boolean checkHasPrevious(){
+        return currentPage > 1;
+    }
 }
