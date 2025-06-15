@@ -6,7 +6,7 @@ import java.util.List;
 
 public record CmaApiSearchResult(
         CmaApiPagination info,
-        CmaApiSearchArtwork data
+        List<CmaApiSearchArtwork> data
 ) {
     public record CmaApiSearchArtwork(
             Long id,
