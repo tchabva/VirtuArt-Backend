@@ -12,6 +12,8 @@ public interface ArtworkService {
 
     PaginatedArtworkResultsDTO getAicArtworks(String limit, String page);
 
+    PaginatedArtworkResultsDTO getCmaArtworks(String limit, String page);
+
     ArtworkDTO getArtworkById(String source, String artworkId);
 
     PaginatedArtworkResultsDTO getArtworksByAdvancedSearchQuery(AdvancedSearchRequest searchQuery);
