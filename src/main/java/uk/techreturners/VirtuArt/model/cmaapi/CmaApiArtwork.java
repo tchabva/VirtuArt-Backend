@@ -16,7 +16,7 @@ public record CmaApiArtwork(
         @JsonProperty("alternate_images") List<CmaApiAlternateImages> alternateImages,
         List<CmaApiCreators> creators
 ) {
-    private record CmaApiAlternateImages(
+    public record CmaApiAlternateImages(
             CmaApiImages.CmaApiWeb web
     ) {
     }
