@@ -43,7 +43,6 @@ public class ArtworkServiceImpl implements ArtworkService, DTOMapper, SearchRequ
 
     @Override
     public PaginatedArtworkResultsDTO getCmaArtworks(String limit, String page) {
-
         return cmaPaginatedResponseMapper(
                 cmaApiDAO.getArtworks(Integer.parseInt(limit), Integer.parseInt(page))
         );
@@ -56,8 +55,7 @@ public class ArtworkServiceImpl implements ArtworkService, DTOMapper, SearchRequ
                 return createArtworkDtoWithAicApi(aicApiDAO.getArtworkById(artworkId).data());
             }
             case "cma" -> {
-                // TODO createDTO Mapping
-                return null;
+                return createArtworkDtoWithCmaApi(cmaApiDAO.getArtworkById(artworkId).data());
             }
             case null, default -> throw new IllegalArgumentException("Invalid data source: " + source);
         }
@@ -68,7 +66,9 @@ public class ArtworkServiceImpl implements ArtworkService, DTOMapper, SearchRequ
         if (searchQuery.source().equalsIgnoreCase("aic")) {
             return getAicArtworksBySearchQuery(createAicAdvancedElasticQuery(searchQuery));
         } else {
-            throw new IllegalArgumentException("The source ".concat(searchQuery.source()).concat(" could not be matched"));
+            throw new IllegalArgumentException(
+                    "The source ".concat(searchQuery.source()).concat(" could not be matched")
+            );
         }
     }
 
@@ -77,7 +77,9 @@ public class ArtworkServiceImpl implements ArtworkService, DTOMapper, SearchRequ
         if (searchQuery.source().equalsIgnoreCase("aic")) {
             return getAicArtworksBySearchQuery(createBasicElasticQuery(searchQuery));
         } else {
-            throw new IllegalArgumentException("The source ".concat(searchQuery.source()).concat(" could not be matched"));
+            throw new IllegalArgumentException(
+                    "The source ".concat(searchQuery.source()).concat(" could not be matched")
+            );
         }
     }
 
