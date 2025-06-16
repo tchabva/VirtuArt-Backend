@@ -3,10 +3,10 @@ package uk.techreturners.VirtuArt.util;
 import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
 import uk.techreturners.VirtuArt.model.Exhibition;
 import uk.techreturners.VirtuArt.model.ExhibitionItem;
-import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
-import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchArtwork;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiArtwork;
-import uk.techreturners.VirtuArt.model.cmaapi.CmaApiArtworkResult;
+import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchArtwork;
+import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
+import uk.techreturners.VirtuArt.model.cmaapi.CmaApiArtwork;
 import uk.techreturners.VirtuArt.model.cmaapi.CmaApiSearchResult;
 import uk.techreturners.VirtuArt.model.cmaapi.CmaApiSearchResult.CmaApiSearchArtwork;
 import uk.techreturners.VirtuArt.model.dto.*;
@@ -15,7 +15,7 @@ import uk.techreturners.VirtuArt.model.dto.*;
 public interface DTOMapper {
     default ArtworkDTO createArtworkDtoWithAicApi(AicApiArtwork aicApiArtwork) {
         if (aicApiArtwork == null) {
-            throw new ItemNotFoundException("Null response from AIC API");
+            throw new ItemNotFoundException("Null response from Art Institute of Chicago API");
         } else {
             return ArtworkDTO.builder()
                     .id(aicApiArtwork.id().toString())
@@ -36,6 +36,43 @@ public interface DTOMapper {
         }
     }
 
+    default ArtworkDTO createArtworkDtoWithCmaApi(CmaApiArtwork cmaApiArtwork) {
+        if (cmaApiArtwork == null) {
+            throw new ItemNotFoundException("Null response from Cleveland Museum of Art API");
+        } else {
+            return ArtworkDTO
+                    .builder()
+                    .id(cmaApiArtwork.id().toString())
+                    .title(cmaApiArtwork.title())
+                    .artist(
+                            cmaApiArtwork.creators() != null && !cmaApiArtwork.creators().isEmpty()
+                                    ? cmaApiArtwork.creators().getFirst().description()
+                                    : null
+                    )
+                    .date(cmaApiArtwork.creationDate())
+                    .displayMedium(cmaApiArtwork.technique())
+                    .imageUrl(
+                            cmaApiArtwork.images().web() != null
+                                    ? cmaApiArtwork.images().web().url()
+                                    : null
+                    )
+                    .altImageUrls(
+                            cmaApiArtwork.alternateImages().stream()
+                                    .map(cmaApiAlternateImages -> cmaApiAlternateImages.web().url())
+                                    .toList()
+                    )
+                    .description(cmaApiArtwork.description())
+                    .origin(
+                            cmaApiArtwork.culture() != null && !cmaApiArtwork.culture().isEmpty()
+                                    ? cmaApiArtwork.culture().getFirst()
+                                    : null
+                    )
+                    .department(cmaApiArtwork.department())
+                    .sourceMuseum("Cleveland Museum of Art")
+                    .build();
+        }
+    }
+
     default String aicImageUrlCreator(String artworkID) {
         if (artworkID == null || artworkID.isBlank()) {
             return "";
@@ -48,11 +85,11 @@ public interface DTOMapper {
 
     default PaginatedArtworkResultsDTO aicPaginatedResponseMapper(AicApiSearchResult aicApiSearchResult) {
         if (aicApiSearchResult == null) {
-            throw new ItemNotFoundException("Null response from AIC API");
+            throw new ItemNotFoundException("Null response from Art Institute of Chicago API");
         } else if (aicApiSearchResult.pagination() == null) {
-            throw new ItemNotFoundException("Null pagination response from AIC API");
+            throw new ItemNotFoundException("Null pagination response from Art Institute of Chicago API");
         } else if (aicApiSearchResult.data() == null) {
-            throw new ItemNotFoundException("Null data response from AIC API");
+            throw new ItemNotFoundException("Null data response from Art Institute of Chicago API");
         } else {
             return PaginatedArtworkResultsDTO.builder()
                     .data(
@@ -71,17 +108,18 @@ public interface DTOMapper {
 
     default PaginatedArtworkResultsDTO cmaPaginatedResponseMapper(CmaApiSearchResult result) {
         if (result == null) {
-            throw new ItemNotFoundException("Null response from AIC API");
+            throw new ItemNotFoundException("Null response from Cleveland Museum of Art");
         } else if (result.info() == null) {
-            throw new ItemNotFoundException("Null pagination response from AIC API");
+            throw new ItemNotFoundException("Null pagination response from Cleveland Museum of Art");
         } else if (result.data() == null) {
-            throw new ItemNotFoundException("Null data response from AIC API");
+            throw new ItemNotFoundException("Null data response from Cleveland Museum of Art");
         } else {
             return PaginatedArtworkResultsDTO.builder()
                     .data(
                             result.data().stream()
                                     .map(this::cmaSearchArtworkResultsResponseMapper)
-                                    .toList())
+                                    .toList()
+                    )
                     .totalItems(result.info().total())
                     .pageSize(result.info().parameters().limit())
                     .totalPages(result.info().parameters().calculateCurrentPage())
@@ -94,7 +132,7 @@ public interface DTOMapper {
 
     default ArtworkResultsDTO aicSearchArtworkResultsResponseMapper(AicApiSearchArtwork aicArtworkSearchResult) {
         if (aicArtworkSearchResult == null) {
-            throw new ItemNotFoundException("Null response from AIC API");
+            throw new ItemNotFoundException("Null response from Art Institute of Chicago API");
         } else {
             return ArtworkResultsDTO
                     .builder()
@@ -110,7 +148,7 @@ public interface DTOMapper {
 
     default ArtworkResultsDTO cmaSearchArtworkResultsResponseMapper(CmaApiSearchArtwork artworkResult) {
         if (artworkResult == null) {
-            throw new ItemNotFoundException("Null response from CMA API");
+            throw new ItemNotFoundException("Null response from Cleveland Museum of Art");
         } else {
             return ArtworkResultsDTO
                     .builder()
