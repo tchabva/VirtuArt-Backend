@@ -6,4 +6,7 @@ public record BasicSearchRequest(
         Integer pageSize,
         Integer currentPage
 ) {
+    public Integer cmaCurrentPage(){
+        return (currentPage -1) * pageSize;
+    }
 }

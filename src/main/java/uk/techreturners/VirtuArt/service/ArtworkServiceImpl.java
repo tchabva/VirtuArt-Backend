@@ -79,7 +79,7 @@ public class ArtworkServiceImpl implements ArtworkService, DTOMapper, SearchRequ
                 return getAicArtworksBySearchQuery(createBasicElasticQuery(searchQuery));
             }
             case "cma" -> {
-                return cmaPaginatedResponseMapper(cmaApiDAO.basicSearchQuery(searchQuery.query()));
+                return cmaPaginatedResponseMapper(cmaApiDAO.basicSearchQuery(searchQuery));
             }
             case null, default -> throw new IllegalArgumentException("Invalid basicSearch: " + searchQuery);
         }

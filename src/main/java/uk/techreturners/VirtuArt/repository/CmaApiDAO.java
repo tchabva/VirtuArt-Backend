@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.techreturners.VirtuArt.exception.ApiServiceException;
 import uk.techreturners.VirtuArt.model.cmaapi.CmaApiArtworkResult;
 import uk.techreturners.VirtuArt.model.cmaapi.CmaApiSearchResult;
+import uk.techreturners.VirtuArt.model.request.BasicSearchRequest;
 
 @Repository
 public class CmaApiDAO {
@@ -53,12 +54,12 @@ public class CmaApiDAO {
         }
     }
 
-    public CmaApiSearchResult basicSearchQuery(String query) {
+    public CmaApiSearchResult basicSearchQuery(BasicSearchRequest request) {
         try {
-            String params = "&cc0&fields=id,title,creation_date,creators,images,share_license_status&limit=20&skip=0";
+            String params = "&cc0&fields=id,title,creation_date,creators,images,share_license_status&limit=";
             return webClient
                     .get()
-                    .uri("/?q=" + query + params)
+                    .uri("/?q=" + request.query() + params + request.pageSize() + "&skip=" + request.cmaCurrentPage())
                     .retrieve()
                     .bodyToMono(CmaApiSearchResult.class)
                     .block();
