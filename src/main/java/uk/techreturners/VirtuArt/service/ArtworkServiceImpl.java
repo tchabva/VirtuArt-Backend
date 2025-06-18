@@ -74,12 +74,14 @@ public class ArtworkServiceImpl implements ArtworkService, DTOMapper, SearchRequ
 
     @Override
     public PaginatedArtworkResultsDTO getArtworksByBasicSearchQuery(BasicSearchRequest searchQuery) {
-        if (searchQuery.source().equalsIgnoreCase("aic")) {
-            return getAicArtworksBySearchQuery(createBasicElasticQuery(searchQuery));
-        } else {
-            throw new IllegalArgumentException(
-                    "The source ".concat(searchQuery.source()).concat(" could not be matched")
-            );
+        switch (searchQuery.source()) {
+            case "aic" -> {
+                return getAicArtworksBySearchQuery(createBasicElasticQuery(searchQuery));
+            }
+            case "cma" -> {
+                return cmaPaginatedResponseMapper(cmaApiDAO.basicSearchQuery(searchQuery.query()));
+            }
+            case null, default -> throw new IllegalArgumentException("Invalid basicSearch: " + searchQuery);
         }
     }
 
