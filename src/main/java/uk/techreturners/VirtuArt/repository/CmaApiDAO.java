@@ -8,7 +8,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.techreturners.VirtuArt.exception.ApiServiceException;
-import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
 import uk.techreturners.VirtuArt.model.cmaapi.CmaApiArtworkResult;
 import uk.techreturners.VirtuArt.model.cmaapi.CmaApiSearchResult;
 
@@ -23,7 +22,6 @@ public class CmaApiDAO {
         try {
             int skip = (page - 1) * limit;
             String params = "/?cc0&fields=id,title,creation_date,creators,images&limit=";
-
             return webClient
                     .get()
                     .uri(params + limit + "&skip=" + skip)
@@ -47,7 +45,24 @@ public class CmaApiDAO {
                     .retrieve()
                     .bodyToMono(CmaApiArtworkResult.class)
                     .block();
-        }catch (WebClientResponseException e) {
+        } catch (WebClientResponseException e) {
+            HttpStatus status = HttpStatus.valueOf(e.getStatusCode().value());
+            throw new ApiServiceException(e.getMessage(), status);
+        } catch (WebClientRequestException e) {
+            throw new ApiServiceException(e.getMessage());
+        }
+    }
+
+    public CmaApiSearchResult basicSearchQuery(String query) {
+        try {
+            String params = "&cc0&fields=id,title,creation_date,creators,images,share_license_status&limit=20&skip=0";
+            return webClient
+                    .get()
+                    .uri("/?q=" + query + params)
+                    .retrieve()
+                    .bodyToMono(CmaApiSearchResult.class)
+                    .block();
+        } catch (WebClientResponseException e) {
             HttpStatus status = HttpStatus.valueOf(e.getStatusCode().value());
             throw new ApiServiceException(e.getMessage(), status);
         } catch (WebClientRequestException e) {
