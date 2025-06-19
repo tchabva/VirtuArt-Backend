@@ -6,6 +6,8 @@
 
 Backend for the VirtuArt Exhibit Curator. This project provides a RESTful API for managing virtual art exhibitions, users, and artwork data from multiple museum APIs.
 
+This backend serves the [VirtuArt Frontend](https://github.com/tchabva/virtuart-frontend), an Android application for curating virtual art exhibits.
+
 ## Features
 - User and exhibition management
 - Integration with external museum APIs
