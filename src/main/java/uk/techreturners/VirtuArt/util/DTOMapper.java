@@ -122,8 +122,8 @@ public interface DTOMapper {
                     )
                     .totalItems(result.info().total())
                     .pageSize(result.info().parameters().limit())
-                    .totalPages(result.info().parameters().calculateCurrentPage())
-                    .currentPage(result.info().parameters().calculateTotalPages(result.info().total()))
+                    .totalPages(result.info().parameters().calculateTotalPages(result.info().total()))
+                    .currentPage(result.info().parameters().calculateCurrentPage())
                     .hasNext(result.info().checkHasNext())
                     .hasPrevious(result.info().checkHasPrevious())
                     .build();
