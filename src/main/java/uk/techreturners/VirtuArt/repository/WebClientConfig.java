@@ -14,4 +14,12 @@ public class WebClientConfig {
                 .defaultHeader("User-Agent", "VirtuArt-Application - tawandachabva@gmail.com")
                 .build();
     }
+
+    @Bean("clevelandApiWebClient")
+    public WebClient clevelandApiWebClient(){
+        return WebClient.builder()
+                .baseUrl("https://openaccess-api.clevelandart.org/api/artworks")
+                .defaultHeader("User-Agent", "VirtuArt-Application - tawandachabva@gmail.com") // Please update with your email
+                .build();
+    }
 }

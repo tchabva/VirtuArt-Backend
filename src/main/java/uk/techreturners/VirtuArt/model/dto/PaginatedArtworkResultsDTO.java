@@ -5,6 +5,7 @@ import lombok.Builder;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 @Builder
 public record PaginatedArtworkResultsDTO(
@@ -16,6 +17,4 @@ public record PaginatedArtworkResultsDTO(
         Boolean hasPrevious,
         List<ArtworkResultsDTO> data
 ) {
-    public static BiPredicate<Integer, Integer> checkHasNext = (cPage, tPage) -> cPage < tPage;
-    public static Predicate<Integer> checkHasPrevious = cPage -> cPage > 1;
 }
