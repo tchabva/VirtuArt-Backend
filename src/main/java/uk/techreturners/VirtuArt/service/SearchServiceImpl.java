@@ -1,6 +1,7 @@
 package uk.techreturners.VirtuArt.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiElasticSearchQuery;
 import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
 import uk.techreturners.VirtuArt.model.request.AdvancedSearchRequest;
@@ -10,6 +11,7 @@ import uk.techreturners.VirtuArt.repository.CmaApiDAO;
 import uk.techreturners.VirtuArt.util.DTOMapper;
 import uk.techreturners.VirtuArt.util.SearchRequestMapper;
 
+@Service
 public class SearchServiceImpl implements SearchService, DTOMapper, SearchRequestMapper {
 
     @Autowired
