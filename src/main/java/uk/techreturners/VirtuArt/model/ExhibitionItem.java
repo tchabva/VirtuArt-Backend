@@ -34,5 +34,6 @@ public class ExhibitionItem {
     private String source;
 
     @ManyToMany(mappedBy = "exhibitionItems", fetch = FetchType.LAZY)
+    @Builder.Default
     private List<Exhibition> exhibitions = new ArrayList<>();
 }
