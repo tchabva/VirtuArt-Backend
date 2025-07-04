@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
 import uk.techreturners.VirtuArt.model.aicapi.*;
 import uk.techreturners.VirtuArt.model.dto.ArtworkDTO;
@@ -17,6 +18,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
+@ActiveProfiles("test")
 class DTOMapperTest implements DTOMapper {
 
     // AIC API Mocks
@@ -180,24 +182,24 @@ class DTOMapperTest implements DTOMapper {
                 () -> assertNotNull(paginatedDTO),
                 () -> assertEquals(
                         mockAicApiSearchResult.pagination().total(),
-                        paginatedDTO.getTotalItems()),
+                        paginatedDTO.totalItems()),
                 () -> assertEquals(
                         mockAicApiSearchResult.pagination().limit(),
-                        paginatedDTO.getPageSize()),
+                        paginatedDTO.pageSize()),
                 () -> assertEquals(
-                        mockAicApiSearchResult.pagination().totalPages(), paginatedDTO.getTotalPages()),
+                        mockAicApiSearchResult.pagination().totalPages(), paginatedDTO.totalPages()),
                 () -> assertEquals(
-                        mockAicApiSearchResult.pagination().currentPage(), paginatedDTO.getCurrentPage()
+                        mockAicApiSearchResult.pagination().currentPage(), paginatedDTO.currentPage()
                 ),
-                () -> assertTrue(paginatedDTO.getHasNext()),
-                () -> assertTrue(paginatedDTO.getHasPrevious()),
-                () -> assertNotNull(paginatedDTO.getData()),
-                () -> assertEquals(mockAicApiSearchResult.data().size(), paginatedDTO.getData().size())
+                () -> assertTrue(paginatedDTO.hasNext()),
+                () -> assertTrue(paginatedDTO.hasPrevious()),
+                () -> assertNotNull(paginatedDTO.data()),
+                () -> assertEquals(mockAicApiSearchResult.data().size(), paginatedDTO.data().size())
         );
 
         // Check mapping of individual artwork results
-        if (!paginatedDTO.getData().isEmpty()) {
-            ArtworkResultsDTO firstArtworkResult = paginatedDTO.getData().getFirst();
+        if (!paginatedDTO.data().isEmpty()) {
+            ArtworkResultsDTO firstArtworkResult = paginatedDTO.data().getFirst();
             AicApiSearchArtwork firstApiArtwork = mockAicApiSearchResult.data().getFirst();
             assertEquals(String.valueOf(firstApiArtwork.id()), firstArtworkResult.id());
             assertEquals(firstApiArtwork.title(), firstArtworkResult.title());
@@ -219,9 +221,9 @@ class DTOMapperTest implements DTOMapper {
         // Assert
         assertAll("aicPaginatedResponse Mapper handles empty data list from API result",
                 () -> assertNotNull(paginatedDTO),
-                () -> assertNotNull(paginatedDTO.getData()),
-                () -> assertTrue(paginatedDTO.getData().isEmpty()),
-                () -> assertEquals(mockAicApiPagination.total(), paginatedDTO.getTotalItems())
+                () -> assertNotNull(paginatedDTO.data()),
+                () -> assertTrue(paginatedDTO.data().isEmpty()),
+                () -> assertEquals(mockAicApiPagination.total(), paginatedDTO.totalItems())
         );
     }
 
@@ -281,8 +283,8 @@ class DTOMapperTest implements DTOMapper {
         PaginatedArtworkResultsDTO dto = aicPaginatedResponseMapper(apiResult);
 
         // Assert
-        assertTrue(dto.getHasNext());
-        assertFalse(dto.getHasPrevious());
+        assertTrue(dto.hasNext());
+        assertFalse(dto.hasPrevious());
     }
 
     @Test
@@ -296,8 +298,8 @@ class DTOMapperTest implements DTOMapper {
         PaginatedArtworkResultsDTO dto = aicPaginatedResponseMapper(apiResult);
 
         // Assert
-        assertFalse(dto.getHasNext());
-        assertTrue(dto.getHasPrevious());
+        assertFalse(dto.hasNext());
+        assertTrue(dto.hasPrevious());
     }
 
     @Test
@@ -311,8 +313,8 @@ class DTOMapperTest implements DTOMapper {
         PaginatedArtworkResultsDTO dto = aicPaginatedResponseMapper(apiResult);
 
         // Assert
-         assertTrue(dto.getHasNext());
-         assertTrue(dto.getHasPrevious());
+         assertTrue(dto.hasNext());
+         assertTrue(dto.hasPrevious());
     }
 
     @Test
@@ -326,7 +328,7 @@ class DTOMapperTest implements DTOMapper {
         PaginatedArtworkResultsDTO dto = aicPaginatedResponseMapper(apiResult); // Or dtoMapper.aicPaginatedResponseMapper(apiResult)
 
         // Assert
-         assertFalse(dto.getHasNext());
-         assertFalse(dto.getHasPrevious());
+         assertFalse(dto.hasNext());
+         assertFalse(dto.hasPrevious());
     }
 }
