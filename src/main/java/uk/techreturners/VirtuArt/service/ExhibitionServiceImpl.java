@@ -19,7 +19,6 @@ import uk.techreturners.VirtuArt.repository.ExhibitionRepository;
 import uk.techreturners.VirtuArt.util.DTOMapper;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,7 +79,6 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
                 .description(request.description())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
-                .exhibitionItems(new ArrayList<>())
                 .user(currentUser)
                 .build();
         return createExhibitionDTO(exhibitionRepository.save(newExhibition));

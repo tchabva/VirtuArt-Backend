@@ -1,10 +1,7 @@
 package uk.techreturners.VirtuArt.model.dto;
 
-import lombok.Builder;
-
 import java.util.List;
 
-@Builder
 public record ArtworkDTO(
         String id,
         String title,

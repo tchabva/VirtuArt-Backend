@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import uk.techreturners.VirtuArt.model.dto.ArtworkResultsDTO;
 import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
 import uk.techreturners.VirtuArt.service.ArtworkService;
@@ -19,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @DataJpaTest
+@ActiveProfiles("test")
 class ArtworkControllerTest {
 
     @Mock
@@ -32,23 +34,25 @@ class ArtworkControllerTest {
     @BeforeEach
     void setUp() {
         // Arrange: Common setup for multiple tests
-        ArtworkResultsDTO artworkDTO = ArtworkResultsDTO.builder()
-                .id("1")
-                .title("Test Artwork")
-                .artistTitle("Test Artist")
-                .date("2023")
-                .build();
+        ArtworkResultsDTO artworkDTO = new ArtworkResultsDTO(
+                "1",
+                "Test Artwork",
+                "Test Artist",
+                "2023",
+                null,
+                null
+        );
         List<ArtworkResultsDTO> artworkList = Collections.singletonList(artworkDTO);
 
-        expectedPaginatedResponse = PaginatedArtworkResultsDTO.builder()
-                .data(artworkList)
-                .totalItems(1)
-                .pageSize(10)
-                .totalPages(1)
-                .currentPage(1)
-                .hasNext(false)
-                .hasPrevious(false)
-                .build();
+        expectedPaginatedResponse = new PaginatedArtworkResultsDTO(
+                1,
+                10,
+                1,
+                1,
+                false,
+                false,
+                artworkList
+        );
     }
 
     @Test
@@ -100,15 +104,15 @@ class ArtworkControllerTest {
         String source = "aic";
         String limit = "5";
         String page = "1";
-        PaginatedArtworkResultsDTO emptyDataResponse = PaginatedArtworkResultsDTO.builder()
-                .data(Collections.emptyList())
-                .totalItems(0)
-                .pageSize(5)
-                .totalPages(0)
-                .currentPage(1)
-                .hasNext(false)
-                .hasPrevious(false)
-                .build();
+        PaginatedArtworkResultsDTO emptyDataResponse = new PaginatedArtworkResultsDTO(
+                0,
+                5,
+                0,
+                1,
+                false,
+                false,
+                Collections.emptyList()
+        );
         when(mockArtworkService.getArtworks(source, limit, page)).thenReturn(emptyDataResponse);
 
         // Act

@@ -6,8 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.techreturners.VirtuArt.model.dto.ArtworkDTO;
 import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
-import uk.techreturners.VirtuArt.model.request.AdvancedSearchRequest;
-import uk.techreturners.VirtuArt.model.request.BasicSearchRequest;
 import uk.techreturners.VirtuArt.service.ArtworkService;
 
 @RestController
@@ -32,15 +30,5 @@ public class ArtworkController {
             @PathVariable("source") String source,
             @PathVariable("id") String artworkId) {
         return new ResponseEntity<>(artworkService.getArtworkById(source, artworkId), HttpStatus.OK);
-    }
-
-    @PostMapping("/search")
-    public ResponseEntity<PaginatedArtworkResultsDTO> basicApiSearch(@RequestBody BasicSearchRequest searchQuery) {
-        return new ResponseEntity<>(artworkService.getArtworksByBasicSearchQuery(searchQuery), HttpStatus.OK);
-    }
-
-    @PostMapping("/search/advanced")
-    public ResponseEntity<PaginatedArtworkResultsDTO> advancedApiSearch(@RequestBody AdvancedSearchRequest searchQuery) {
-        return new ResponseEntity<>(artworkService.getArtworksByAdvancedSearchQuery(searchQuery), HttpStatus.OK);
     }
 }

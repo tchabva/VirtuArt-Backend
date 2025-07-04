@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.*;
 import org.springframework.web.reactive.function.client.WebClient.RequestHeadersSpec;
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @DataJpaTest
+@ActiveProfiles("dev")
 class AicApiDAOTest {
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -104,7 +106,7 @@ class AicApiDAOTest {
         String expectedUri = "?fields=id,title,artist_title,date_display&limit=" + limit + "&page=" + page;
 
         WebClientResponseException responseException = WebClientResponseException.create(
-                404, "Not Found", null, null, null
+                404, "Not Found", new HttpHeaders(), new byte[0], null
         );
 
         when(mockRequestHeadersUriSpec.uri(expectedUri)).thenReturn(mockRequestHeadersSpec);
@@ -178,7 +180,7 @@ class AicApiDAOTest {
         String expectedUri = "/" + artworkId + expectedParams;
 
         WebClientResponseException responseException = WebClientResponseException.create(
-                500, "Internal Server Error", null, null, null
+                500, "Internal Server Error", new HttpHeaders(), new byte[0], null
         );
 
         when(mockRequestHeadersUriSpec.uri(expectedUri)).thenReturn(mockRequestHeadersSpec);

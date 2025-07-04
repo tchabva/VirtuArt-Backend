@@ -21,7 +21,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Allow public access Artworks and the test H2 console
                         .requestMatchers(HttpMethod.GET, "/api/v1/artworks/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/artworks/search/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/search/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         // Secure all Exhibition related endpoints for only authenticated users.
                         .requestMatchers("/api/v1/exhibitions/**").authenticated()
