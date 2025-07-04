@@ -38,5 +38,6 @@ public class Exhibition {
             joinColumns = @JoinColumn(name = "exhibition_id"),
             inverseJoinColumns = @JoinColumn(name = "exhibition_item_id")
     )
+    @Builder.Default
     private List<ExhibitionItem> exhibitionItems = new ArrayList<>();
 }
