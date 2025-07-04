@@ -17,7 +17,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findOrCreateUser(Jwt jwt) {
-        String googleId = jwt.getSubject();
+        String googleId = jwt.getSubject(); // Retrieve the GoogleID from the JSON Web Token Jwt
         if (googleId == null || googleId.isBlank()) {
             throw new IllegalArgumentException("Google ID not found in JWT");
         }
@@ -27,10 +27,12 @@ public class UserServiceImpl implements UserService {
         if (existingUser.isPresent()) {
             User upToDateUser = existingUser.get();
             boolean isUpdated = false;
+            // Retrieve the User attributes from the Jwt
             String emailFromJwt = jwt.getClaimAsString("email");
             String nameFromJwt = jwt.getClaimAsString("name");
             String pictureFromJwt = jwt.getClaimAsString("picture");
 
+            // Update the User's details based on the latest information from the Jwt if required
             if (emailFromJwt != null && !emailFromJwt.equals(upToDateUser.getEmail())) {
                 upToDateUser.setEmail(emailFromJwt);
                 isUpdated = true;
@@ -48,6 +50,7 @@ public class UserServiceImpl implements UserService {
             }
             return upToDateUser;
         } else {
+            // If no existing User is found, return a newly created user with the Jwt details
             User newUser = User.builder()
                     .googleId(googleId)
                     .email(jwt.getClaimAsString("email"))
@@ -61,8 +64,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getCurrentUser(Jwt jwt) {
         User user = findOrCreateUser(jwt);
-        if(user == null) {
-            throw new UserNotFoundException("Could not obtain using the provided token");
+        if (user == null) {
+            throw new UserNotFoundException("Could not obtain a User using the provided token");
         }
         return user;
     }
