@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @DataJpaTest
-@ActiveProfiles("test")
+@ActiveProfiles("dev")
 class AicApiDAOTest {
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
