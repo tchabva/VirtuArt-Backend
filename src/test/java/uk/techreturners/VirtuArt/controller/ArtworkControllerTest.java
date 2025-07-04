@@ -120,7 +120,7 @@ class ArtworkControllerTest {
                 () -> assertEquals(HttpStatus.OK, responseEntity.getStatusCode()),
                 () -> {
                     assertNotNull(responseEntity.getBody());
-                    assertEquals(0, responseEntity.getBody().data().size());
+                    assertEquals(0, responseEntity.getBody().getData().size());
                 },
                 () -> assertEquals(emptyDataResponse, responseEntity.getBody())
         );
