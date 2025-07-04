@@ -1,11 +1,13 @@
 package uk.techreturners.VirtuArt.util;
 
-import org.springframework.web.reactive.function.client.WebClientRequestException;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiElasticSearchQuery;
 import uk.techreturners.VirtuArt.model.request.AdvancedSearchRequest;
 import uk.techreturners.VirtuArt.model.request.BasicSearchRequest;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public interface SearchRequestMapper {
     default AicApiElasticSearchQuery createAicAdvancedElasticQuery(AdvancedSearchRequest request) {
@@ -83,7 +85,7 @@ public interface SearchRequestMapper {
     default AicApiElasticSearchQuery createBasicElasticQuery(BasicSearchRequest request) {
         AicApiElasticSearchQuery elasticSearchQuery = new AicApiElasticSearchQuery();
 
-        if (request.query() != null && !request.query().isBlank()){
+        if (request.query() != null && !request.query().isBlank()) {
             elasticSearchQuery.setQ(request.query().trim());
         }
 
