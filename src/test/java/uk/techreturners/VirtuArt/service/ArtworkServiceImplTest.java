@@ -72,25 +72,25 @@ class ArtworkServiceImplTest {
         // Assert
         assertAll(
                 () -> assertNotNull(resultDTO),
-                () -> assertEquals(mockApiSearchResult.pagination().total(), resultDTO.totalItems()),
-                () -> assertEquals(mockApiSearchResult.pagination().limit(), resultDTO.pageSize()),
+                () -> assertEquals(mockApiSearchResult.pagination().total(), resultDTO.getTotalItems()),
+                () -> assertEquals(mockApiSearchResult.pagination().limit(), resultDTO.getPageSize()),
                 () -> assertEquals(
-                        mockApiSearchResult.pagination().totalPages(), resultDTO.totalPages()
+                        mockApiSearchResult.pagination().totalPages(), resultDTO.getTotalPages()
                 ),
                 () -> assertEquals(
-                        mockApiSearchResult.pagination().currentPage(), resultDTO.currentPage()
+                        mockApiSearchResult.pagination().currentPage(), resultDTO.getCurrentPage()
                 ),
-                () -> assertNotNull(resultDTO.data()),
-                () -> assertEquals(1, resultDTO.data().size()),
+                () -> assertNotNull(resultDTO.getData()),
+                () -> assertEquals(1, resultDTO.getData().size()),
                 () -> assertEquals(
-                        String.valueOf(mockApiSearchArtwork.id()), resultDTO.data().getFirst().id()
+                        String.valueOf(mockApiSearchArtwork.id()), resultDTO.getData().getFirst().id()
                 ),
-                () -> assertEquals(mockApiSearchArtwork.title(), resultDTO.data().getFirst().title()),
+                () -> assertEquals(mockApiSearchArtwork.title(), resultDTO.getData().getFirst().title()),
                 () -> assertEquals(
-                        mockApiSearchArtwork.artistTitle(), resultDTO.data().getFirst().artistTitle()
+                        mockApiSearchArtwork.artistTitle(), resultDTO.getData().getFirst().artistTitle()
                 ),
                 () -> assertEquals(
-                        mockApiSearchArtwork.dateDisplay(), resultDTO.data().getFirst().date()
+                        mockApiSearchArtwork.dateDisplay(), resultDTO.getData().getFirst().date()
                 )
         );
 
@@ -137,10 +137,10 @@ class ArtworkServiceImplTest {
         // Assert
         assertAll(
                 () -> assertNotNull(resultDTO),
-                () -> assertNotNull(resultDTO.data()),
-                () -> assertEquals(0, resultDTO.data().size()),
-                () -> assertEquals(0, resultDTO.totalItems()),
-                () -> assertEquals(0, resultDTO.totalPages())
+                () -> assertNotNull(resultDTO.getData()),
+                () -> assertEquals(0, resultDTO.getData().size()),
+                () -> assertEquals(0, resultDTO.getTotalItems()),
+                () -> assertEquals(0, resultDTO.getTotalPages())
         );
 
         verify(mockAicApiDAO).getArtworks(limit, page);
