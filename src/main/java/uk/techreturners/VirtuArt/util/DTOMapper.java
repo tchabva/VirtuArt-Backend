@@ -17,22 +17,21 @@ public interface DTOMapper {
         if (aicApiArtwork == null) {
             throw new ItemNotFoundException("Null response from Art Institute of Chicago API");
         } else {
-            return ArtworkDTO.builder()
-                    .id(aicApiArtwork.id().toString())
-                    .title(aicApiArtwork.title())
-                    .artist(aicApiArtwork.artist())
-                    .date(aicApiArtwork.dateDisplay())
-                    .displayMedium(aicApiArtwork.displayMedium())
-                    .imageUrl(aicImageUrlCreator(aicApiArtwork.primaryImageId()))
-                    .altImageUrls( // Map each altImageId in the List to the URL
-                            aicApiArtwork.altImageIds().stream()
-                                    .map(this::aicImageUrlCreator)
-                                    .toList())
-                    .description(aicApiArtwork.description())
-                    .origin(aicApiArtwork.origin())
-                    .department(aicApiArtwork.department())
-                    .sourceMuseum("Art Institute of Chicago")
-                    .build();
+            return new ArtworkDTO(
+                    aicApiArtwork.id().toString(),
+                    aicApiArtwork.title(),
+                    aicApiArtwork.artist(),
+                    aicApiArtwork.dateDisplay(),
+                    aicApiArtwork.displayMedium(),
+                    aicImageUrlCreator(aicApiArtwork.primaryImageId()),
+                    aicApiArtwork.altImageIds().stream()
+                            .map(this::aicImageUrlCreator)
+                            .toList(),
+                    aicApiArtwork.description(),
+                    aicApiArtwork.origin(),
+                    aicApiArtwork.department(),
+                    "Art Institute of Chicago"
+            );
         }
     }
 
@@ -40,36 +39,27 @@ public interface DTOMapper {
         if (cmaApiArtwork == null) {
             throw new ItemNotFoundException("Null response from Cleveland Museum of Art API");
         } else {
-            return ArtworkDTO
-                    .builder()
-                    .id(cmaApiArtwork.id().toString())
-                    .title(cmaApiArtwork.title())
-                    .artist(
-                            cmaApiArtwork.creators() != null && !cmaApiArtwork.creators().isEmpty()
-                                    ? cmaApiArtwork.creators().getFirst().description()
-                                    : null
-                    )
-                    .date(cmaApiArtwork.creationDate())
-                    .displayMedium(cmaApiArtwork.technique())
-                    .imageUrl(
-                            cmaApiArtwork.images().web() != null
-                                    ? cmaApiArtwork.images().web().url()
-                                    : null
-                    )
-                    .altImageUrls(
-                            cmaApiArtwork.alternateImages().stream()
-                                    .map(cmaApiAlternateImages -> cmaApiAlternateImages.web().url())
-                                    .toList()
-                    )
-                    .description(cmaApiArtwork.description())
-                    .origin(
-                            cmaApiArtwork.culture() != null && !cmaApiArtwork.culture().isEmpty()
-                                    ? cmaApiArtwork.culture().getFirst()
-                                    : null
-                    )
-                    .department(cmaApiArtwork.department())
-                    .sourceMuseum("Cleveland Museum of Art")
-                    .build();
+            return new ArtworkDTO(
+                    cmaApiArtwork.id().toString(),
+                    cmaApiArtwork.title(),
+                    cmaApiArtwork.creators() != null && !cmaApiArtwork.creators().isEmpty()
+                            ? cmaApiArtwork.creators().getFirst().description()
+                            : null,
+                    cmaApiArtwork.creationDate(),
+                    cmaApiArtwork.technique(),
+                    cmaApiArtwork.images().web() != null
+                            ? cmaApiArtwork.images().web().url()
+                            : null,
+                    cmaApiArtwork.alternateImages().stream()
+                            .map(cmaApiAlternateImages -> cmaApiAlternateImages.web().url())
+                            .toList(),
+                    cmaApiArtwork.description(),
+                    cmaApiArtwork.culture() != null && !cmaApiArtwork.culture().isEmpty()
+                            ? cmaApiArtwork.culture().getFirst()
+                            : null,
+                    cmaApiArtwork.department(),
+                    "Cleveland Museum of Art"
+            );
         }
     }
 
@@ -91,18 +81,17 @@ public interface DTOMapper {
         } else if (aicApiSearchResult.data() == null) {
             throw new ItemNotFoundException("Null data response from Art Institute of Chicago API");
         } else {
-            return PaginatedArtworkResultsDTO.builder()
-                    .data(
-                            aicApiSearchResult.data().stream()
-                                    .map(this::aicSearchArtworkResultsResponseMapper)
-                                    .toList())
-                    .totalItems(aicApiSearchResult.pagination().total())
-                    .pageSize(aicApiSearchResult.pagination().limit())
-                    .totalPages(aicApiSearchResult.pagination().totalPages())
-                    .currentPage(aicApiSearchResult.pagination().currentPage())
-                    .hasNext(aicApiSearchResult.pagination().checkHasNext())
-                    .hasPrevious(aicApiSearchResult.pagination().checkHasPrevious())
-                    .build();
+            return new PaginatedArtworkResultsDTO(
+                    aicApiSearchResult.pagination().total(),
+                    aicApiSearchResult.pagination().limit(),
+                    aicApiSearchResult.pagination().totalPages(),
+                    aicApiSearchResult.pagination().currentPage(),
+                    aicApiSearchResult.pagination().checkHasNext(),
+                    aicApiSearchResult.pagination().checkHasPrevious(),
+                    aicApiSearchResult.data().stream()
+                            .map(this::aicSearchArtworkResultsResponseMapper)
+                            .toList()
+            );
         }
     }
 
@@ -114,19 +103,17 @@ public interface DTOMapper {
         } else if (result.data() == null) {
             throw new ItemNotFoundException("Null data response from Cleveland Museum of Art");
         } else {
-            return PaginatedArtworkResultsDTO.builder()
-                    .data(
-                            result.data().stream()
-                                    .map(this::cmaSearchArtworkResultsResponseMapper)
-                                    .toList()
-                    )
-                    .totalItems(result.info().total())
-                    .pageSize(result.info().parameters().limit())
-                    .totalPages(result.info().parameters().calculateTotalPages(result.info().total()))
-                    .currentPage(result.info().parameters().calculateCurrentPage())
-                    .hasNext(result.info().checkHasNext())
-                    .hasPrevious(result.info().checkHasPrevious())
-                    .build();
+            return new PaginatedArtworkResultsDTO(
+                    result.info().total(),
+                    result.info().parameters().limit(),
+                    result.info().parameters().calculateTotalPages(result.info().total()),
+                    result.info().parameters().calculateCurrentPage(),
+                    result.info().checkHasNext(),
+                    result.info().checkHasPrevious(),
+                    result.data().stream()
+                            .map(this::cmaSearchArtworkResultsResponseMapper)
+                            .toList()
+            );
         }
     }
 
@@ -134,15 +121,14 @@ public interface DTOMapper {
         if (aicArtworkSearchResult == null) {
             throw new ItemNotFoundException("Null response from Art Institute of Chicago API");
         } else {
-            return ArtworkResultsDTO
-                    .builder()
-                    .id(aicArtworkSearchResult.id().toString())
-                    .title(aicArtworkSearchResult.title())
-                    .artistTitle(aicArtworkSearchResult.artistTitle())
-                    .date(aicArtworkSearchResult.dateDisplay())
-                    .imageURL(aicImageUrlCreator(aicArtworkSearchResult.primaryImageId()))
-                    .source("aic")
-                    .build();
+            return new ArtworkResultsDTO(
+                    aicArtworkSearchResult.id().toString(),
+                    aicArtworkSearchResult.title(),
+                    aicArtworkSearchResult.artistTitle(),
+                    aicArtworkSearchResult.dateDisplay(),
+                    aicImageUrlCreator(aicArtworkSearchResult.primaryImageId()),
+                    "aic"
+            );
         }
     }
 
@@ -150,23 +136,18 @@ public interface DTOMapper {
         if (artworkResult == null) {
             throw new ItemNotFoundException("Null response from Cleveland Museum of Art");
         } else {
-            return ArtworkResultsDTO
-                    .builder()
-                    .id(artworkResult.id().toString())
-                    .title(artworkResult.title())
-                    .artistTitle(
-                            artworkResult.creators() != null && !artworkResult.creators().isEmpty()
-                                    ? artworkResult.creators().getFirst().description()
-                                    : null
-                    )
-                    .date(artworkResult.creationDate())
-                    .imageURL(
-                            artworkResult.images().web() != null
-                                    ? artworkResult.images().web().url()
-                                    : null
-                    )
-                    .source("cma")
-                    .build();
+            return new ArtworkResultsDTO(
+                    artworkResult.id().toString(),
+                    artworkResult.title(),
+                    artworkResult.creators() != null && !artworkResult.creators().isEmpty()
+                            ? artworkResult.creators().getFirst().description()
+                            : null,
+                    artworkResult.creationDate(),
+                    artworkResult.images().web() != null
+                            ? artworkResult.images().web().url()
+                            : null,
+                    "cma"
+            );
         }
     }
 
@@ -174,13 +155,13 @@ public interface DTOMapper {
         if (exhibition == null) {
             throw new ItemNotFoundException("Exhibition Item could not be found");
         } else {
-            return ExhibitionDTO.builder()
-                    .id(exhibition.getId())
-                    .title(exhibition.getTitle())
-                    .itemCount(exhibition.getExhibitionItems().size())
-                    .createdAt(exhibition.getCreatedAt())
-                    .updatedAt(exhibition.getUpdatedAt())
-                    .build();
+            return new ExhibitionDTO(
+                    exhibition.getId(),
+                    exhibition.getTitle(),
+                    exhibition.getExhibitionItems().size(),
+                    exhibition.getCreatedAt(),
+                    exhibition.getUpdatedAt()
+            );
         }
     }
 
@@ -188,16 +169,14 @@ public interface DTOMapper {
         if (exhibition == null) {
             throw new ItemNotFoundException("Exhibition Item could not be found");
         } else {
-            return ExhibitionDetailDTO.builder()
-                    .id(exhibition.getId())
-                    .title(exhibition.getTitle())
-                    .description(exhibition.getDescription())
-                    .createdAt(exhibition.getCreatedAt())
-                    .updatedAt(exhibition.getUpdatedAt())
-                    .exhibitionItems(
-                            exhibition.getExhibitionItems().stream().map(this::createExhibitionItemDTO).toList()
-                    )
-                    .build();
+            return new ExhibitionDetailDTO(
+                    exhibition.getId(),
+                    exhibition.getTitle(),
+                    exhibition.getDescription(),
+                    exhibition.getCreatedAt(),
+                    exhibition.getUpdatedAt(),
+                    exhibition.getExhibitionItems().stream().map(this::createExhibitionItemDTO).toList()
+            );
         }
     }
 
@@ -205,14 +184,14 @@ public interface DTOMapper {
         if (exhibitionItem == null) {
             throw new ItemNotFoundException("Exhibition Item could not be found");
         } else {
-            return ExhibitionItemDTO.builder()
-                    .id(exhibitionItem.getId())
-                    .apiId(exhibitionItem.getApiId())
-                    .title(exhibitionItem.getTitle())
-                    .date(exhibitionItem.getDate())
-                    .imageUrl(exhibitionItem.getImageUrl())
-                    .source(exhibitionItem.getSource())
-                    .build();
+            return new ExhibitionItemDTO(
+                    exhibitionItem.getId(),
+                    exhibitionItem.getApiId(),
+                    exhibitionItem.getTitle(),
+                    exhibitionItem.getDate(),
+                    exhibitionItem.getImageUrl(),
+                    exhibitionItem.getSource()
+            );
         }
     }
 }
