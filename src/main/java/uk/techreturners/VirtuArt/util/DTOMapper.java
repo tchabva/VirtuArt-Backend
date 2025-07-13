@@ -188,6 +188,7 @@ public interface DTOMapper {
                     exhibitionItem.getId(),
                     exhibitionItem.getApiId(),
                     exhibitionItem.getTitle(),
+                    exhibitionItem.getArtistTitle(),
                     exhibitionItem.getDate(),
                     exhibitionItem.getImageUrl(),
                     exhibitionItem.getSource()
