@@ -6,6 +6,10 @@
 
 Backend for the VirtuArt Exhibit Curator. This project provides a RESTful API for managing virtual art exhibitions, users, and artwork data from multiple museum APIs.
 
+This project is currently aggregating collections from the following museum APIs:
+- [The Art Institute of Chicago](https://www.artic.edu/)
+- [The Cleveland Museum of Art](https://www.clevelandart.org/home)
+
 This backend serves the [VirtuArt Frontend](https://github.com/tchabva/virtuart-frontend), an Android application for curating virtual art exhibits.
 
 ## Features
@@ -113,4 +117,4 @@ src/main/java/uk/techreturners/VirtuArt
 ```
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://opensource.org/licenses/MIT) file for details.
