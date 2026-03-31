@@ -1,7 +1,7 @@
 # VirtuArt-Backend
 
 [![Java](https://img.shields.io/badge/Java-21-blue.svg)](https://www.java.com)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.x-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Backend for the VirtuArt Exhibit Curator. This project provides a RESTful API for managing virtual art exhibitions, users, and artwork data from multiple museum APIs.
@@ -20,7 +20,7 @@ This backend serves the [VirtuArt Frontend](https://github.com/tchabva/virtuart-
 
 ## Technologies Used
 - Java 21
-- Spring Boot 3
+- Spring Boot 4
 - Spring Data JPA
 - Spring Security & OAuth2
 - Lombok
