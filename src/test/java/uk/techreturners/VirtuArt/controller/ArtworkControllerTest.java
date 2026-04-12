@@ -3,12 +3,12 @@ package uk.techreturners.VirtuArt.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
 import uk.techreturners.VirtuArt.model.dto.ArtworkResultsDTO;
 import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
 import uk.techreturners.VirtuArt.service.ArtworkService;
@@ -19,8 +19,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@DataJpaTest
-@ActiveProfiles("test")
+@ExtendWith(MockitoExtension.class)
 class ArtworkControllerTest {
 
     @Mock
