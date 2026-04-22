@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
+import uk.techreturners.VirtuArt.exception.IllegalSourceException;
 import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiPagination;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchArtwork;
@@ -20,6 +21,7 @@ import uk.techreturners.VirtuArt.repository.AicApiDAO;
 import java.util.Collections;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -60,6 +62,22 @@ class ArtworkServiceImplTest {
                 mockPagination,
                 List.of(mockApiSearchArtwork)
         );
+    }
+
+    @Test
+    @DisplayName("Throws IllegalSourceException when provided invalid source")
+    void invalidSourceThrowsException(){
+        // Arrange
+        String limit = "10";
+        String page = "1";
+        String source = "abc";
+
+        // Act & Assert
+        assertThatThrownBy( () -> artworkService.getArtworks(source,limit, page))
+                .isInstanceOf(IllegalSourceException.class)
+                .hasMessageContaining("Invalid data source: " + source);
+
+        verify(mockAicApiDAO, never()).getArtworks(any(), any());
     }
 
     @Nested
