@@ -15,8 +15,14 @@ import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiPagination;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchArtwork;
 import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
+import uk.techreturners.VirtuArt.model.cmaapi.CmaApiCreators;
+import uk.techreturners.VirtuArt.model.cmaapi.CmaApiImages;
+import uk.techreturners.VirtuArt.model.cmaapi.CmaApiPagination;
+import uk.techreturners.VirtuArt.model.cmaapi.CmaApiSearchResult;
+import uk.techreturners.VirtuArt.model.cmaapi.CmaApiSearchResult.CmaApiSearchArtwork;
 import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
 import uk.techreturners.VirtuArt.repository.AicApiDAO;
+import uk.techreturners.VirtuArt.repository.CmaApiDAO;
 
 import java.util.Collections;
 import java.util.List;
@@ -32,6 +38,9 @@ class ArtworkServiceImplTest {
     @Mock
     private AicApiDAO mockAicApiDAO;
 
+    @Mock
+    private CmaApiDAO mockCmaApiDAO;
+
     @Spy // For verifying the method calls for the DTOMapper Interface
     @InjectMocks
     private ArtworkServiceImpl artworkService;
@@ -40,9 +49,12 @@ class ArtworkServiceImplTest {
     private AicApiSearchResult mockAicApiSearchResult;
     private AicApiSearchArtwork mockAicApiSearchArtwork;
 
+    private CmaApiSearchResult mockCmaApiSearchResult;
+    private CmaApiSearchArtwork mockCmaApiSearchArtwork;
+
     @BeforeEach
     void setUp() {
-        // Arrange: Common setup for mock DAO responses
+        // AIC Mock Data
         mockAicApiSearchArtwork = new AicApiSearchArtwork(
                 123,
                 "Mona Lisa",
@@ -51,7 +63,7 @@ class ArtworkServiceImplTest {
                 "https://www.image.com/imageId"
         );
 
-        AicApiPagination mockPagination = new AicApiPagination(
+        AicApiPagination mockAicPagination = new AicApiPagination(
                 100,
                 10,
                 10,
@@ -59,8 +71,27 @@ class ArtworkServiceImplTest {
         );
 
         mockAicApiSearchResult = new AicApiSearchResult(
-                mockPagination,
+                mockAicPagination,
                 List.of(mockAicApiSearchArtwork)
+        );
+
+        // CMA Mock Data
+        mockCmaApiSearchArtwork = new CmaApiSearchArtwork(
+                123L,
+                "Starry Night",
+                "1889",
+                new CmaApiImages(new CmaApiImages.CmaApiWeb("https://www.image.com/imageId")),
+                List.of(new CmaApiCreators("https://www.image.com/imageId"))
+        );
+
+        CmaApiPagination mockCmaPagination = new CmaApiPagination(
+                1000,
+                new CmaApiPagination.CmaApiPaginationParameters(20, 100)
+        );
+
+        mockCmaApiSearchResult = new CmaApiSearchResult(
+                mockCmaPagination,
+                List.of(mockCmaApiSearchArtwork)
         );
     }
 
