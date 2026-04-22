@@ -94,12 +94,7 @@ public class ExhibitionServiceImpl implements ExhibitionService, DTOMapper {
         if (exhibition.getExhibitionItems().stream().anyMatch(
                 item -> item.getId().equals(exhibitionItem.getId()))
         ) {
-            throw new ExhibitionItemExistsAlreadyException(
-                    String.format(
-                            "The ExhibitionItem name: %s and apiId: %s already in this Exhibition",
-                            exhibition.getTitle(), exhibition.getId()
-                    )
-            );
+            throw new ExhibitionItemExistsAlreadyException(exhibition.getTitle(), exhibition.getId());
         } else {
             exhibition.getExhibitionItems().add(exhibitionItem);
             exhibition.setUpdatedAt(LocalDateTime.now());
