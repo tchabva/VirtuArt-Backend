@@ -54,7 +54,7 @@ public class ArtworkServiceImpl implements ArtworkService, DTOMapper, SearchRequ
             case "cma" -> {
                 return createArtworkDtoWithCmaApi(cmaApiDAO.getArtworkById(artworkId).data());
             }
-            case null, default -> throw new IllegalArgumentException("Invalid data source: " + source);
+            case null, default -> throw new IllegalSourceException(source);
         }
     }
 }
