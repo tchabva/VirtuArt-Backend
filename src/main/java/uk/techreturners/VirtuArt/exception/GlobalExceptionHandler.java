@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ExhibitionItemExistsAlreadyException.class)
-    public ResponseEntity<Object> handleItemExistsAlreadyException(ExhibitionItemExistsAlreadyException e) {
+    public ResponseEntity<Object> handleExhibitionItemExistsAlreadyException(ExhibitionItemExistsAlreadyException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
 
