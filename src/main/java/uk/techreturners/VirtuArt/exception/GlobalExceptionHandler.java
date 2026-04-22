@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ExhibitionItemExistsAlreadyException.class)
-    public ResponseEntity<Object> handleItemExistsAlreadyException(ExhibitionItemExistsAlreadyException e) {
+    public ResponseEntity<Object> handleExhibitionItemExistsAlreadyException(ExhibitionItemExistsAlreadyException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
 
@@ -44,5 +44,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Object> handleUserAccessDeniedException(AccessDeniedException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(IllegalSourceException.class)
+    public ResponseEntity<Object> handleIllegalSourceException(IllegalSourceException e){
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
     public User getCurrentUser(Jwt jwt) {
         User user = findOrCreateUser(jwt);
         if (user == null) {
-            throw new UserNotFoundException("Could not obtain a User using the provided token");
+            throw new UserNotFoundException();
         }
         return user;
     }

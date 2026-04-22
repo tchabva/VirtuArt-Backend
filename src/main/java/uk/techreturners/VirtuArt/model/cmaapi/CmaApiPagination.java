@@ -19,7 +19,9 @@ public record CmaApiPagination(
             Integer skip,
             Integer limit
     ) {
-        // Note: to calculate the skip = currentPage-1 (from Pager or Pagination) * limit
+        /**
+         *  To calculate the skip = currentPage-1 (from Pager or Pagination) * limit
+         */
 
         public Integer calculateCurrentPage() {
             return (skip / limit) + 1;

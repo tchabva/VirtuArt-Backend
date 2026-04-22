@@ -2,6 +2,7 @@ package uk.techreturners.VirtuArt.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.techreturners.VirtuArt.exception.IllegalSourceException;
 import uk.techreturners.VirtuArt.model.dto.ArtworkDTO;
 import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
 import uk.techreturners.VirtuArt.repository.AicApiDAO;
@@ -27,8 +28,7 @@ public class ArtworkServiceImpl implements ArtworkService, DTOMapper, SearchRequ
             case "cma" -> {
                 return getCmaArtworks(limit, page);
             }
-            // TODO: create an illegal source exception
-            case null, default -> throw new IllegalArgumentException("Invalid data source: " + source);
+            case null, default -> throw new IllegalSourceException(source);
         }
     }
 
@@ -54,7 +54,7 @@ public class ArtworkServiceImpl implements ArtworkService, DTOMapper, SearchRequ
             case "cma" -> {
                 return createArtworkDtoWithCmaApi(cmaApiDAO.getArtworkById(artworkId).data());
             }
-            case null, default -> throw new IllegalArgumentException("Invalid data source: " + source);
+            case null, default -> throw new IllegalSourceException(source);
         }
     }
 }
