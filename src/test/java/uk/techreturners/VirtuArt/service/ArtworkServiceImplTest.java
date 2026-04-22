@@ -63,21 +63,30 @@ class ArtworkServiceImplTest {
                 List.of(mockApiSearchArtwork)
         );
     }
+    /**
+     * Source Routing
+     */
 
-    @Test
-    @DisplayName("Throws IllegalSourceException when provided invalid source")
-    void invalidSourceThrowsException(){
-        // Arrange
-        String limit = "10";
-        String page = "1";
-        String source = "abc";
+    @Nested
+    @DisplayName("getArtworks source routing")
+    class GetArtworksRouting{
 
-        // Act & Assert
-        assertThatThrownBy( () -> artworkService.getArtworks(source,limit, page))
-                .isInstanceOf(IllegalSourceException.class)
-                .hasMessageContaining("Invalid data source: " + source);
+        @Test
+        @DisplayName("Throws IllegalSourceException when provided invalid source")
+        void invalidSourceThrowsException(){
+            // Arrange
+            String limit = "10";
+            String page = "1";
+            String source = "abc";
 
-        verify(mockAicApiDAO, never()).getArtworks(any(), any());
+            // Act & Assert
+            assertThatThrownBy( () -> artworkService.getArtworks(source,limit, page))
+                    .isInstanceOf(IllegalSourceException.class)
+                    .hasMessageContaining("Invalid data source: " + source);
+
+            verify(mockAicApiDAO, never()).getArtworks(any(), any());
+        }
+
     }
 
     @Nested
