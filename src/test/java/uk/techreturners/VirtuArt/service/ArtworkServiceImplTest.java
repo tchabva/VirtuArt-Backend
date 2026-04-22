@@ -64,7 +64,7 @@ class ArtworkServiceImplTest {
         );
     }
     /**
-     * Source Routing
+     * Source Routing via getArtworks()
      */
 
     @Nested
@@ -106,6 +106,24 @@ class ArtworkServiceImplTest {
             verify(artworkService, never()).getCmaArtworks(any(), any());
         }
 
+        @Test
+        @DisplayName("getArtworks with 'cma' source delegates to getCmaArtworks")
+        void testGetArtworksRoutesToCma() {
+            // Arrange
+            String limit = "10";
+            String page = "1";
+            String source = "cma";
+            PaginatedArtworkResultsDTO expectedDTO = mock(PaginatedArtworkResultsDTO.class);
+            doReturn(expectedDTO).when(artworkService).getCmaArtworks(limit, page);
+
+            // Act
+            PaginatedArtworkResultsDTO result = artworkService.getArtworks(source, limit, page);
+
+            // Assert
+            assertSame(expectedDTO, result);
+            verify(artworkService, times(1)).getCmaArtworks(limit, page);
+            verify(artworkService, never()).getAicArtworks(any(), any());
+        }
     }
 
     @Nested
