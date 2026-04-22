@@ -2,6 +2,7 @@ package uk.techreturners.VirtuArt.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -61,116 +62,121 @@ class ArtworkServiceImplTest {
         );
     }
 
-    @Test
-    @DisplayName("getAicArtworks calls DAO and maps response correctly")
-    void testGetAicArtworks() {
-        // Arrange
-        String limit = "10";
-        String page = "1";
-        when(mockAicApiDAO.getArtworks(limit, page)).thenReturn(mockApiSearchResult);
+    @Nested
+    @DisplayName("AIC Artworks")
+    class AicArtworks {
 
-        // Act
-        PaginatedArtworkResultsDTO resultDTO = artworkService.getAicArtworks(limit, page);
+        @Test
+        @DisplayName("getAicArtworks calls DAO and maps response correctly")
+        void testGetAicArtworks() {
+            // Arrange
+            String limit = "10";
+            String page = "1";
+            when(mockAicApiDAO.getArtworks(limit, page)).thenReturn(mockApiSearchResult);
 
-        // Assert
-        assertAll(
-                () -> assertNotNull(resultDTO),
-                () -> assertEquals(mockApiSearchResult.pagination().total(), resultDTO.totalItems()),
-                () -> assertEquals(mockApiSearchResult.pagination().limit(), resultDTO.pageSize()),
-                () -> assertEquals(
-                        mockApiSearchResult.pagination().totalPages(), resultDTO.totalPages()
-                ),
-                () -> assertEquals(
-                        mockApiSearchResult.pagination().currentPage(), resultDTO.currentPage()
-                ),
-                () -> assertNotNull(resultDTO.data()),
-                () -> assertEquals(1, resultDTO.data().size()),
-                () -> assertEquals(
-                        String.valueOf(mockApiSearchArtwork.id()), resultDTO.data().getFirst().id()
-                ),
-                () -> assertEquals(mockApiSearchArtwork.title(), resultDTO.data().getFirst().title()),
-                () -> assertEquals(
-                        mockApiSearchArtwork.artistTitle(), resultDTO.data().getFirst().artistTitle()
-                ),
-                () -> assertEquals(
-                        mockApiSearchArtwork.dateDisplay(), resultDTO.data().getFirst().date()
-                )
-        );
+            // Act
+            PaginatedArtworkResultsDTO resultDTO = artworkService.getAicArtworks(limit, page);
 
-        verify(mockAicApiDAO).getArtworks(limit, page); // Verify DAO method was called
-        // Verify that the DTOMapper's methods were involved.
-        verify(artworkService, times(1))
-                .aicSearchArtworkResultsResponseMapper(any(AicApiSearchArtwork.class));
-        verify(artworkService, times(1))
-                .aicPaginatedResponseMapper(any(AicApiSearchResult.class));
-    }
+            // Assert
+            assertAll(
+                    () -> assertNotNull(resultDTO),
+                    () -> assertEquals(mockApiSearchResult.pagination().total(), resultDTO.totalItems()),
+                    () -> assertEquals(mockApiSearchResult.pagination().limit(), resultDTO.pageSize()),
+                    () -> assertEquals(
+                            mockApiSearchResult.pagination().totalPages(), resultDTO.totalPages()
+                    ),
+                    () -> assertEquals(
+                            mockApiSearchResult.pagination().currentPage(), resultDTO.currentPage()
+                    ),
+                    () -> assertNotNull(resultDTO.data()),
+                    () -> assertEquals(1, resultDTO.data().size()),
+                    () -> assertEquals(
+                            String.valueOf(mockApiSearchArtwork.id()), resultDTO.data().getFirst().id()
+                    ),
+                    () -> assertEquals(mockApiSearchArtwork.title(), resultDTO.data().getFirst().title()),
+                    () -> assertEquals(
+                            mockApiSearchArtwork.artistTitle(), resultDTO.data().getFirst().artistTitle()
+                    ),
+                    () -> assertEquals(
+                            mockApiSearchArtwork.dateDisplay(), resultDTO.data().getFirst().date()
+                    )
+            );
 
-    @Test
-    @DisplayName("getAicArtworks handles null response from DAO")
-    void testGetAicArtworksHandlesNullDaoResponse() {
-        // Arrange
-        String limit = "10";
-        String page = "1";
-        when(mockAicApiDAO.getArtworks(limit, page)).thenReturn(null);
+            verify(mockAicApiDAO).getArtworks(limit, page); // Verify DAO method was called
+            // Verify that the DTOMapper's methods were involved.
+            verify(artworkService, times(1))
+                    .aicSearchArtworkResultsResponseMapper(any(AicApiSearchArtwork.class));
+            verify(artworkService, times(1))
+                    .aicPaginatedResponseMapper(any(AicApiSearchResult.class));
+        }
 
-        // Act & Assert
-        assertThrows(ItemNotFoundException.class, () -> artworkService.getAicArtworks(limit, page));
+        @Test
+        @DisplayName("getAicArtworks handles null response from DAO")
+        void testGetAicArtworksHandlesNullDaoResponse() {
+            // Arrange
+            String limit = "10";
+            String page = "1";
+            when(mockAicApiDAO.getArtworks(limit, page)).thenReturn(null);
 
-        verify(mockAicApiDAO).getArtworks(limit, page);
-    }
+            // Act & Assert
+            assertThrows(ItemNotFoundException.class, () -> artworkService.getAicArtworks(limit, page));
 
-    @Test
-    @DisplayName("getAicArtworks handles empty data list from DAO")
-    void testGetAicArtworksHandlesEmptyDataListFromDao() {
-        // Arrange
-        String limit = "10";
-        String page = "1";
-        AicApiPagination mockPagination = new AicApiPagination(
-                0, 10, 0, 1
-        );
-        AicApiSearchResult emptyDataApiResult = new AicApiSearchResult(
-                mockPagination,
-                Collections.emptyList()
-        );
-        when(mockAicApiDAO.getArtworks(limit, page)).thenReturn(emptyDataApiResult);
+            verify(mockAicApiDAO).getArtworks(limit, page);
+        }
 
-        // Act
-        PaginatedArtworkResultsDTO resultDTO = artworkService.getAicArtworks(limit, page);
+        @Test
+        @DisplayName("getAicArtworks handles empty data list from DAO")
+        void testGetAicArtworksHandlesEmptyDataListFromDao() {
+            // Arrange
+            String limit = "10";
+            String page = "1";
+            AicApiPagination mockPagination = new AicApiPagination(
+                    0, 10, 0, 1
+            );
+            AicApiSearchResult emptyDataApiResult = new AicApiSearchResult(
+                    mockPagination,
+                    Collections.emptyList()
+            );
+            when(mockAicApiDAO.getArtworks(limit, page)).thenReturn(emptyDataApiResult);
 
-        // Assert
-        assertAll(
-                () -> assertNotNull(resultDTO),
-                () -> assertNotNull(resultDTO.data()),
-                () -> assertEquals(0, resultDTO.data().size()),
-                () -> assertEquals(0, resultDTO.totalItems()),
-                () -> assertEquals(0, resultDTO.totalPages())
-        );
+            // Act
+            PaginatedArtworkResultsDTO resultDTO = artworkService.getAicArtworks(limit, page);
 
-        verify(mockAicApiDAO).getArtworks(limit, page);
-        verify(artworkService, times(0)) // Should not be called if the response is empty
-                .aicSearchArtworkResultsResponseMapper(any(AicApiSearchArtwork.class));
-        verify(artworkService, times(1))
-                .aicPaginatedResponseMapper(any(AicApiSearchResult.class));
-    }
+            // Assert
+            assertAll(
+                    () -> assertNotNull(resultDTO),
+                    () -> assertNotNull(resultDTO.data()),
+                    () -> assertEquals(0, resultDTO.data().size()),
+                    () -> assertEquals(0, resultDTO.totalItems()),
+                    () -> assertEquals(0, resultDTO.totalPages())
+            );
 
-    @Test
-    @DisplayName("getAicArtworks handles null data from DAO")
-    void testGetAicArtworksHandlesNullDataFromDao() {
-        // Arrange
-        String limit = "10";
-        String page = "1";
-        AicApiPagination mockPagination = new AicApiPagination(
-                100, 10, 10, 1
-        );
-        AicApiSearchResult nullDataResult = new AicApiSearchResult(
-                mockPagination,
-                null
-        );
-        when(mockAicApiDAO.getArtworks(limit, page)).thenReturn(nullDataResult);
+            verify(mockAicApiDAO).getArtworks(limit, page);
+            verify(artworkService, times(0)) // Should not be called if the response is empty
+                    .aicSearchArtworkResultsResponseMapper(any(AicApiSearchArtwork.class));
+            verify(artworkService, times(1))
+                    .aicPaginatedResponseMapper(any(AicApiSearchResult.class));
+        }
 
-        // Act & Assert
-        assertThrows(ItemNotFoundException.class, () -> artworkService.getAicArtworks(limit, page));
+        @Test
+        @DisplayName("getAicArtworks handles null data from DAO")
+        void testGetAicArtworksHandlesNullDataFromDao() {
+            // Arrange
+            String limit = "10";
+            String page = "1";
+            AicApiPagination mockPagination = new AicApiPagination(
+                    100, 10, 10, 1
+            );
+            AicApiSearchResult nullDataResult = new AicApiSearchResult(
+                    mockPagination,
+                    null
+            );
+            when(mockAicApiDAO.getArtworks(limit, page)).thenReturn(nullDataResult);
 
-        verify(mockAicApiDAO).getArtworks(limit, page);
+            // Act & Assert
+            assertThrows(ItemNotFoundException.class, () -> artworkService.getAicArtworks(limit, page));
+
+            verify(mockAicApiDAO).getArtworks(limit, page);
+        }
     }
 }
