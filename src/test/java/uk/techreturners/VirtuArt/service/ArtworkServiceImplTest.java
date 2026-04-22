@@ -302,5 +302,47 @@ class ArtworkServiceImplTest {
     @DisplayName("CMA Artworks")
     class CmaArtworks {
 
+        @Test
+        @DisplayName("getCmaArtworks calls DAO & maps response correctly")
+        void testGetCmaArtworks() {
+            // Arrange
+            String limit = "10";
+            String page = "1";
+            when(mockCmaApiDAO.getArtworks(Integer.parseInt(limit), Integer.parseInt(page)))
+                    .thenReturn(mockCmaApiSearchResult);
+
+            // Act
+            PaginatedArtworkResultsDTO resultDTO = artworkService.getCmaArtworks(limit, page);
+
+            // Assert
+            assertAll(
+                    () -> assertNotNull(resultDTO),
+                    () -> assertEquals(mockCmaApiSearchResult.info().total(), resultDTO.totalItems()),
+                    () -> assertEquals(mockCmaApiSearchResult.info().parameters().limit(), resultDTO.pageSize()),
+                    () -> assertEquals(
+                            mockCmaApiSearchResult.info().parameters().calculateTotalPages(
+                                    mockCmaApiSearchResult.info().total()
+                            ),
+                            resultDTO.totalPages()
+                    ),
+                    () -> assertEquals(
+                            mockCmaApiSearchResult.info().parameters().calculateCurrentPage(),
+                            resultDTO.currentPage()
+                    ),
+                    () -> assertNotNull(resultDTO.data()),
+                    () -> assertEquals(1, resultDTO.data().size()),
+                    () -> assertEquals(
+                            String.valueOf(mockCmaApiSearchArtwork.id()), resultDTO.data().getFirst().id()
+                    ),
+                    () -> assertEquals(mockCmaApiSearchArtwork.title(), resultDTO.data().getFirst().title()),
+                    () -> assertEquals(mockCmaApiSearchArtwork.creationDate(), resultDTO.data().getFirst().date())
+            );
+
+            verify(mockCmaApiDAO).getArtworks(Integer.parseInt(limit), Integer.parseInt(page));
+            verify(artworkService, times(1))
+                    .cmaSearchArtworkResultsResponseMapper(any(CmaApiSearchArtwork.class));
+            verify(artworkService, times(1))
+                    .cmaPaginatedResponseMapper(any(CmaApiSearchResult.class));
+        }
     }
 }
