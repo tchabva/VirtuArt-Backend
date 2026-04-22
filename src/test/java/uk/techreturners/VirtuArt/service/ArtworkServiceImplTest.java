@@ -37,13 +37,13 @@ class ArtworkServiceImplTest {
     private ArtworkServiceImpl artworkService;
 
 
-    private AicApiSearchResult mockApiSearchResult;
-    private AicApiSearchArtwork mockApiSearchArtwork;
+    private AicApiSearchResult mockAicApiSearchResult;
+    private AicApiSearchArtwork mockAicApiSearchArtwork;
 
     @BeforeEach
     void setUp() {
         // Arrange: Common setup for mock DAO responses
-        mockApiSearchArtwork = new AicApiSearchArtwork(
+        mockAicApiSearchArtwork = new AicApiSearchArtwork(
                 123,
                 "Mona Lisa",
                 "1503-1506",
@@ -58,9 +58,9 @@ class ArtworkServiceImplTest {
                 1
         );
 
-        mockApiSearchResult = new AicApiSearchResult(
+        mockAicApiSearchResult = new AicApiSearchResult(
                 mockPagination,
-                List.of(mockApiSearchArtwork)
+                List.of(mockAicApiSearchArtwork)
         );
     }
     /**
@@ -126,6 +126,10 @@ class ArtworkServiceImplTest {
         }
     }
 
+    /**
+     * AIC Artworks
+     */
+
     @Nested
     @DisplayName("AIC Artworks")
     class AicArtworks {
@@ -136,7 +140,7 @@ class ArtworkServiceImplTest {
             // Arrange
             String limit = "10";
             String page = "1";
-            when(mockAicApiDAO.getArtworks(limit, page)).thenReturn(mockApiSearchResult);
+            when(mockAicApiDAO.getArtworks(limit, page)).thenReturn(mockAicApiSearchResult);
 
             // Act
             PaginatedArtworkResultsDTO resultDTO = artworkService.getAicArtworks(limit, page);
@@ -144,25 +148,25 @@ class ArtworkServiceImplTest {
             // Assert
             assertAll(
                     () -> assertNotNull(resultDTO),
-                    () -> assertEquals(mockApiSearchResult.pagination().total(), resultDTO.totalItems()),
-                    () -> assertEquals(mockApiSearchResult.pagination().limit(), resultDTO.pageSize()),
+                    () -> assertEquals(mockAicApiSearchResult.pagination().total(), resultDTO.totalItems()),
+                    () -> assertEquals(mockAicApiSearchResult.pagination().limit(), resultDTO.pageSize()),
                     () -> assertEquals(
-                            mockApiSearchResult.pagination().totalPages(), resultDTO.totalPages()
+                            mockAicApiSearchResult.pagination().totalPages(), resultDTO.totalPages()
                     ),
                     () -> assertEquals(
-                            mockApiSearchResult.pagination().currentPage(), resultDTO.currentPage()
+                            mockAicApiSearchResult.pagination().currentPage(), resultDTO.currentPage()
                     ),
                     () -> assertNotNull(resultDTO.data()),
                     () -> assertEquals(1, resultDTO.data().size()),
                     () -> assertEquals(
-                            String.valueOf(mockApiSearchArtwork.id()), resultDTO.data().getFirst().id()
+                            String.valueOf(mockAicApiSearchArtwork.id()), resultDTO.data().getFirst().id()
                     ),
-                    () -> assertEquals(mockApiSearchArtwork.title(), resultDTO.data().getFirst().title()),
+                    () -> assertEquals(mockAicApiSearchArtwork.title(), resultDTO.data().getFirst().title()),
                     () -> assertEquals(
-                            mockApiSearchArtwork.artistTitle(), resultDTO.data().getFirst().artistTitle()
+                            mockAicApiSearchArtwork.artistTitle(), resultDTO.data().getFirst().artistTitle()
                     ),
                     () -> assertEquals(
-                            mockApiSearchArtwork.dateDisplay(), resultDTO.data().getFirst().date()
+                            mockAicApiSearchArtwork.dateDisplay(), resultDTO.data().getFirst().date()
                     )
             );
 
