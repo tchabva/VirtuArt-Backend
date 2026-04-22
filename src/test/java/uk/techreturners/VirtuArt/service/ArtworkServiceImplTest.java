@@ -87,6 +87,25 @@ class ArtworkServiceImplTest {
             verify(mockAicApiDAO, never()).getArtworks(any(), any());
         }
 
+        @Test
+        @DisplayName("getArtworks with 'aic' source delegates to getAicArtworks")
+        void testGetArtworksRoutesToAic() {
+            // Arrange
+            String limit = "10";
+            String page = "1";
+            String source = "aic";
+            PaginatedArtworkResultsDTO expectedDTO = mock(PaginatedArtworkResultsDTO.class);
+            doReturn(expectedDTO).when(artworkService).getAicArtworks(limit, page);
+
+            // Act
+            PaginatedArtworkResultsDTO result = artworkService.getArtworks(source, limit, page);
+
+            // Assert
+            assertSame(expectedDTO, result);
+            verify(artworkService, times(1)).getAicArtworks(limit, page);
+            verify(artworkService, never()).getCmaArtworks(any(), any());
+        }
+
     }
 
     @Nested
