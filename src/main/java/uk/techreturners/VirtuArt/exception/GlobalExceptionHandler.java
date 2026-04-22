@@ -45,4 +45,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleUserAccessDeniedException(AccessDeniedException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
     }
+
+    @ExceptionHandler(IllegalSourceException.class)
+    public ResponseEntity<Object> handleIllegalSourceException(IllegalSourceException e){
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
