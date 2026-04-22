@@ -63,24 +63,25 @@ class ArtworkServiceImplTest {
                 List.of(mockAicApiSearchArtwork)
         );
     }
+
     /**
      * Source Routing via getArtworks()
      */
 
     @Nested
     @DisplayName("getArtworks source routing")
-    class GetArtworksRouting{
+    class GetArtworksRouting {
 
         @Test
         @DisplayName("Throws IllegalSourceException when provided invalid source")
-        void invalidSourceThrowsException(){
+        void invalidSourceThrowsException() {
             // Arrange
             String limit = "10";
             String page = "1";
             String source = "abc";
 
             // Act & Assert
-            assertThatThrownBy( () -> artworkService.getArtworks(source,limit, page))
+            assertThatThrownBy(() -> artworkService.getArtworks(source, limit, page))
                     .isInstanceOf(IllegalSourceException.class)
                     .hasMessageContaining("Invalid data source: " + source);
 
@@ -243,6 +244,21 @@ class ArtworkServiceImplTest {
 
             // Act & Assert
             assertThrows(ItemNotFoundException.class, () -> artworkService.getAicArtworks(limit, page));
+
+            verify(mockAicApiDAO).getArtworks(limit, page);
+        }
+
+        @Test
+        @DisplayName("getAicArtworks handles null pagination from DAO")
+        void testGetAicArtworksHandlesNullPaginationFromDao() {
+            // Arrange
+            String limit = "10";
+            String page = "1";
+            AicApiSearchResult nullPaginationResult = new AicApiSearchResult(null, List.of(mockAicApiSearchArtwork));
+            when(mockAicApiDAO.getArtworks(limit, page)).thenReturn(nullPaginationResult);
+            // Act & Assert
+            assertThatThrownBy(() -> artworkService.getAicArtworks(limit, page))
+                    .isInstanceOf(ItemNotFoundException.class);
 
             verify(mockAicApiDAO).getArtworks(limit, page);
         }
