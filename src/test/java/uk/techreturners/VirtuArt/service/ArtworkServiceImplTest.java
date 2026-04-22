@@ -344,5 +344,20 @@ class ArtworkServiceImplTest {
             verify(artworkService, times(1))
                     .cmaPaginatedResponseMapper(any(CmaApiSearchResult.class));
         }
+
+        @Test
+        @DisplayName("getCmaArtworks handles null response from DAO")
+        void getCmaArtworksHandlesNullDaoResponse() {
+            // Arrange
+            String limit = "10";
+            String page = "1";
+            when(mockCmaApiDAO.getArtworks(Integer.parseInt(limit), Integer.parseInt(page)))
+                    .thenReturn(null);
+
+            // Act & Assert
+            assertThrows(ItemNotFoundException.class,() -> artworkService.getCmaArtworks(limit, page));
+
+            verify(mockCmaApiDAO).getArtworks(Integer.parseInt(limit), Integer.parseInt(page));
+        }
     }
 }
