@@ -294,4 +294,13 @@ class ArtworkServiceImplTest {
             verify(mockAicApiDAO).getArtworks(limit, page);
         }
     }
+
+    /**
+     * CMA Artworks
+     */
+    @Nested
+    @DisplayName("CMA Artworks")
+    class CmaArtworks {
+
+    }
 }
