@@ -371,7 +371,7 @@ class ArtworkServiceImplTest {
             CmaApiSearchResult nullInfoResult = mock(CmaApiSearchResult.class);
             when(nullInfoResult.info()).thenReturn(null);
             when(mockCmaApiDAO.getArtworks(intLimit, intPage))
-                    .thenReturn(mockCmaApiSearchResult);
+                    .thenReturn(nullInfoResult);
 
             // Act & Assert
             assertThrows(ItemNotFoundException.class, () -> artworkService.getCmaArtworks(limit, page));
