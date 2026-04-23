@@ -355,7 +355,7 @@ class ArtworkServiceImplTest {
                     .thenReturn(null);
 
             // Act & Assert
-            assertThrows(ItemNotFoundException.class,() -> artworkService.getCmaArtworks(limit, page));
+            assertThrows(ItemNotFoundException.class, () -> artworkService.getCmaArtworks(limit, page));
 
             verify(mockCmaApiDAO).getArtworks(Integer.parseInt(limit), Integer.parseInt(page));
         }
@@ -368,13 +368,13 @@ class ArtworkServiceImplTest {
             int intLimit = Integer.parseInt(limit);
             String page = "1";
             int intPage = Integer.parseInt(page);
-            mockCmaApiSearchResult = null;
+            CmaApiSearchResult nullInfoResult = mock(CmaApiSearchResult.class);
+            when(nullInfoResult.info()).thenReturn(null);
             when(mockCmaApiDAO.getArtworks(intLimit, intPage))
                     .thenReturn(mockCmaApiSearchResult);
 
             // Act & Assert
-            assertThatThrownBy(() -> artworkService.getCmaArtworks(limit, page))
-                    .isInstanceOf(ItemNotFoundException.class);
+            assertThrows(ItemNotFoundException.class, () -> artworkService.getCmaArtworks(limit, page));
 
             verify(mockCmaApiDAO).getArtworks(intLimit, intPage);
         }
