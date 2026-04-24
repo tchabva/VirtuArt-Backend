@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.in;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -518,6 +519,21 @@ class ArtworkServiceImplTest {
             );
 
             verify(mockCmaApiDAO).getArtworkById(artworkId);
+        }
+
+        @Test
+        @DisplayName("getArtworkId throws IllegalSourceException for invalid source")
+        void getArtworkByIdHandlesNullAicData() {
+            // Arrange
+            String artworkId = "123";
+            String invalidSource = "xyz";
+
+            // Act & Assert
+            assertThatThrownBy( () -> artworkService.getArtworkById(invalidSource, artworkId))
+                    .isInstanceOf(IllegalSourceException.class)
+                    .hasMessageContaining( "Invalid data source: " + invalidSource);
+
+            verify(mockAicApiDAO, never()).getArtworkById(any());
         }
     }
 }
