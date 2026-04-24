@@ -551,5 +551,22 @@ class ArtworkServiceImplTest {
 
             verify(mockAicApiDAO).getArtworkById(artworkId);
         }
+
+        @Test
+        @DisplayName("getArtworkById throws ItemNotFoundException when CMA DAO returns null data")
+        void getArtworkByIdHandlesNullCmaData() {
+            // Arrange
+            String artworkId = "123";
+            String source = "cma";
+            CmaApiArtworkResult cmaArtworkResult = new CmaApiArtworkResult(null);
+            when(mockCmaApiDAO.getArtworkById(artworkId)).thenReturn(cmaArtworkResult);
+
+            // Act & Assert
+            assertThatThrownBy(() -> artworkService.getArtworkById(source, artworkId))
+                    .isInstanceOf(ItemNotFoundException.class)
+                    .hasMessageContaining("Null response from Cleveland Museum of Art API");
+
+            verify(mockCmaApiDAO).getArtworkById(artworkId);
+        }
     }
 }
