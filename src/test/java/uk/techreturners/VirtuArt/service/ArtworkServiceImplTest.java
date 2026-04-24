@@ -97,7 +97,7 @@ class ArtworkServiceImplTest {
      */
 
     @Nested
-    @DisplayName("getArtworks source routing")
+    @DisplayName("Get Artworks source routing")
     class GetArtworksRouting {
 
         @Test
@@ -436,7 +436,7 @@ class ArtworkServiceImplTest {
      *  Get Artwork by ID
      */
     @Nested
-    @DisplayName("Get Artwork By ID")
+    @DisplayName("Get Artwork by ID")
     class GetArtworkById {
         @Test
         @DisplayName("getArtworkById with 'aic' source calls AIC DAO & maps response")
