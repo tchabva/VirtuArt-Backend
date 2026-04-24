@@ -12,15 +12,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import uk.techreturners.VirtuArt.exception.IllegalSourceException;
 import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
-import uk.techreturners.VirtuArt.model.aicapi.AicApiPagination;
-import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchArtwork;
-import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
+import uk.techreturners.VirtuArt.model.aicapi.*;
 import uk.techreturners.VirtuArt.model.cmaapi.CmaApiCreators;
 import uk.techreturners.VirtuArt.model.cmaapi.CmaApiImages;
 import uk.techreturners.VirtuArt.model.cmaapi.CmaApiPagination;
 import uk.techreturners.VirtuArt.model.cmaapi.CmaApiPagination.CmaApiPaginationParameters;
 import uk.techreturners.VirtuArt.model.cmaapi.CmaApiSearchResult;
 import uk.techreturners.VirtuArt.model.cmaapi.CmaApiSearchResult.CmaApiSearchArtwork;
+import uk.techreturners.VirtuArt.model.dto.ArtworkDTO;
 import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
 import uk.techreturners.VirtuArt.repository.AicApiDAO;
 import uk.techreturners.VirtuArt.repository.CmaApiDAO;
@@ -442,6 +441,45 @@ class ArtworkServiceImplTest {
     @Nested
     @DisplayName("Get Artwork By ID")
     class GetArtworkById {
+        @Test
+        @DisplayName("getArtworkById with 'aic' source calls AIC DAO & maps response")
+        void getArtworkByIdWithAicSource() {
+            // Arrange
+            String artworkId = "123";
+            String source = "aic";
+            AicApiArtwork aicArtwork = new AicApiArtwork(
+                    123,
+                    "Mona Lisa",
+                    "1503-1506",
+                    "Italy",
+                    "A famous portrait",
+                    "Oil on poplar panel",
+                    "Paintings",
+                    "Leonardo da Vinci",
+                    "imageId123",
+                    Collections.emptyList()
+            );
+            AicApiArtworkResult aicArtworkResult = new AicApiArtworkResult(aicArtwork);
+            when(mockAicApiDAO.getArtworkById(artworkId)).thenReturn(aicArtworkResult);
 
+            // Act
+            ArtworkDTO resultDTO = artworkService.getArtworkById(source, artworkId);
+
+            // Assert
+            assertAll(
+                    () -> assertNotNull(resultDTO),
+                    () -> assertEquals(aicArtwork.id().toString(), resultDTO.id()),
+                    () -> assertEquals(aicArtwork.title(), resultDTO.title()),
+                    () -> assertEquals(aicArtwork.artist(), resultDTO.artist()),
+                    () -> assertEquals(aicArtwork.dateDisplay(), resultDTO.date()),
+                    () -> assertEquals(aicArtwork.displayMedium(), resultDTO.displayMedium()),
+                    () -> assertEquals(aicArtwork.description(), resultDTO.description()),
+                    () -> assertEquals(aicArtwork.department(), resultDTO.department()),
+                    () -> assertEquals(aicArtwork.origin(), resultDTO.origin()),
+                    () -> assertEquals("Art Institute of Chicago", resultDTO.sourceMuseum())
+            );
+
+            verify(mockAicApiDAO).getArtworkById(artworkId);
+        }
     }
 }
