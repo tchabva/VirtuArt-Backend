@@ -378,5 +378,24 @@ class ArtworkServiceImplTest {
 
             verify(mockCmaApiDAO).getArtworks(intLimit, intPage);
         }
+
+        @Test
+        @DisplayName("getCmaArtworks handles null data list from DAO")
+        void getCmaArtworksHandlesEmptyDataListFromDao() {
+            // Arrange
+            String limit = "10";
+            int intLimit = Integer.parseInt(limit);
+            String page = "1";
+            int intPage = Integer.parseInt(page);
+            CmaApiPagination mockPagination = mock(CmaApiPagination.class);
+            mockCmaApiSearchResult = new CmaApiSearchResult(mockPagination,null);
+            when(mockCmaApiDAO.getArtworks(intLimit, intPage))
+                    .thenReturn(mockCmaApiSearchResult);
+
+            // Act & Assert
+            assertThrows(ItemNotFoundException.class, () -> artworkService.getCmaArtworks(limit, page));
+
+            verify(mockCmaApiDAO).getArtworks(intLimit, intPage);
+        }
     }
 }
