@@ -13,11 +13,8 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.techreturners.VirtuArt.exception.IllegalSourceException;
 import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
 import uk.techreturners.VirtuArt.model.aicapi.*;
-import uk.techreturners.VirtuArt.model.cmaapi.CmaApiCreators;
-import uk.techreturners.VirtuArt.model.cmaapi.CmaApiImages;
-import uk.techreturners.VirtuArt.model.cmaapi.CmaApiPagination;
+import uk.techreturners.VirtuArt.model.cmaapi.*;
 import uk.techreturners.VirtuArt.model.cmaapi.CmaApiPagination.CmaApiPaginationParameters;
-import uk.techreturners.VirtuArt.model.cmaapi.CmaApiSearchResult;
 import uk.techreturners.VirtuArt.model.cmaapi.CmaApiSearchResult.CmaApiSearchArtwork;
 import uk.techreturners.VirtuArt.model.dto.ArtworkDTO;
 import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
@@ -480,6 +477,47 @@ class ArtworkServiceImplTest {
             );
 
             verify(mockAicApiDAO).getArtworkById(artworkId);
+        }
+
+        @Test
+        @DisplayName("getArtworkById with 'cma' source calls CMA DAO & maps response")
+        void getArtworkByIdWithCmaSource() {
+            // Arrange
+            String artworkId = "456";
+            String source = "cma";
+            CmaApiArtwork cmaArtwork = new CmaApiArtwork(
+                    456L,
+                    "Starry Nights",
+                    "1889",
+                    List.of("France"),
+                    "Oil on canvas",
+                    "Paintings",
+                    "A famous night scene",
+                    new CmaApiImages(new CmaApiImages.CmaApiWeb("imageId456")),
+                    Collections.emptyList(),
+                    List.of(new CmaApiCreators("Vincent van Gogh"))
+            );
+            CmaApiArtworkResult cmaArtworkResult = new CmaApiArtworkResult(cmaArtwork);
+            when(mockCmaApiDAO.getArtworkById(artworkId)).thenReturn(cmaArtworkResult);
+
+            // Act
+            ArtworkDTO resultDTO = artworkService.getArtworkById(source, artworkId);
+
+            // Assert
+            assertAll(
+                    () -> assertNotNull(resultDTO),
+                    () -> assertEquals(cmaArtwork.id().toString(), resultDTO.id()),
+                    () -> assertEquals(cmaArtwork.title(), resultDTO.title()),
+                    () -> assertEquals(cmaArtwork.creators().getFirst().description(), resultDTO.artist()),
+                    () -> assertEquals(cmaArtwork.creationDate(), resultDTO.date()),
+                    () -> assertEquals(cmaArtwork.technique(), resultDTO.displayMedium()),
+                    () -> assertEquals(cmaArtwork.description(), resultDTO.description()),
+                    () -> assertEquals(cmaArtwork.department(), resultDTO.department()),
+                    () -> assertEquals(cmaArtwork.culture().getFirst(), resultDTO.origin()),
+                    () -> assertEquals("Cleveland Museum of Art", resultDTO.sourceMuseum())
+            );
+
+            verify(mockCmaApiDAO).getArtworkById(artworkId);
         }
     }
 }
