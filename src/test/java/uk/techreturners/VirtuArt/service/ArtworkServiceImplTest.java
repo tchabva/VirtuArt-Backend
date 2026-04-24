@@ -18,6 +18,7 @@ import uk.techreturners.VirtuArt.model.aicapi.AicApiSearchResult;
 import uk.techreturners.VirtuArt.model.cmaapi.CmaApiCreators;
 import uk.techreturners.VirtuArt.model.cmaapi.CmaApiImages;
 import uk.techreturners.VirtuArt.model.cmaapi.CmaApiPagination;
+import uk.techreturners.VirtuArt.model.cmaapi.CmaApiPagination.CmaApiPaginationParameters;
 import uk.techreturners.VirtuArt.model.cmaapi.CmaApiSearchResult;
 import uk.techreturners.VirtuArt.model.cmaapi.CmaApiSearchResult.CmaApiSearchArtwork;
 import uk.techreturners.VirtuArt.model.dto.PaginatedArtworkResultsDTO;
@@ -86,7 +87,7 @@ class ArtworkServiceImplTest {
 
         CmaApiPagination mockCmaPagination = new CmaApiPagination(
                 1000,
-                new CmaApiPagination.CmaApiPaginationParameters(20, 100)
+                new CmaApiPaginationParameters(20, 100)
         );
 
         mockCmaApiSearchResult = new CmaApiSearchResult(
@@ -381,14 +382,14 @@ class ArtworkServiceImplTest {
 
         @Test
         @DisplayName("getCmaArtworks handles null data list from DAO")
-        void getCmaArtworksHandlesEmptyDataListFromDao() {
+        void getCmaArtworksHandlesNullDataListFromDao() {
             // Arrange
             String limit = "10";
             int intLimit = Integer.parseInt(limit);
             String page = "1";
             int intPage = Integer.parseInt(page);
             CmaApiPagination mockPagination = mock(CmaApiPagination.class);
-            mockCmaApiSearchResult = new CmaApiSearchResult(mockPagination,null);
+            mockCmaApiSearchResult = new CmaApiSearchResult(mockPagination, null);
             when(mockCmaApiDAO.getArtworks(intLimit, intPage))
                     .thenReturn(mockCmaApiSearchResult);
 
@@ -396,6 +397,42 @@ class ArtworkServiceImplTest {
             assertThrows(ItemNotFoundException.class, () -> artworkService.getCmaArtworks(limit, page));
 
             verify(mockCmaApiDAO).getArtworks(intLimit, intPage);
+        }
+
+        @Test
+        @DisplayName("getCmaArtworks handles empty data list from DAO")
+        void getCmaArtworksHandlesEmptyDataListFromDao() {
+            // Arrange
+            String limit = "10";
+            int intLimit = Integer.parseInt(limit);
+            String page = "1";
+            int intPage = Integer.parseInt(page);
+            CmaApiPagination mockPagination = mock(CmaApiPagination.class);
+            CmaApiPaginationParameters mockPaginationParams = mock(CmaApiPaginationParameters.class);
+            mockCmaApiSearchResult = new CmaApiSearchResult(mockPagination, Collections.emptyList());
+            when(mockPagination.total()).thenReturn(0);
+            when(mockPagination.parameters()).thenReturn(mockPaginationParams);
+            when(mockPagination.parameters().calculateTotalPages(0)).thenReturn(0);
+            when(mockCmaApiSearchResult.info().parameters().calculateTotalPages(0)).thenReturn(0);
+            when(mockCmaApiDAO.getArtworks(intLimit, intPage)).thenReturn(mockCmaApiSearchResult);
+
+            // Act
+            PaginatedArtworkResultsDTO resultDTO = artworkService.getCmaArtworks(limit, page);
+
+            // Assert
+            assertAll(
+                    () -> assertNotNull(resultDTO),
+                    () -> assertNotNull(resultDTO.data()),
+                    () -> assertEquals(0,resultDTO.data().size()),
+                    () -> assertEquals(0,resultDTO.totalItems()),
+                    () -> assertEquals(0,resultDTO.totalPages())
+            );
+
+            verify(mockCmaApiDAO).getArtworks(intLimit, intPage);
+            verify(artworkService, times(0))
+                    .cmaSearchArtworkResultsResponseMapper(any(CmaApiSearchArtwork.class));
+            verify(artworkService, times(1))
+                    .cmaPaginatedResponseMapper(any(CmaApiSearchResult.class));
         }
     }
 }
