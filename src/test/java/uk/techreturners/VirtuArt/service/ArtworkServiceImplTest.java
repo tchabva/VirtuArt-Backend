@@ -435,4 +435,13 @@ class ArtworkServiceImplTest {
                     .cmaPaginatedResponseMapper(any(CmaApiSearchResult.class));
         }
     }
+
+    /**
+     *  Get Artwork by ID
+     */
+    @Nested
+    @DisplayName("Get Artwork By ID")
+    class GetArtworkById {
+
+    }
 }
