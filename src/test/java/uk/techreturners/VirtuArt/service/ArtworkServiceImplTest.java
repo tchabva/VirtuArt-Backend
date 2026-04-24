@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.in;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -534,6 +533,23 @@ class ArtworkServiceImplTest {
                     .hasMessageContaining( "Invalid data source: " + invalidSource);
 
             verify(mockAicApiDAO, never()).getArtworkById(any());
+        }
+
+        @Test
+        @DisplayName("getArtworkById throws ItemNotFoundException when AIC DAO returns null data")
+        void getArtworkByIdHandsNullAicData() {
+            // Arrange
+            String artworkId = "123";
+            String source = "aic";
+            AicApiArtworkResult aicArtworkResult = new AicApiArtworkResult(null);
+            when(mockAicApiDAO.getArtworkById(artworkId)).thenReturn(aicArtworkResult);
+
+            // Act & Assert
+            assertThatThrownBy(() -> artworkService.getArtworkById(source, artworkId))
+                    .isInstanceOf(ItemNotFoundException.class)
+                    .hasMessageContaining("Null response from Art Institute of Chicago API");
+
+            verify(mockAicApiDAO).getArtworkById(artworkId);
         }
     }
 }
