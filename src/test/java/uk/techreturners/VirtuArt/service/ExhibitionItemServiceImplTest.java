@@ -206,5 +206,35 @@ public class ExhibitionItemServiceImplTest {
             verify(mockArtworkService, never()).getArtworkById(any(),any());
             verify(mockExhibitionItemRepository, never()).save(any());
         }
+
+        /**
+         * getOrCreateExhibitionItem
+         */
+        @Nested
+        @DisplayName("Get Or Create Exhibition Item")
+        class GetOrCreateExhibitionItem {
+
+            @Test
+            @DisplayName("getOrCreateExhibitionItem returns existing item when found & does not call artworkService or save")
+            void getOrCreateExhibitionItemReturnsExistingItemWhenFound() {
+                // Arrange
+                when(mockExhibitionItemRepository.findByApiIdAndSource(API_ID, SOURCE))
+                        .thenReturn(Optional.of(mockExhibitionItem));
+
+                // Act
+                ExhibitionItem result = exhibitionItemService.getOrCreateExhibitionItem(mockAddArtworkRequest);
+
+                // Assert
+                assertAll(
+                        () -> assertNotNull(result),
+                        () -> assertEquals(mockExhibitionItem.getId(), result.getId()),
+                        () -> assertEquals(mockExhibitionItem.getApiId(), result.getApiId()),
+                        () -> assertEquals(mockExhibitionItem.getSource(), result.getSource())
+                );
+
+                verify(mockArtworkService, never()).getArtworkById(any(), any());
+                verify(mockExhibitionItemRepository, never()).save(any());
+            }
+        }
     }
 }
