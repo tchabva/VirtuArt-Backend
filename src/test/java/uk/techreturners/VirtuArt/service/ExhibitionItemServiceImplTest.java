@@ -2,7 +2,11 @@ package uk.techreturners.VirtuArt.service;
 
 import org.apiguardian.api.API;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -12,6 +16,12 @@ import uk.techreturners.VirtuArt.model.request.AddArtworkRequest;
 import uk.techreturners.VirtuArt.repository.ExhibitionItemRepository;
 
 import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ExhibitionItemServiceImplTest {
@@ -63,5 +73,37 @@ public class ExhibitionItemServiceImplTest {
                 API_ID,
                 SOURCE
         );
+    }
+
+    /**
+     *  addNewExhibition
+     */
+    @Nested
+    @DisplayName("Add New Exhibition Item")
+    class AddNewExhibitionItem {
+
+        @Test
+        @DisplayName("addNewExhibitionItem builds ExhibitionItem for ArtworkDTO & saves it")
+        void addNewExhibitionItemMapsFieldsAndSaves() {
+            // Arrange
+            when(mockExhibitionItemRepository.save(any(ExhibitionItem.class))).thenReturn(mockExhibitionItem);
+
+            // Act
+            exhibitionItemService.addNewExhibitionItem(mockArtworkDTO, SOURCE);
+
+            // Assert: capture what was passed to save() to verify field mapping
+            ArgumentCaptor<ExhibitionItem> captor = ArgumentCaptor.forClass(ExhibitionItem.class);
+            verify(mockExhibitionItemRepository).save(captor.capture());
+            ExhibitionItem savedItem = captor.getValue();
+
+            assertAll(
+                    () -> assertEquals(mockArtworkDTO.id(), savedItem.getApiId()),
+                    () -> assertEquals(mockArtworkDTO.title(), savedItem.getTitle()),
+                    () -> assertEquals(mockArtworkDTO.artist(), savedItem.getArtistTitle()),
+                    () -> assertEquals(mockArtworkDTO.date(), savedItem.getDate()),
+                    () -> assertEquals(mockArtworkDTO.imageUrl(), savedItem.getImageUrl()),
+                    () -> assertEquals(SOURCE, savedItem.getSource())
+            );
+        }
     }
 }
