@@ -265,6 +265,35 @@ public class ExhibitionItemServiceImplTest {
                 verify(mockArtworkService, times(1)).getArtworkById(SOURCE, API_ID);
                 verify(mockExhibitionItemRepository, times(1)).save(any(ExhibitionItem.class));
             }
+
+            @Test
+            @DisplayName("getOrCreateExhibitionItem maps ArtworkDTO fields correctly onto new ExhibitionItem")
+            void getOrCreateMapsArtworkDtoToFieldsCorrectly() {
+                // Arrange
+                when(mockExhibitionItemRepository.findByApiIdAndSource(API_ID,SOURCE))
+                        .thenReturn(Optional.empty());
+                when(mockArtworkService.getArtworkById(SOURCE,API_ID))
+                        .thenReturn(mockArtworkDTO);
+                when(mockExhibitionItemRepository.save(any(ExhibitionItem.class)))
+                        .thenReturn(mockExhibitionItem);
+
+                // Act
+                exhibitionItemService.getOrCreateExhibitionItem(mockAddArtworkRequest);
+
+                // Assert
+                ArgumentCaptor<ExhibitionItem> argumentCaptor = ArgumentCaptor.forClass(ExhibitionItem.class);
+                verify(mockExhibitionItemRepository).save(argumentCaptor.capture());
+                ExhibitionItem savedItem = argumentCaptor.getValue();
+
+                assertAll(
+                        () -> assertEquals(mockArtworkDTO.id(), savedItem.getApiId()),
+                        () -> assertEquals(mockArtworkDTO.title(), savedItem.getTitle()),
+                        () -> assertEquals(mockArtworkDTO.artist(), savedItem.getArtistTitle()),
+                        () -> assertEquals(mockArtworkDTO.date(), savedItem.getDate()),
+                        () -> assertEquals(mockArtworkDTO.imageUrl(), savedItem.getImageUrl()),
+                        () -> assertEquals(SOURCE, savedItem.getSource())
+                );
+            }
         }
     }
 }
