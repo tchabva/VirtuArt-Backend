@@ -9,6 +9,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
 import uk.techreturners.VirtuArt.model.ExhibitionItem;
 import uk.techreturners.VirtuArt.model.dto.ArtworkDTO;
 import uk.techreturners.VirtuArt.model.request.AddArtworkRequest;
@@ -17,6 +18,7 @@ import uk.techreturners.VirtuArt.repository.ExhibitionItemRepository;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -174,6 +176,20 @@ public class ExhibitionItemServiceImplTest {
             );
 
             verify(mockExhibitionItemRepository, atLeastOnce()).findByApiIdAndSource(API_ID, SOURCE);
+        }
+
+        @Test
+        @DisplayName("getExhibition throws ItemNotFoundException when no item matches apiId & source")
+        void getExhibitionItemThrowsExceptionWhenNotFound() {
+            // Arrange
+            when(mockExhibitionItemRepository.findByApiIdAndSource(API_ID, SOURCE))
+                    .thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThatThrownBy(() -> exhibitionItemService.getExhibitionItem(API_ID,SOURCE))
+                    .isInstanceOf(ItemNotFoundException.class)
+                    .hasMessageContaining(API_ID)
+                    .hasMessageContaining(SOURCE);
         }
     }
 }
