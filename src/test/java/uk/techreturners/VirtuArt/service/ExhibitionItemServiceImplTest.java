@@ -128,5 +128,19 @@ public class ExhibitionItemServiceImplTest {
             verify(mockExhibitionItemRepository, times(1))
                     .save(any(ExhibitionItem.class));
         }
+
+        @Test
+        @DisplayName("addNewExhibitionItem does not call artworkService")
+        void addNewExhibitionItemDoesNotCallArtworkService() {
+            // Arrange
+            when(mockExhibitionItemRepository.save(any(ExhibitionItem.class)))
+                    .thenReturn(mockExhibitionItem);
+
+            // Act
+            exhibitionItemService.addNewExhibitionItem(mockArtworkDTO,SOURCE);
+
+            // Assert
+            verify(mockArtworkService, never()).getArtworkById(any(), any());
+        }
     }
 }
