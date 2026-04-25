@@ -1,6 +1,5 @@
 package uk.techreturners.VirtuArt.service;
 
-import org.apiguardian.api.API;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -16,6 +15,7 @@ import uk.techreturners.VirtuArt.model.request.AddArtworkRequest;
 import uk.techreturners.VirtuArt.repository.ExhibitionItemRepository;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -141,6 +141,39 @@ public class ExhibitionItemServiceImplTest {
 
             // Assert
             verify(mockArtworkService, never()).getArtworkById(any(), any());
+        }
+    }
+
+    /**
+     * getExhibition
+     */
+    @Nested
+    @DisplayName("Get Exhibition Item")
+    class GetExhibitionItem {
+
+        @Test
+        @DisplayName("getExhibitionItem returns the ExhibitionItem when found by apiId & source")
+        void getExhibitionItemReturnsItemWhenFound() {
+            // Arrange
+            when(mockExhibitionItemRepository.findByApiIdAndSource(API_ID, SOURCE))
+                    .thenReturn(Optional.ofNullable(mockExhibitionItem));
+
+            // Act
+            ExhibitionItem result = exhibitionItemService.getExhibitionItem(API_ID,SOURCE);
+
+            // Assert
+            assertAll(
+                    () -> assertNotNull(result),
+                    () -> assertEquals(mockExhibitionItem.getId(), result.getId()),
+                    () -> assertEquals(mockExhibitionItem.getApiId(), result.getApiId()),
+                    () -> assertEquals(mockExhibitionItem.getTitle(), result.getTitle()),
+                    () -> assertEquals(mockExhibitionItem.getArtistTitle(), result.getArtistTitle()),
+                    () -> assertEquals(mockExhibitionItem.getDate(), result.getDate()),
+                    () -> assertEquals(mockExhibitionItem.getImageUrl(), result.getImageUrl()),
+                    () -> assertEquals(mockExhibitionItem.getSource(), result.getSource())
+            );
+
+            verify(mockExhibitionItemRepository, atLeastOnce()).findByApiIdAndSource(API_ID, SOURCE);
         }
     }
 }
