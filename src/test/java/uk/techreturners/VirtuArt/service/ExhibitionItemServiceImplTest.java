@@ -235,6 +235,36 @@ public class ExhibitionItemServiceImplTest {
                 verify(mockArtworkService, never()).getArtworkById(any(), any());
                 verify(mockExhibitionItemRepository, never()).save(any());
             }
+
+            @Test
+            @DisplayName("getOrCreateExhibitionItem creates & saves a new item when not found")
+            void getOrCreateExhibitionItemCreatesNewItemWhenNotFound() {
+                // Arrange
+                when(mockExhibitionItemRepository.findByApiIdAndSource(API_ID, SOURCE))
+                        .thenReturn(Optional.empty());
+                when(mockArtworkService.getArtworkById(SOURCE,API_ID))
+                        .thenReturn(mockArtworkDTO);
+                when(mockExhibitionItemRepository.save(any(ExhibitionItem.class)))
+                        .thenReturn(mockExhibitionItem);
+
+                // Act
+                ExhibitionItem result = exhibitionItemService.getOrCreateExhibitionItem(mockAddArtworkRequest);
+
+                // Assert
+                assertAll(
+                        () -> assertNotNull(result),
+                        () -> assertEquals(mockExhibitionItem.getId(), result.getId()),
+                        () -> assertEquals(mockExhibitionItem.getTitle(), result.getTitle()),
+                        () -> assertEquals(mockExhibitionItem.getArtistTitle(), result.getArtistTitle()),
+                        () -> assertEquals(mockExhibitionItem.getDate(), result.getDate()),
+                        () -> assertEquals(mockExhibitionItem.getApiId(), result.getApiId()),
+                        () -> assertEquals(mockExhibitionItem.getImageUrl(), result.getImageUrl()),
+                        () -> assertEquals(mockExhibitionItem.getSource(), result.getSource())
+                );
+
+                verify(mockArtworkService, times(1)).getArtworkById(SOURCE, API_ID);
+                verify(mockExhibitionItemRepository, times(1)).save(any(ExhibitionItem.class));
+            }
         }
     }
 }
