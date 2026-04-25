@@ -17,11 +17,9 @@ import uk.techreturners.VirtuArt.repository.ExhibitionItemRepository;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ExhibitionItemServiceImplTest {
@@ -76,7 +74,7 @@ public class ExhibitionItemServiceImplTest {
     }
 
     /**
-     *  addNewExhibition
+     * addNewExhibition
      */
     @Nested
     @DisplayName("Add New Exhibition Item")
@@ -104,6 +102,31 @@ public class ExhibitionItemServiceImplTest {
                     () -> assertEquals(mockArtworkDTO.imageUrl(), savedItem.getImageUrl()),
                     () -> assertEquals(SOURCE, savedItem.getSource())
             );
+        }
+
+        @Test
+        @DisplayName("addNewExhibition returns the save ExhibitionItem from the repository")
+        void addNewExhibitionItemReturnsSavedEntity() {
+            // Arrange
+            when(mockExhibitionItemRepository.save(any(ExhibitionItem.class)))
+                    .thenReturn(mockExhibitionItem);
+            // Act
+            ExhibitionItem result = exhibitionItemService.addNewExhibitionItem(mockArtworkDTO, SOURCE);
+
+            // Assert
+            assertAll(
+                    () -> assertNotNull(result),
+                    () -> assertEquals(mockExhibitionItem.getId(), result.getId()),
+                    () -> assertEquals(mockExhibitionItem.getApiId(), result.getApiId()),
+                    () -> assertEquals(mockExhibitionItem.getTitle(), result.getTitle()),
+                    () -> assertEquals(mockExhibitionItem.getArtistTitle(), result.getArtistTitle()),
+                    () -> assertEquals(mockExhibitionItem.getDate(), result.getDate()),
+                    () -> assertEquals(mockExhibitionItem.getImageUrl(), result.getImageUrl()),
+                    () -> assertEquals(mockExhibitionItem.getSource(), result.getSource())
+            );
+
+            verify(mockExhibitionItemRepository, times(1))
+                    .save(any(ExhibitionItem.class));
         }
     }
 }
