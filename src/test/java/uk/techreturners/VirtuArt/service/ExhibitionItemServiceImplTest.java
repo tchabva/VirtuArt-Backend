@@ -191,5 +191,20 @@ public class ExhibitionItemServiceImplTest {
                     .hasMessageContaining(API_ID)
                     .hasMessageContaining(SOURCE);
         }
+
+        @Test
+        @DisplayName("getExhibition does not call artworkService or repository save")
+        void getExhibitionItemDoesNotCallArtworkOrSave() {
+            // Arrange
+            when(mockExhibitionItemRepository.findByApiIdAndSource(API_ID,SOURCE))
+                    .thenReturn(Optional.of(mockExhibitionItem));
+
+            // Act
+            exhibitionItemService.getExhibitionItem(API_ID, SOURCE);
+
+            // Assert
+            verify(mockArtworkService, never()).getArtworkById(any(),any());
+            verify(mockExhibitionItemRepository, never()).save(any());
+        }
     }
 }
