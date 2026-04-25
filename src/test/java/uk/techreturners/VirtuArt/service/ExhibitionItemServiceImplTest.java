@@ -294,6 +294,35 @@ public class ExhibitionItemServiceImplTest {
                         () -> assertEquals(SOURCE, savedItem.getSource())
                 );
             }
+
+            @Test
+            @DisplayName("getOrCreateExhibitionItem forwards the correct source from the request to artworkService & saved item")
+            void getOrCreateExhibitionItemPassesCorrectSourceToArtworkService() {
+                // Arrange
+                String cmaSource = "cma";
+                AddArtworkRequest cmaRequest = new AddArtworkRequest(
+                        API_ID,
+                        cmaSource
+                );
+
+                when(mockExhibitionItemRepository.findByApiIdAndSource(API_ID,cmaSource))
+                        .thenReturn(Optional.empty());
+                when(mockArtworkService.getArtworkById(cmaSource,API_ID))
+                        .thenReturn(mockArtworkDTO);
+                when(mockExhibitionItemRepository.save(any(ExhibitionItem.class)))
+                        .thenReturn(mockExhibitionItem);
+
+                // Act
+                exhibitionItemService.getOrCreateExhibitionItem(cmaRequest);
+
+                // Assert
+                verify(mockArtworkService, times(1)).getArtworkById(cmaSource,API_ID);
+
+                ArgumentCaptor<ExhibitionItem> argumentCaptor = ArgumentCaptor.forClass(ExhibitionItem.class);
+                verify(mockExhibitionItemRepository).save(argumentCaptor.capture());
+
+                assertEquals(cmaSource,argumentCaptor.getValue().getSource());
+            }
         }
     }
 }
