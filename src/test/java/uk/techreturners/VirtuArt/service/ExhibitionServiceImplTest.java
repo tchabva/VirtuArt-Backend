@@ -245,5 +245,24 @@ class ExhibitionServiceImplTest {
             assertThatThrownBy(() -> exhibitionService.getExhibitionById(EXHIBITION_ID, mockJwt))
                     .isInstanceOf(AccessDeniedException.class);
         }
+
+        @Test
+        @DisplayName("getExhibitionById throws AccessDeniedException when the exhibition has a null user")
+        void getExhibitionByIdThrowsExceptionWhenExhibitionUserIsNull() {
+            // Arrange
+            Exhibition noUserExhibition = Exhibition.builder()
+                    .id(EXHIBITION_ID)
+                    .title("Orphaned Exhibition")
+                    .user(null)
+                    .exhibitionItems(new ArrayList<>())
+                    .build();
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID))
+                    .thenReturn(Optional.of(noUserExhibition));
+
+            // Act & Assert
+            assertThatThrownBy(() -> exhibitionService.getExhibitionById(EXHIBITION_ID, mockJwt))
+                    .isInstanceOf(AccessDeniedException.class);
+        }
     }
 }
