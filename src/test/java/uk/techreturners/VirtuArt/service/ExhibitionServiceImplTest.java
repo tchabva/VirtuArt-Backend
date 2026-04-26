@@ -1,6 +1,9 @@
 package uk.techreturners.VirtuArt.service;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -11,15 +14,16 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.techreturners.VirtuArt.model.Exhibition;
 import uk.techreturners.VirtuArt.model.ExhibitionItem;
 import uk.techreturners.VirtuArt.model.User;
+import uk.techreturners.VirtuArt.model.dto.ExhibitionDTO;
 import uk.techreturners.VirtuArt.repository.ExhibitionRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("dev")
@@ -89,4 +93,36 @@ class ExhibitionServiceImplTest {
                 .build();
     }
 
+    /**
+     * getAllUserExhibitions
+     */
+    @Nested
+    @DisplayName("Get All User Exhibitions")
+    class GetAllUserExhibitions {
+
+        @Test
+        @DisplayName("getAllUserExhibitions returns a mapped ExhibitionDTO for the current user")
+        void getAllUserExhibitionsReturnsMappedDtoList() {
+            // Arrange
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findByUser(mockUserOne)).thenReturn(List.of(mockExhibition));
+
+            // Act
+            List<ExhibitionDTO> results = exhibitionService.getAllUserExhibitions(mockJwt);
+
+            // Assert
+            assertAll(
+                    () -> assertNotNull(results),
+                    () -> assertEquals(1, results.size()),
+                    () -> assertEquals(mockExhibition.getId(), results.getFirst().id()),
+                    () -> assertEquals(mockExhibition.getTitle(), results.getFirst().title()),
+                    () -> assertEquals(mockExhibition.getExhibitionItems().size(), results.getFirst().itemCount()),
+                    () -> assertEquals(mockExhibition.getCreatedAt(), results.getFirst().createdAt()),
+                    () -> assertEquals(mockExhibition.getUpdatedAt(), results.getFirst().updatedAt())
+            );
+
+            verify(mockExhibitionRepository).findByUser(mockUserOne);
+            verify(exhibitionService, times(1)).createExhibitionDTO(mockExhibition);
+        }
+    }
 }
