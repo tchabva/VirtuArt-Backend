@@ -15,13 +15,16 @@ import uk.techreturners.VirtuArt.model.Exhibition;
 import uk.techreturners.VirtuArt.model.ExhibitionItem;
 import uk.techreturners.VirtuArt.model.User;
 import uk.techreturners.VirtuArt.model.dto.ExhibitionDTO;
+import uk.techreturners.VirtuArt.model.dto.ExhibitionDetailDTO;
 import uk.techreturners.VirtuArt.repository.ExhibitionRepository;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -171,6 +174,40 @@ class ExhibitionServiceImplTest {
 
             verify(exhibitionService, times(2))
                     .createExhibitionDTO(any(Exhibition.class));
+        }
+    }
+
+    /**
+     * getExhibitionById
+     */
+    @Nested
+    @DisplayName("Get Exhibition By ID")
+    class GetExhibitionById {
+
+        @Test
+        @DisplayName("getExhibitionById returns an ExhibitionDetailDTO when found & owned by the current user")
+        void getExhibitionByIdReturnsDetailDTO() {
+            // Arrange
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID))
+                    .thenReturn(Optional.of(mockExhibition));
+
+            // Act
+            ExhibitionDetailDTO result = exhibitionService.getExhibitionById(EXHIBITION_ID,mockJwt);
+
+            // Assert
+            assertAll(
+                    () -> assertNotNull(result),
+                    () -> assertEquals(mockExhibition.getId(), result.id()),
+                    () -> assertEquals(mockExhibition.getTitle(), result.title()),
+                    () -> assertEquals(mockExhibition.getDescription(), result.description()),
+                    () -> assertEquals(mockExhibition.getCreatedAt(), result.createdAt()),
+                    () -> assertEquals(mockExhibition.getUpdatedAt(), result.updatedAt()),
+                    () -> assertNotNull(result.exhibitionItems())
+            );
+
+            verify(mockExhibitionRepository).findById(EXHIBITION_ID);
+            verify(exhibitionService, times(1)).createExhibitionDetailDTO(mockExhibition);
         }
     }
 }
