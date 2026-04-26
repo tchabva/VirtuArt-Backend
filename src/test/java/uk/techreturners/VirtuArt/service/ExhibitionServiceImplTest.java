@@ -142,5 +142,35 @@ class ExhibitionServiceImplTest {
                     () -> assertTrue(results.isEmpty())
             );
         }
+
+        @Test
+        @DisplayName("getAllUserExhibitions returns a correctly sized list when the user has multiple exhibitions")
+        void getAllUserExhibitionsReturnsAllExhibitions() {
+            // Arrange
+            Exhibition secondExhibition = Exhibition.builder()
+                    .id("exhibition-uuid-2")
+                    .title("My Second Exhibition")
+                    .description("Another test exhibition")
+                    .createdAt(FIXED_TIME)
+                    .updatedAt(FIXED_TIME)
+                    .user(mockUserOne)
+                    .exhibitionItems(new ArrayList<>())
+                    .build();
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findByUser(mockUserOne))
+                    .thenReturn(List.of(mockExhibition, secondExhibition));
+
+            // Act
+            List<ExhibitionDTO> results = exhibitionService.getAllUserExhibitions(mockJwt);
+
+            // Assert
+            assertAll(
+                    () -> assertNotNull(results),
+                    () -> assertEquals(2, results.size())
+            );
+
+            verify(exhibitionService, times(2))
+                    .createExhibitionDTO(any(Exhibition.class));
+        }
     }
 }
