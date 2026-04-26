@@ -20,6 +20,7 @@ import uk.techreturners.VirtuArt.repository.ExhibitionRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -123,6 +124,23 @@ class ExhibitionServiceImplTest {
 
             verify(mockExhibitionRepository).findByUser(mockUserOne);
             verify(exhibitionService, times(1)).createExhibitionDTO(mockExhibition);
+        }
+
+        @Test
+        @DisplayName("getAllUserExhibitions returns an empty list when the user has no exhibitions")
+        void getAllUserExhibitionsReturnsEmptyList() {
+            // Arrange
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findByUser(mockUserOne)).thenReturn(Collections.emptyList());
+
+            // Act
+            List<ExhibitionDTO> results = exhibitionService.getAllUserExhibitions(mockJwt);
+
+            // Assert
+            assertAll(
+                    () -> assertNotNull(results),
+                    () -> assertTrue(results.isEmpty())
+            );
         }
     }
 }
