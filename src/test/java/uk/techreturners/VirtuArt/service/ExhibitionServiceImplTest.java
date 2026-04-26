@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -56,6 +57,7 @@ class ExhibitionServiceImplTest {
     private User mockUserTwo;
     private Exhibition mockExhibition;
     private ExhibitionItem mockExhibitionItem;
+    private CreateExhibitionRequest mockCreateExhibitionRequest;
 
     private static final String EXHIBITION_ID = "exhibition-uuid-1";
     private static final String USER_ONE_ID = "user-uuid-1";
@@ -98,6 +100,8 @@ class ExhibitionServiceImplTest {
                 .user(mockUserOne)
                 .exhibitionItems(new ArrayList<>())
                 .build();
+
+        mockCreateExhibitionRequest = new CreateExhibitionRequest("My Exhibition", "A test exhibition");
     }
 
     /**
@@ -279,13 +283,12 @@ class ExhibitionServiceImplTest {
         @DisplayName("createUserExhibition builds an Exhibition from the request, saves it, & returns mapped DTO")
         void createUserExhibitionSavesAndReturnsDTO() {
             // Arrange
-            CreateExhibitionRequest request = new CreateExhibitionRequest("My Exhibition", "A test exhibition");
             when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
             when(mockExhibitionRepository.save(any(Exhibition.class)))
                     .thenReturn(mockExhibition);
 
             // Act
-            ExhibitionDTO result = exhibitionService.createUserExhibition(request,mockJwt);
+            ExhibitionDTO result = exhibitionService.createUserExhibition(mockCreateExhibitionRequest, mockJwt);
 
             //
             assertAll(
@@ -298,6 +301,31 @@ class ExhibitionServiceImplTest {
 
             verify(mockExhibitionRepository, times(1)).save(any(Exhibition.class));
             verify(exhibitionService, times(1)).createExhibitionDTO(mockExhibition);
+        }
+
+        @Test
+        @DisplayName("createUserExhibition maps all request fields correctly onto the saved Exhibition")
+        void createUserExhibitionMapsRequestFieldsCorrectly() {
+            // Arrange
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.save(any(Exhibition.class)))
+                    .thenReturn(mockExhibition);
+
+            // Act
+            exhibitionService.createUserExhibition(mockCreateExhibitionRequest, mockJwt);
+
+            // Assert
+            ArgumentCaptor<Exhibition> argumentCaptor = ArgumentCaptor.forClass(Exhibition.class);
+            verify(mockExhibitionRepository).save(argumentCaptor.capture());
+            Exhibition savedExhibition = argumentCaptor.getValue();
+
+            assertAll(
+                    () -> assertEquals(mockCreateExhibitionRequest.title(), savedExhibition.getTitle()),
+                    () -> assertEquals(mockCreateExhibitionRequest.description(), savedExhibition.getDescription()),
+                    () -> assertEquals(mockUserOne, savedExhibition.getUser()),
+                    () -> assertNotNull(savedExhibition.getCreatedAt()),
+                    () -> assertNotNull(savedExhibition.getUpdatedAt())
+            );
         }
     }
 }
