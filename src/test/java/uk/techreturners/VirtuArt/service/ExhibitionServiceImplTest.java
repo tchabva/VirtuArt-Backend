@@ -11,6 +11,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.context.ActiveProfiles;
+import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
 import uk.techreturners.VirtuArt.model.Exhibition;
 import uk.techreturners.VirtuArt.model.ExhibitionItem;
 import uk.techreturners.VirtuArt.model.User;
@@ -26,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -193,7 +195,7 @@ class ExhibitionServiceImplTest {
                     .thenReturn(Optional.of(mockExhibition));
 
             // Act
-            ExhibitionDetailDTO result = exhibitionService.getExhibitionById(EXHIBITION_ID,mockJwt);
+            ExhibitionDetailDTO result = exhibitionService.getExhibitionById(EXHIBITION_ID, mockJwt);
 
             // Assert
             assertAll(
@@ -208,6 +210,21 @@ class ExhibitionServiceImplTest {
 
             verify(mockExhibitionRepository).findById(EXHIBITION_ID);
             verify(exhibitionService, times(1)).createExhibitionDetailDTO(mockExhibition);
+        }
+
+        @Test
+        @DisplayName("getExhibitionById throws ItemNotFoundException when the Exhibition does not exist")
+        void getExhibitionByIdThrowsExceptionWhenNotFound() {
+            // Arrange
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID)).thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThatThrownBy( () -> exhibitionService.getExhibitionById(EXHIBITION_ID,mockJwt))
+                    .isInstanceOf(ItemNotFoundException.class)
+                    .hasMessageContaining(EXHIBITION_ID);
+
+            verify(mockExhibitionRepository).findById(EXHIBITION_ID);
         }
     }
 }
