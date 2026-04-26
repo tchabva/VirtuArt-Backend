@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.context.ActiveProfiles;
+import uk.techreturners.VirtuArt.exception.ExhibitionItemExistsAlreadyException;
 import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
 import uk.techreturners.VirtuArt.model.Exhibition;
 import uk.techreturners.VirtuArt.model.ExhibitionItem;
@@ -370,6 +371,27 @@ class ExhibitionServiceImplTest {
             verify(mockExhibitionRepository, times(1)).save(mockExhibition);
             verify(exhibitionService, times(1)).createExhibitionDTO(mockExhibition);
 
+        }
+
+        @Test
+        @DisplayName("addArtworkToExhibition throws ExhibitionItemExistsAlreadyException when item is already in the exhibition")
+        void addArtworkToExhibitionThrowsExceptionWhenItemAlreadyExists() {
+            // Arrange
+            mockExhibition.getExhibitionItems().add(mockExhibitionItem);
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID))
+                    .thenReturn(Optional.of(mockExhibition));
+            when(mockExhibitionItemService.getOrCreateExhibitionItem(mockAddArtworkRequest))
+                    .thenReturn(mockExhibitionItem);
+
+            // Act & Assert
+            assertThatThrownBy(() -> exhibitionService.addArtworkToExhibition(
+                    EXHIBITION_ID,
+                    mockAddArtworkRequest,
+                    mockJwt))
+                    .isInstanceOf(ExhibitionItemExistsAlreadyException.class);
+
+            verify(mockExhibitionRepository, never()).save(any());
         }
     }
 }
