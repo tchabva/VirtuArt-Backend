@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.context.ActiveProfiles;
 import uk.techreturners.VirtuArt.exception.ItemNotFoundException;
@@ -19,8 +20,6 @@ import uk.techreturners.VirtuArt.model.dto.ExhibitionDTO;
 import uk.techreturners.VirtuArt.model.dto.ExhibitionDetailDTO;
 import uk.techreturners.VirtuArt.repository.ExhibitionRepository;
 
-import javax.swing.text.html.Option;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -220,11 +219,31 @@ class ExhibitionServiceImplTest {
             when(mockExhibitionRepository.findById(EXHIBITION_ID)).thenReturn(Optional.empty());
 
             // Act & Assert
-            assertThatThrownBy( () -> exhibitionService.getExhibitionById(EXHIBITION_ID,mockJwt))
+            assertThatThrownBy(() -> exhibitionService.getExhibitionById(EXHIBITION_ID, mockJwt))
                     .isInstanceOf(ItemNotFoundException.class)
                     .hasMessageContaining(EXHIBITION_ID);
 
             verify(mockExhibitionRepository).findById(EXHIBITION_ID);
+        }
+
+        @Test
+        @DisplayName("getExhibitionById throws AccessDeniedException when the exhibition belongs to a different user")
+        void getExhibitionByIdThrowsExceptionWhenNotOwner() {
+            // Arrange
+            Exhibition otherUsersExhibition = Exhibition.builder()
+                    .id(EXHIBITION_ID)
+                    .title("Not Mine")
+                    .user(mockUserTwo)
+                    .exhibitionItems(new ArrayList<>())
+                    .build();
+
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID))
+                    .thenReturn(Optional.of(otherUsersExhibition));
+
+            // Act & Assert
+            assertThatThrownBy(() -> exhibitionService.getExhibitionById(EXHIBITION_ID, mockJwt))
+                    .isInstanceOf(AccessDeniedException.class);
         }
     }
 }
