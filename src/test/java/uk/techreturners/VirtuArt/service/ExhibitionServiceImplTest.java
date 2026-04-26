@@ -57,11 +57,13 @@ class ExhibitionServiceImplTest {
     @BeforeEach
     void setUp() {
         // Arrange Users
-        mockUserOne = mock(User.class);
-        when(mockUserOne.getId()).thenReturn(USER_ONE_ID);
+        mockUserOne = User.builder()
+                .id(USER_ONE_ID)
+                .build();
 
-        mockUserTwo = mock(User.class);
-        when(mockUserTwo.getId()).thenReturn(USER_TWO_ID);
+        mockUserTwo = User.builder()
+                .id(USER_TWO_ID)
+                .build();
 
         // Arrange ExhibitionItem
         mockExhibitionItem = ExhibitionItem.builder()
