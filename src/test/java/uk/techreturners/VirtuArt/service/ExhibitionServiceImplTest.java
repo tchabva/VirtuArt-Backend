@@ -58,6 +58,7 @@ class ExhibitionServiceImplTest {
     private User mockUserOne;
     private User mockUserTwo;
     private Exhibition mockExhibition;
+    private Exhibition mockUserTwoExhibition;
     private ExhibitionItem mockExhibitionItem;
     private CreateExhibitionRequest mockCreateExhibitionRequest;
     private AddArtworkRequest mockAddArtworkRequest;
@@ -392,6 +393,15 @@ class ExhibitionServiceImplTest {
                     .isInstanceOf(ExhibitionItemExistsAlreadyException.class);
 
             verify(mockExhibitionRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("addArtworkToExhibition throws ItemNotFoundException when the exhibition does not exist")
+        void addArtworkToExhibitionThrowsExceptionWhenExhibitionNotFound() {
+            // Arrange
+
+
+            // Act & Assert
         }
     }
 }
