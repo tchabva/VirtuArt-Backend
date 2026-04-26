@@ -20,6 +20,7 @@ import uk.techreturners.VirtuArt.model.ExhibitionItem;
 import uk.techreturners.VirtuArt.model.User;
 import uk.techreturners.VirtuArt.model.dto.ExhibitionDTO;
 import uk.techreturners.VirtuArt.model.dto.ExhibitionDetailDTO;
+import uk.techreturners.VirtuArt.model.request.AddArtworkRequest;
 import uk.techreturners.VirtuArt.model.request.CreateExhibitionRequest;
 import uk.techreturners.VirtuArt.repository.ExhibitionRepository;
 
@@ -58,6 +59,7 @@ class ExhibitionServiceImplTest {
     private Exhibition mockExhibition;
     private ExhibitionItem mockExhibitionItem;
     private CreateExhibitionRequest mockCreateExhibitionRequest;
+    private AddArtworkRequest mockAddArtworkRequest;
 
     private static final String EXHIBITION_ID = "exhibition-uuid-1";
     private static final String USER_ONE_ID = "user-uuid-1";
@@ -101,7 +103,10 @@ class ExhibitionServiceImplTest {
                 .exhibitionItems(new ArrayList<>())
                 .build();
 
+        // Arrange Requests
         mockCreateExhibitionRequest = new CreateExhibitionRequest("My Exhibition", "A test exhibition");
+
+        mockAddArtworkRequest = new AddArtworkRequest(API_ID, SOURCE);
     }
 
     /**
@@ -326,6 +331,45 @@ class ExhibitionServiceImplTest {
                     () -> assertNotNull(savedExhibition.getCreatedAt()),
                     () -> assertNotNull(savedExhibition.getUpdatedAt())
             );
+        }
+    }
+
+    /**
+     * addArtworkToExhibition
+     */
+    @Nested
+    @DisplayName("Add Artwork to Exhibition")
+    class AddArtworkToExhibition {
+
+        @Test
+        @DisplayName("addArtworkToExhibition adds the item, saves the exhibition, & returns the mapped DTO")
+        void addArtworkToExhibitionAddsItemAndReturnsDTO() {
+            // Arrange
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID))
+                    .thenReturn(Optional.of(mockExhibition));
+            when(mockExhibitionItemService.getOrCreateExhibitionItem(mockAddArtworkRequest))
+                    .thenReturn(mockExhibitionItem);
+            when(mockExhibitionRepository.save(mockExhibition)).thenReturn(mockExhibition);
+
+            // Act
+            ExhibitionDTO result = exhibitionService.addArtworkToExhibition(
+                    EXHIBITION_ID,
+                    mockAddArtworkRequest,
+                    mockJwt
+            );
+
+            // Assert
+            assertAll(
+                    () -> assertNotNull(result),
+                    () -> assertEquals(mockExhibition.getId(), result.id()),
+                    () -> assertTrue(mockExhibition.getExhibitionItems().contains(mockExhibitionItem))
+            );
+
+            verify(mockExhibitionItemService, times(1)).getOrCreateExhibitionItem(mockAddArtworkRequest);
+            verify(mockExhibitionRepository, times(1)).save(mockExhibition);
+            verify(exhibitionService, times(1)).createExhibitionDTO(mockExhibition);
+
         }
     }
 }
