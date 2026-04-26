@@ -1,5 +1,6 @@
 package uk.techreturners.VirtuArt.service;
 
+import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -18,6 +19,7 @@ import uk.techreturners.VirtuArt.model.ExhibitionItem;
 import uk.techreturners.VirtuArt.model.User;
 import uk.techreturners.VirtuArt.model.dto.ExhibitionDTO;
 import uk.techreturners.VirtuArt.model.dto.ExhibitionDetailDTO;
+import uk.techreturners.VirtuArt.model.request.CreateExhibitionRequest;
 import uk.techreturners.VirtuArt.repository.ExhibitionRepository;
 
 import java.time.LocalDateTime;
@@ -263,6 +265,39 @@ class ExhibitionServiceImplTest {
             // Act & Assert
             assertThatThrownBy(() -> exhibitionService.getExhibitionById(EXHIBITION_ID, mockJwt))
                     .isInstanceOf(AccessDeniedException.class);
+        }
+    }
+
+    /**
+     * createUserExhibition
+     */
+    @Nested
+    @DisplayName("Create User Exhibition")
+    class CreateUserExhibition {
+
+        @Test
+        @DisplayName("createUserExhibition builds an Exhibition from the request, saves it, & returns mapped DTO")
+        void createUserExhibitionSavesAndReturnsDTO() {
+            // Arrange
+            CreateExhibitionRequest request = new CreateExhibitionRequest("My Exhibition", "A test exhibition");
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.save(any(Exhibition.class)))
+                    .thenReturn(mockExhibition);
+
+            // Act
+            ExhibitionDTO result = exhibitionService.createUserExhibition(request,mockJwt);
+
+            //
+            assertAll(
+                    () -> assertNotNull(result),
+                    () -> assertEquals(mockExhibition.getId(), result.id()),
+                    () -> assertEquals(mockExhibition.getTitle(), result.title()),
+                    () -> assertEquals(mockExhibition.getCreatedAt(), result.createdAt()),
+                    () -> assertEquals(mockExhibition.getUpdatedAt(), result.updatedAt())
+            );
+
+            verify(mockExhibitionRepository, times(1)).save(any(Exhibition.class));
+            verify(exhibitionService, times(1)).createExhibitionDTO(mockExhibition);
         }
     }
 }
