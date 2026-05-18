@@ -424,4 +424,13 @@ class ExhibitionServiceImplTest {
             verify(mockExhibitionRepository, never()).save(any());
         }
     }
+
+    /**
+     * removeArtworkFromExhibition
+     */
+    @Nested
+    @DisplayName("Remove Artwork From Exhibition")
+    class RemoveArtworkFromExhibition {
+
+    }
 }
