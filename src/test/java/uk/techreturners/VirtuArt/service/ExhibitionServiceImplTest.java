@@ -432,5 +432,25 @@ class ExhibitionServiceImplTest {
     @DisplayName("Remove Artwork From Exhibition")
     class RemoveArtworkFromExhibition {
 
+        @Test
+        @DisplayName("removeArtworkFromExhibition removes the item, saves the exhibition, & returns null")
+        void removeArtworkFromExhibitionRemovesItemAndSaves() {
+            // Arrange
+            mockExhibition.getExhibitionItems().add(mockExhibitionItem);
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID)).thenReturn(Optional.of(mockExhibition));
+            when(mockExhibitionItemService.getExhibitionItem(API_ID, SOURCE)).thenReturn(mockExhibitionItem);
+
+            // Act
+            Void result = exhibitionService.removeArtworkFromExhibition(EXHIBITION_ID, API_ID, SOURCE, mockJwt);
+
+            // Assert
+            assertAll(
+                    () -> assertNull(result),
+                    () -> assertFalse(mockExhibition.getExhibitionItems().contains(mockExhibitionItem))
+            );
+
+            verify(mockExhibitionRepository, times(1)).save(mockExhibition);
+        }
     }
 }
