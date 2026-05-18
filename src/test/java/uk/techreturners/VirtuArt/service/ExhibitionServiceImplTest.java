@@ -406,6 +406,8 @@ class ExhibitionServiceImplTest {
             assertThatThrownBy(() -> exhibitionService.addArtworkToExhibition(EXHIBITION_ID, mockAddArtworkRequest, mockJwt))
                     .isInstanceOf(ItemNotFoundException.class)
                     .hasMessageContaining(EXHIBITION_ID);
+            verify(mockExhibitionItemService, never()).getOrCreateExhibitionItem(any());
+            verify(mockExhibitionRepository, never()).save(any());
         }
 
         @Test
