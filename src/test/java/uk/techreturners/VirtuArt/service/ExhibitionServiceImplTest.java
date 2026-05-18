@@ -399,14 +399,27 @@ class ExhibitionServiceImplTest {
         @DisplayName("addArtworkToExhibition throws ItemNotFoundException when the exhibition does not exist")
         void addArtworkToExhibitionThrowsExceptionWhenExhibitionNotFound() {
             // Arrange
-            AddArtworkRequest request = new AddArtworkRequest(API_ID, SOURCE);
             when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
             when(mockExhibitionRepository.findById(EXHIBITION_ID)).thenReturn(Optional.empty());
 
             // Act & Assert
-            assertThatThrownBy(() -> exhibitionService.addArtworkToExhibition(EXHIBITION_ID, request, mockJwt))
+            assertThatThrownBy(() -> exhibitionService.addArtworkToExhibition(EXHIBITION_ID, mockAddArtworkRequest, mockJwt))
                     .isInstanceOf(ItemNotFoundException.class)
                     .hasMessageContaining(EXHIBITION_ID);
+        }
+
+        @Test
+        @DisplayName("addArtworkToExhibition throws AccessDeniedException when the exhibition belongs to a different user")
+        void addArtworkToExhibitionThrowsAccessDeniedExceptionWhenNotOwner() {
+            // Arrange
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID)).thenReturn(Optional.of(mockUserTwoExhibition));
+
+            // Act & Assert
+            assertThatThrownBy(() -> exhibitionService.addArtworkToExhibition(EXHIBITION_ID, mockAddArtworkRequest, mockJwt))
+                    .isInstanceOf(AccessDeniedException.class);
+            verify(mockExhibitionItemService, never()).getOrCreateExhibitionItem(any());
+            verify(mockExhibitionRepository, never()).save(any());
         }
     }
 }
