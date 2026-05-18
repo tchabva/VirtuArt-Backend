@@ -94,7 +94,7 @@ class ExhibitionServiceImplTest {
                 .exhibitions(new ArrayList<>())
                 .build();
 
-        // Arrange Exhibition owned by mockUserOne
+        // Arrange Exhibitions
         mockExhibition = Exhibition.builder()
                 .id(EXHIBITION_ID)
                 .title("My Exhibition")
@@ -102,6 +102,13 @@ class ExhibitionServiceImplTest {
                 .createdAt(FIXED_TIME)
                 .updatedAt(FIXED_TIME)
                 .user(mockUserOne)
+                .exhibitionItems(new ArrayList<>())
+                .build();
+
+        mockUserTwoExhibition = Exhibition.builder()
+                .id(EXHIBITION_ID)
+                .title("Not Mine")
+                .user(mockUserTwo)
                 .exhibitionItems(new ArrayList<>())
                 .build();
 
@@ -243,16 +250,9 @@ class ExhibitionServiceImplTest {
         @DisplayName("getExhibitionById throws AccessDeniedException when the exhibition belongs to a different user")
         void getExhibitionByIdThrowsExceptionWhenNotOwner() {
             // Arrange
-            Exhibition otherUsersExhibition = Exhibition.builder()
-                    .id(EXHIBITION_ID)
-                    .title("Not Mine")
-                    .user(mockUserTwo)
-                    .exhibitionItems(new ArrayList<>())
-                    .build();
-
             when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
             when(mockExhibitionRepository.findById(EXHIBITION_ID))
-                    .thenReturn(Optional.of(otherUsersExhibition));
+                    .thenReturn(Optional.of(mockUserTwoExhibition));
 
             // Act & Assert
             assertThatThrownBy(() -> exhibitionService.getExhibitionById(EXHIBITION_ID, mockJwt))
@@ -399,9 +399,14 @@ class ExhibitionServiceImplTest {
         @DisplayName("addArtworkToExhibition throws ItemNotFoundException when the exhibition does not exist")
         void addArtworkToExhibitionThrowsExceptionWhenExhibitionNotFound() {
             // Arrange
-
+            AddArtworkRequest request = new AddArtworkRequest(API_ID, SOURCE);
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID)).thenReturn(Optional.empty());
 
             // Act & Assert
+            assertThatThrownBy(() -> exhibitionService.addArtworkToExhibition(EXHIBITION_ID, request, mockJwt))
+                    .isInstanceOf(ItemNotFoundException.class)
+                    .hasMessageContaining(EXHIBITION_ID);
         }
     }
 }
