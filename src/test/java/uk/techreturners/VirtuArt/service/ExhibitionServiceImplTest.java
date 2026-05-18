@@ -488,5 +488,20 @@ class ExhibitionServiceImplTest {
             verify(mockExhibitionItemService, never()).getExhibitionItem(any(),any());
             verify(mockExhibitionRepository, never()).save(any());
         }
+
+        @Test
+        @DisplayName("removeArtworkExhibition throws AccessDeniedException when the exhibition belongs to a different user")
+        void removeArtworkFromExhibitionThrowsAccessDeniedExceptionWhenNotOwner() {
+            // Arrange
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID)).thenReturn(Optional.of(mockUserTwoExhibition));
+
+            // Act & Assert
+            assertThatThrownBy(() ->
+                    exhibitionService.removeArtworkFromExhibition(EXHIBITION_ID,API_ID,SOURCE,mockJwt))
+                    .isInstanceOf(AccessDeniedException.class);
+            verify(mockExhibitionItemService, never()).getExhibitionItem(any(), any());
+            verify(mockExhibitionRepository, never()).save(any());
+        }
     }
 }
