@@ -452,5 +452,24 @@ class ExhibitionServiceImplTest {
 
             verify(mockExhibitionRepository, times(1)).save(mockExhibition);
         }
+
+        @Test
+        @DisplayName("removeArtworkFromExhibition throws ItemNotFoundException when the artwork is not in the exhibition")
+        void removeArtworkFromExhibitionThrowsItemNotFoundExceptionWhenItemNotInExhibition() {
+            // Arrange
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID)).thenReturn(Optional.of(mockExhibition));
+            when(mockExhibitionItemService.getExhibitionItem(API_ID, SOURCE)).thenReturn(mockExhibitionItem);
+
+            // Act & Assert
+            assertThatThrownBy(() ->
+                    exhibitionService.removeArtworkFromExhibition(EXHIBITION_ID,API_ID,SOURCE,mockJwt))
+                    .isInstanceOf(ItemNotFoundException.class)
+                    .hasMessageContaining(API_ID)
+                    .hasMessageContaining(SOURCE)
+                    .hasMessageContaining(EXHIBITION_ID);
+
+            verify(mockExhibitionRepository, never()).save(any());
+        }
     }
 }
