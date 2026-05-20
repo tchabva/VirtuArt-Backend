@@ -530,7 +530,7 @@ class ExhibitionServiceImplTest {
 
         @Test
         @DisplayName("deleteExhibition throws ItemNotFoundException when the exhibition does not exist")
-        void deleteExhibitionThrowsWhenNotFound() {
+        void deleteExhibitionThrowsItemNotFoundExceptionWhenNotFound() {
             // Arrange
             when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
             when(mockExhibitionRepository.findById(EXHIBITION_ID)).thenReturn(Optional.empty());
@@ -540,6 +540,21 @@ class ExhibitionServiceImplTest {
                     () -> exhibitionService.deleteExhibition(EXHIBITION_ID,mockJwt))
                     .isInstanceOf(ItemNotFoundException.class)
                     .hasMessageContaining(EXHIBITION_ID);
+            verify(mockExhibitionRepository, never()).deleteById(any());
+        }
+
+        @Test
+        @DisplayName("deleteExhibition throws AccessDeniedException when the exhibition belongs to different user")
+        void deleteExhibitionThrowsAccessDeniedExceptionWhenNotOwner() {
+            // Arrange
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID))
+                    .thenReturn(Optional.of(mockUserTwoExhibition));
+
+            // Act & Assert
+            assertThatThrownBy(
+                    () -> exhibitionService.deleteExhibition(EXHIBITION_ID,mockJwt))
+                    .isInstanceOf(AccessDeniedException.class);
             verify(mockExhibitionRepository, never()).deleteById(any());
         }
     }
