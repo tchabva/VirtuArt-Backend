@@ -713,5 +713,25 @@ class ExhibitionServiceImplTest {
             );
             verify(mockExhibitionRepository, times(1)).save(mockExhibition);
         }
+
+        @Test
+        @DisplayName("updateExhibitionDetails throws ItemNotFoundException when the exhibition does not exist")
+        void updateExhibitionDetailsThrowsItemNotFoundExceptionWhenNotFound() {
+            // Arrange
+            UpdateExhibitionRequest request = new UpdateExhibitionRequest(
+                    "Updated Title",
+                    "Updated Description"
+            );
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID))
+                    .thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThatThrownBy(
+                    () -> exhibitionService.updateExhibitionDetails(EXHIBITION_ID,request,mockJwt))
+                    .isInstanceOf(ItemNotFoundException.class)
+                    .hasMessageContaining(EXHIBITION_ID);
+            verify(mockExhibitionRepository, never()).save(any());
+        }
     }
 }
