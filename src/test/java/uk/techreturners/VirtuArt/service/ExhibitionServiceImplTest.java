@@ -652,5 +652,21 @@ class ExhibitionServiceImplTest {
             assertNotNull(result);
             verify(mockExhibitionRepository, never()).save(any());
         }
+
+        @Test
+        @DisplayName("updateExhibitionDetails does not save when the request is null")
+        void updateExhibitionDetailDoesNotSaveWhenRequestIsNull() {
+            // Arrange
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID))
+                    .thenReturn(Optional.of(mockExhibition));
+
+            // Act
+            ExhibitionDTO result = exhibitionService.updateExhibitionDetails(EXHIBITION_ID,null,mockJwt);
+
+            // Assert
+            assertNotNull(result);
+            verify(mockExhibitionRepository, never()).save(any());
+        }
     }
 }
