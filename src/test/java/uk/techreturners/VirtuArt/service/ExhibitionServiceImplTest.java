@@ -668,5 +668,26 @@ class ExhibitionServiceImplTest {
             assertNotNull(result);
             verify(mockExhibitionRepository, never()).save(any());
         }
+
+        @Test
+        @DisplayName("updateExhibitionDetails does not save when both fields are blank")
+        void updateExhibitionDetailsDoesNotSaveWhenBothFieldsAreBlack() {
+            // Arrange
+            UpdateExhibitionRequest request = new UpdateExhibitionRequest("   ", "   ");
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID))
+                    .thenReturn(Optional.of(mockExhibition));
+
+            // Act
+            ExhibitionDTO result = exhibitionService.updateExhibitionDetails(EXHIBITION_ID,request,mockJwt);
+
+            // Assert
+            assertAll(
+                    () -> assertNotNull(result),
+                    () -> assertEquals("My Exhibition", mockExhibition.getTitle()),
+                    () -> assertEquals("A test exhibition", mockExhibition.getDescription())
+            );
+            verify(mockExhibitionRepository, never()).save(any());
+        }
     }
 }
