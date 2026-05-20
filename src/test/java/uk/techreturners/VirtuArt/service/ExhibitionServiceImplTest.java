@@ -538,7 +538,7 @@ class ExhibitionServiceImplTest {
 
             // Act & Assert
             assertThatThrownBy(
-                    () -> exhibitionService.deleteExhibition(EXHIBITION_ID,mockJwt))
+                    () -> exhibitionService.deleteExhibition(EXHIBITION_ID, mockJwt))
                     .isInstanceOf(ItemNotFoundException.class)
                     .hasMessageContaining(EXHIBITION_ID);
             verify(mockExhibitionRepository, never()).deleteById(any());
@@ -554,7 +554,7 @@ class ExhibitionServiceImplTest {
 
             // Act & Assert
             assertThatThrownBy(
-                    () -> exhibitionService.deleteExhibition(EXHIBITION_ID,mockJwt))
+                    () -> exhibitionService.deleteExhibition(EXHIBITION_ID, mockJwt))
                     .isInstanceOf(AccessDeniedException.class);
             verify(mockExhibitionRepository, never()).deleteById(any());
         }
@@ -581,7 +581,7 @@ class ExhibitionServiceImplTest {
             when(mockExhibitionRepository.save(mockExhibition)).thenReturn(mockExhibition);
 
             // Act
-            exhibitionService.updateExhibitionDetails(EXHIBITION_ID,request,mockJwt);
+            exhibitionService.updateExhibitionDetails(EXHIBITION_ID, request, mockJwt);
 
             // Assert
             assertAll(
@@ -595,14 +595,14 @@ class ExhibitionServiceImplTest {
         @DisplayName("updateExhibitionDetails updates only the title when only the title has changed")
         void updateExhibitionDetailsUpdatesOnlyTitle() {
             // Arrange
-            UpdateExhibitionRequest request = new UpdateExhibitionRequest("Updated Title",null);
+            UpdateExhibitionRequest request = new UpdateExhibitionRequest("Updated Title", null);
             when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
             when(mockExhibitionRepository.findById(EXHIBITION_ID))
                     .thenReturn(Optional.of(mockExhibition));
             when(mockExhibitionRepository.save(mockExhibition)).thenReturn(mockExhibition);
 
             // Act
-            exhibitionService.updateExhibitionDetails(EXHIBITION_ID,request,mockJwt);
+            exhibitionService.updateExhibitionDetails(EXHIBITION_ID, request, mockJwt);
 
             // Assert
             assertAll(
@@ -616,14 +616,14 @@ class ExhibitionServiceImplTest {
         @DisplayName("updateExhibitionDetails updates only the description when only the description has changed")
         void updateExhibitionDetailsUpdatesOnlyDescription() {
             // Arrange
-            UpdateExhibitionRequest request = new UpdateExhibitionRequest(null,"Updated Description");
+            UpdateExhibitionRequest request = new UpdateExhibitionRequest(null, "Updated Description");
             when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
             when(mockExhibitionRepository.findById(EXHIBITION_ID))
                     .thenReturn(Optional.of(mockExhibition));
             when(mockExhibitionRepository.save(mockExhibition)).thenReturn(mockExhibition);
 
             // Act
-            exhibitionService.updateExhibitionDetails(EXHIBITION_ID,request,mockJwt);
+            exhibitionService.updateExhibitionDetails(EXHIBITION_ID, request, mockJwt);
 
             // Assert
             assertAll(
@@ -662,7 +662,7 @@ class ExhibitionServiceImplTest {
                     .thenReturn(Optional.of(mockExhibition));
 
             // Act
-            ExhibitionDTO result = exhibitionService.updateExhibitionDetails(EXHIBITION_ID,null,mockJwt);
+            ExhibitionDTO result = exhibitionService.updateExhibitionDetails(EXHIBITION_ID, null, mockJwt);
 
             // Assert
             assertNotNull(result);
@@ -679,7 +679,7 @@ class ExhibitionServiceImplTest {
                     .thenReturn(Optional.of(mockExhibition));
 
             // Act
-            ExhibitionDTO result = exhibitionService.updateExhibitionDetails(EXHIBITION_ID,request,mockJwt);
+            ExhibitionDTO result = exhibitionService.updateExhibitionDetails(EXHIBITION_ID, request, mockJwt);
 
             // Assert
             assertAll(
@@ -704,7 +704,7 @@ class ExhibitionServiceImplTest {
             when(mockExhibitionRepository.save(mockExhibition)).thenReturn(mockExhibition);
 
             // Act
-            exhibitionService.updateExhibitionDetails(EXHIBITION_ID,request,mockJwt);
+            exhibitionService.updateExhibitionDetails(EXHIBITION_ID, request, mockJwt);
 
             // Assert
             assertAll(
@@ -728,7 +728,7 @@ class ExhibitionServiceImplTest {
 
             // Act & Assert
             assertThatThrownBy(
-                    () -> exhibitionService.updateExhibitionDetails(EXHIBITION_ID,request,mockJwt))
+                    () -> exhibitionService.updateExhibitionDetails(EXHIBITION_ID, request, mockJwt))
                     .isInstanceOf(ItemNotFoundException.class)
                     .hasMessageContaining(EXHIBITION_ID);
             verify(mockExhibitionRepository, never()).save(any());
@@ -748,7 +748,7 @@ class ExhibitionServiceImplTest {
 
             // Act & Assert
             assertThatThrownBy(
-                    () -> exhibitionService.updateExhibitionDetails(EXHIBITION_ID,request,mockJwt))
+                    () -> exhibitionService.updateExhibitionDetails(EXHIBITION_ID, request, mockJwt))
                     .isInstanceOf(AccessDeniedException.class);
             verify(mockExhibitionRepository, never()).save(any());
 
