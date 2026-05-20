@@ -590,5 +590,26 @@ class ExhibitionServiceImplTest {
             );
             verify(mockExhibitionRepository, times(1)).save(mockExhibition);
         }
+
+        @Test
+        @DisplayName("updateExhibitionDetails updates only the title when only the title has changed")
+        void updateExhibitionDetailsUpdatesOnlyTitle() {
+            // Arrange
+            UpdateExhibitionRequest request = new UpdateExhibitionRequest("Updated Title",null);
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID))
+                    .thenReturn(Optional.of(mockExhibition));
+            when(mockExhibitionRepository.save(mockExhibition)).thenReturn(mockExhibition);
+
+            // Act
+            exhibitionService.updateExhibitionDetails(EXHIBITION_ID,request,mockJwt);
+
+            // Assert
+            assertAll(
+                    () -> assertEquals("Updated Title", mockExhibition.getTitle()),
+                    () -> assertEquals("A test exhibition", mockExhibition.getDescription())
+            );
+            verify(mockExhibitionRepository, times(1)).save(mockExhibition);
+        }
     }
 }
