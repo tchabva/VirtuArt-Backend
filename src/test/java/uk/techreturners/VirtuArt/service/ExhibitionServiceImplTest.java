@@ -463,7 +463,7 @@ class ExhibitionServiceImplTest {
 
             // Act & Assert
             assertThatThrownBy(() ->
-                    exhibitionService.removeArtworkFromExhibition(EXHIBITION_ID,API_ID,SOURCE,mockJwt))
+                    exhibitionService.removeArtworkFromExhibition(EXHIBITION_ID, API_ID, SOURCE, mockJwt))
                     .isInstanceOf(ItemNotFoundException.class)
                     .hasMessageContaining(API_ID)
                     .hasMessageContaining(SOURCE)
@@ -481,11 +481,11 @@ class ExhibitionServiceImplTest {
 
             // Act & Assert
             assertThatThrownBy(() ->
-                    exhibitionService.removeArtworkFromExhibition(EXHIBITION_ID,API_ID,SOURCE,mockJwt))
+                    exhibitionService.removeArtworkFromExhibition(EXHIBITION_ID, API_ID, SOURCE, mockJwt))
                     .isInstanceOf(ItemNotFoundException.class)
                     .hasMessageContaining(EXHIBITION_ID);
 
-            verify(mockExhibitionItemService, never()).getExhibitionItem(any(),any());
+            verify(mockExhibitionItemService, never()).getExhibitionItem(any(), any());
             verify(mockExhibitionRepository, never()).save(any());
         }
 
@@ -498,10 +498,36 @@ class ExhibitionServiceImplTest {
 
             // Act & Assert
             assertThatThrownBy(() ->
-                    exhibitionService.removeArtworkFromExhibition(EXHIBITION_ID,API_ID,SOURCE,mockJwt))
+                    exhibitionService.removeArtworkFromExhibition(EXHIBITION_ID, API_ID, SOURCE, mockJwt))
                     .isInstanceOf(AccessDeniedException.class);
             verify(mockExhibitionItemService, never()).getExhibitionItem(any(), any());
             verify(mockExhibitionRepository, never()).save(any());
         }
+    }
+
+    /**
+     * deleteExhibition
+     */
+    @Nested
+    @DisplayName("Delete Exhibition")
+    class DeleteExhibition {
+
+        @Test
+        @DisplayName("deleteExhibition deletes the exhibition by ID & returns null")
+        void deleteExhibitionDeletesByIdAndReturnsNull() {
+            // Arrange
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID))
+                    .thenReturn(Optional.of(mockExhibition));
+
+            // Act
+            Void result = exhibitionService.deleteExhibition(EXHIBITION_ID, mockJwt);
+
+            // Assert
+            assertNull(result);
+            verify(mockExhibitionRepository, times(1)).deleteById(EXHIBITION_ID);
+        }
+
+
     }
 }
