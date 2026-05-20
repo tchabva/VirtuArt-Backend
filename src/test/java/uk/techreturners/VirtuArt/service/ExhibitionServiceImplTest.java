@@ -733,5 +733,25 @@ class ExhibitionServiceImplTest {
                     .hasMessageContaining(EXHIBITION_ID);
             verify(mockExhibitionRepository, never()).save(any());
         }
+
+        @Test
+        @DisplayName("updateExhibitionDetails throws AccessDeniedException when the exhibition belongs to a different user")
+        void updateExhibitionDetailsThrowsAccessDeniedExceptionWhenNotOwner() {
+            // Arrange
+            UpdateExhibitionRequest request = new UpdateExhibitionRequest(
+                    "Updated Title",
+                    "Updated Description"
+            );
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID))
+                    .thenReturn(Optional.of(mockUserTwoExhibition));
+
+            // Act & Assert
+            assertThatThrownBy(
+                    () -> exhibitionService.updateExhibitionDetails(EXHIBITION_ID,request,mockJwt))
+                    .isInstanceOf(AccessDeniedException.class);
+            verify(mockExhibitionRepository, never()).save(any());
+
+        }
     }
 }
