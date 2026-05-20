@@ -18,7 +18,7 @@ This backend serves the [VirtuArt Frontend](https://github.com/tchabva/virtuart-
 - OAuth2 authentication (Google)
 - H2 (in-memory) and PostgreSQL database support
 
-## Technologies Used
+## Technology Stack
 - Java 21
 - Spring Boot 4
 - Spring Data JPA
