@@ -23,6 +23,7 @@ import uk.techreturners.VirtuArt.model.dto.ExhibitionDTO;
 import uk.techreturners.VirtuArt.model.dto.ExhibitionDetailDTO;
 import uk.techreturners.VirtuArt.model.request.AddArtworkRequest;
 import uk.techreturners.VirtuArt.model.request.CreateExhibitionRequest;
+import uk.techreturners.VirtuArt.model.request.UpdateExhibitionRequest;
 import uk.techreturners.VirtuArt.repository.ExhibitionRepository;
 
 import java.time.LocalDateTime;
@@ -566,5 +567,28 @@ class ExhibitionServiceImplTest {
     @DisplayName("Update Exhibition Details")
     class UpdateExhibitionDetails {
 
+        @Test
+        @DisplayName("updateExhibitionDetails updates both title and description, saves, and returns mapped DTO")
+        void updateExhibitionDetailsSavesAndReturnsDTO() {
+            // Arrange
+            UpdateExhibitionRequest request = new UpdateExhibitionRequest(
+                    "Updated Title",
+                    "Updated Description"
+            );
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID))
+                    .thenReturn(Optional.of(mockExhibition));
+            when(mockExhibitionRepository.save(mockExhibition)).thenReturn(mockExhibition);
+
+            // Act
+            exhibitionService.updateExhibitionDetails(EXHIBITION_ID,request,mockJwt);
+
+            // Assert
+            assertAll(
+                    () -> assertEquals("Updated Title", mockExhibition.getTitle()),
+                    () -> assertEquals("Updated Description", mockExhibition.getDescription())
+            );
+            verify(mockExhibitionRepository, times(1)).save(mockExhibition);
+        }
     }
 }
