@@ -632,5 +632,25 @@ class ExhibitionServiceImplTest {
             );
             verify(mockExhibitionRepository, times(1)).save(mockExhibition);
         }
+
+        @Test
+        @DisplayName("updateExhibitionDetails does not save when both fields are the same as existing values")
+        void updateExhibitionDetailsDoesNotSaveWhenNothingChances() {
+            // Arrange
+            UpdateExhibitionRequest request = new UpdateExhibitionRequest(
+                    mockExhibition.getTitle(),
+                    mockExhibition.getDescription()
+            );
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID))
+                    .thenReturn(Optional.of(mockExhibition));
+
+            // Act
+            ExhibitionDTO result = exhibitionService.updateExhibitionDetails(EXHIBITION_ID, request, mockJwt);
+
+            // Assert
+            assertNotNull(result);
+            verify(mockExhibitionRepository, never()).save(any());
+        }
     }
 }
