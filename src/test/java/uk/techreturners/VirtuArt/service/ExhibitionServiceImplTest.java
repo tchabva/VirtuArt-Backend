@@ -56,7 +56,6 @@ class ExhibitionServiceImplTest {
     private ExhibitionServiceImpl exhibitionService;
 
     private User mockUserOne;
-    private User mockUserTwo;
     private Exhibition mockExhibition;
     private Exhibition mockUserTwoExhibition;
     private ExhibitionItem mockExhibitionItem;
@@ -78,7 +77,7 @@ class ExhibitionServiceImplTest {
                 .id(USER_ONE_ID)
                 .build();
 
-        mockUserTwo = User.builder()
+        User mockUserTwo = User.builder()
                 .id(USER_TWO_ID)
                 .build();
 
