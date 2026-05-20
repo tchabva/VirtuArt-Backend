@@ -18,7 +18,7 @@ This backend serves the [VirtuArt Frontend](https://github.com/tchabva/virtuart-
 - OAuth2 authentication (Google)
 - H2 (in-memory) and PostgreSQL database support
 
-## Technologies Used
+## Technology Stack
 - Java 21
 - Spring Boot 4
 - Spring Data JPA
@@ -27,7 +27,8 @@ This backend serves the [VirtuArt Frontend](https://github.com/tchabva/virtuart-
 - H2 Database (development)
 - PostgreSQL (production)
 - Maven
-- JUnit & Mockito (testing)
+- JUnit 5, Mockito, AssertJ (testing)
+- Spring Boot Test, Spring Security Test, Reactor Test
 
 ## Prerequisites
 - Java 21+
@@ -104,6 +105,76 @@ All endpoints are available under the `/api/v1/` prefix.
 | `POST`   | `/exhibitions/{id}`                             | Add an artwork to an exhibition.                |
 | `DELETE` | `/exhibitions/{id}/{apiId}/{source}`            | Remove an artwork from an exhibition.           |
 
+## Testing
+
+The project includes a unit and integration test suite covering controllers, services, and DTO mapping. Tests use the `dev` profile (H2 in-memory database) and do not require external museum APIs or a running PostgreSQL instance.
+
+### Run All Tests
+```bash
+./mvnw test
+```
+
+Tests are also executed automatically as part of a full build:
+```bash
+./mvnw clean install
+```
+
+### Run a Specific Test Class
+```bash
+./mvnw test -Dtest=ArtworkServiceImplTest
+```
+
+### Run a Single Test Method
+```bash
+./mvnw test -Dtest=ArtworkServiceImplTest#invalidSourceThrowsException
+```
+
+### Run Tests from Your IDE
+Import the project as a Maven project, then run individual test classes or methods using your IDE's JUnit 5 runner (IntelliJ IDEA, Eclipse, VS Code, etc.).
+
+### Test Stack
+| Library | Purpose |
+|---------|---------|
+| JUnit 5 | Test framework (`@Test`, `@Nested`, `@DisplayName`) |
+| Mockito | Mocking dependencies (`@Mock`, `@InjectMocks`, `@Spy`) |
+| AssertJ | Fluent exception and assertion checks |
+| Spring Boot Test | Integration testing and application context loading |
+| Spring Security Test | Security-related test support |
+| Reactor Test | Reactive stream testing support |
+
+Mockito is configured via the Maven Surefire plugin to support Java 21 inline mocking of final classes and methods.
+
+### Test Structure
+```
+src/test/java/uk/techreturners/VirtuArt
+├── VirtuArtBackendApplicationTests.java   // Spring context load test
+├── controller
+│   └── ArtworkControllerTest.java         // Controller unit tests
+├── service
+│   ├── ArtworkServiceImplTest.java        // Artwork service (AIC & CMA routing, pagination, lookup)
+│   ├── ExhibitionServiceImplTest.java     // Exhibition CRUD, ownership, and artwork management
+│   └── ExhibitionItemServiceImplTest.java // Exhibition item create/lookup logic
+└── util
+    └── DTOMapperTest.java                 // AIC API response → DTO mapping
+```
+
+### Test Coverage by Layer
+
+| Layer | Test Class | What Is Covered |
+|-------|------------|-----------------|
+| Integration | `VirtuArtBackendApplicationTests` | Spring application context loads with the `dev` profile |
+| Controller | `ArtworkControllerTest` | Paginated artwork endpoint responses and HTTP status codes |
+| Service | `ArtworkServiceImplTest` | Source routing (`aic` / `cma`), DAO delegation, pagination mapping, artwork lookup, and error handling |
+| Service | `ExhibitionServiceImplTest` | List/create/update/delete exhibitions, add/remove artworks, user ownership checks, and access control |
+| Service | `ExhibitionItemServiceImplTest` | Get-or-create exhibition items, field mapping from artwork DTOs, and repository interactions |
+| Util | `DTOMapperTest` | AIC image URL construction, artwork DTO mapping, paginated response mapping, and pagination flags |
+
+### Testing Conventions
+- **Unit tests** use `@ExtendWith(MockitoExtension.class)` with mocked collaborators — no database or HTTP calls.
+- **Integration test** uses `@SpringBootTest` with `@ActiveProfiles("dev")` to verify the full application wiring against H2.
+- Tests are organised with `@Nested` inner classes and `@DisplayName` for readable, grouped output.
+- Service tests that implement `DTOMapper` use `@Spy` on the service under test to verify mapper method calls.
+
 ## Project Structure
 ```
 src/main/java/uk/techreturners/VirtuArt
@@ -114,6 +185,11 @@ src/main/java/uk/techreturners/VirtuArt
 ├── repository      // Data Access Objects (DAO) and JPA repositories
 ├── service         // Business logic and services
 └── util            // Utility classes
+
+src/test/java/uk/techreturners/VirtuArt
+├── controller      // Controller unit tests
+├── service         // Service unit tests
+└── util            // Utility/mapper unit tests
 ```
 
 ## License
