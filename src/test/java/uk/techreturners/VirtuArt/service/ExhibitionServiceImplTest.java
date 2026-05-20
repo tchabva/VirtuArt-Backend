@@ -528,6 +528,19 @@ class ExhibitionServiceImplTest {
             verify(mockExhibitionRepository, times(1)).deleteById(EXHIBITION_ID);
         }
 
+        @Test
+        @DisplayName("deleteExhibition throws ItemNotFoundException when the exhibition does not exist")
+        void deleteExhibitionThrowsWhenNotFound() {
+            // Arrange
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID)).thenReturn(Optional.empty());
 
+            // Act & Assert
+            assertThatThrownBy(
+                    () -> exhibitionService.deleteExhibition(EXHIBITION_ID,mockJwt))
+                    .isInstanceOf(ItemNotFoundException.class)
+                    .hasMessageContaining(EXHIBITION_ID);
+            verify(mockExhibitionRepository, never()).deleteById(any());
+        }
     }
 }
