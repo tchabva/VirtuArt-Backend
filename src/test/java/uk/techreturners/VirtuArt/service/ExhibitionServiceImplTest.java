@@ -558,4 +558,13 @@ class ExhibitionServiceImplTest {
             verify(mockExhibitionRepository, never()).deleteById(any());
         }
     }
+
+    /**
+     * updateExhibitionDetails
+     */
+    @Nested
+    @DisplayName("Update Exhibition Details")
+    class UpdateExhibitionDetails {
+
+    }
 }
