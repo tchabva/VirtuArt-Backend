@@ -689,5 +689,29 @@ class ExhibitionServiceImplTest {
             );
             verify(mockExhibitionRepository, never()).save(any());
         }
+
+        @Test
+        @DisplayName("updateExhibitionDetails trims whitespace from the updated fields before saving")
+        void updateExhibitionDetailsTrimsWhitespacesBeforeSaving() {
+            // Arrange
+            UpdateExhibitionRequest request = new UpdateExhibitionRequest(
+                    "  Trimmed Title   ",
+                    "  Trimmed Description   "
+            );
+            when(mockUserService.getCurrentUser(mockJwt)).thenReturn(mockUserOne);
+            when(mockExhibitionRepository.findById(EXHIBITION_ID))
+                    .thenReturn(Optional.of(mockExhibition));
+            when(mockExhibitionRepository.save(mockExhibition)).thenReturn(mockExhibition);
+
+            // Act
+            exhibitionService.updateExhibitionDetails(EXHIBITION_ID,request,mockJwt);
+
+            // Assert
+            assertAll(
+                    () -> assertEquals("Trimmed Title", mockExhibition.getTitle()),
+                    () -> assertEquals("Trimmed Description", mockExhibition.getDescription())
+            );
+            verify(mockExhibitionRepository, times(1)).save(mockExhibition);
+        }
     }
 }
